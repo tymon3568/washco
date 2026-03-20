@@ -184,3 +184,51 @@ impl Bay {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn location_new_starts_pending() {
+        let loc = Location::new(
+            Uuid::now_v7(), "Test Wash".into(), None,
+            "123 St".into(), "Q1".into(), "HCM".into(),
+            10.8, 106.7, 3, QueueMode::Hybrid, serde_json::json!([]),
+        );
+        assert_eq!(loc.status, LocationStatus::Pending);
+        assert_eq!(loc.slug, "test-wash");
+        assert!(loc.deleted_at.is_none());
+    }
+
+    #[test]
+    fn slugify_handles_spaces() {
+        assert_eq!(Location::slugify("My Cool Wash"), "my-cool-wash");
+        assert_eq!(Location::slugify("OneWord"), "oneword");
+        assert_eq!(Location::slugify("  multiple   spaces  "), "multiple-spaces");
+    }
+
+    #[test]
+    fn queue_mode_roundtrip() {
+        for mode in [QueueMode::BookingOnly, QueueMode::WalkinOnly, QueueMode::Hybrid] {
+            let s = mode.as_str();
+            assert_eq!(QueueMode::from_str(s), Some(mode));
+        }
+        assert_eq!(QueueMode::from_str("invalid"), None);
+    }
+
+    #[test]
+    fn location_status_roundtrip() {
+        for status in [LocationStatus::Pending, LocationStatus::Active, LocationStatus::Suspended] {
+            let s = status.as_str();
+            assert_eq!(LocationStatus::from_str(s), Some(status));
+        }
+        assert_eq!(LocationStatus::from_str("invalid"), None);
+    }
+
+    #[test]
+    fn bay_new_is_active() {
+        let bay = Bay::new(Uuid::now_v7(), Uuid::now_v7(), "Bay 1".into());
+        assert!(bay.is_active);
+    }
+}

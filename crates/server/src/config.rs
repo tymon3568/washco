@@ -9,6 +9,11 @@ pub struct AppConfig {
     pub jwt_secret: String,
     pub jwt_expiry_seconds: i64,
     pub jwt_refresh_expiry_seconds: i64,
+    pub s3_endpoint: String,
+    pub s3_bucket: String,
+    pub s3_access_key: String,
+    pub s3_secret_key: String,
+    pub s3_region: String,
 }
 
 impl AppConfig {
@@ -31,6 +36,16 @@ impl AppConfig {
                 .unwrap_or_else(|_| "604800".to_string())
                 .parse()
                 .context("JWT_REFRESH_EXPIRY_SECONDS must be i64")?,
+            s3_endpoint: std::env::var("S3_ENDPOINT")
+                .unwrap_or_else(|_| "http://localhost:9000".to_string()),
+            s3_bucket: std::env::var("S3_BUCKET")
+                .unwrap_or_else(|_| "washco".to_string()),
+            s3_access_key: std::env::var("S3_ACCESS_KEY")
+                .unwrap_or_else(|_| "washco".to_string()),
+            s3_secret_key: std::env::var("S3_SECRET_KEY")
+                .unwrap_or_else(|_| "washco-secret".to_string()),
+            s3_region: std::env::var("S3_REGION")
+                .unwrap_or_else(|_| "us-east-1".to_string()),
         })
     }
 }

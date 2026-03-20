@@ -67,6 +67,9 @@ dotenvy = "0.15"
 aws-sdk-s3 = "1"
 aws-config = "1"
 
+# HTTP client
+reqwest = { version = "0.12", features = ["json"] }
+
 # Redis/KeyDB
 redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
 

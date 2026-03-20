@@ -1,5 +1,6 @@
 use axum::{
     extract::{Path, State},
+    http::StatusCode,
     Json,
 };
 use uuid::Uuid;
@@ -13,7 +14,7 @@ pub async fn create_promotion(
     State(svc): State<PromotionState>,
     ctx: TenantContext,
     Json(body): Json<CreatePromotionRequest>,
-) -> Result<Json<PromotionResponse>, AppError> {
+) -> Result<(StatusCode, Json<PromotionResponse>), AppError> {
     let promo = svc
         .create_promotion(
             ctx.tenant_id,
@@ -33,7 +34,7 @@ pub async fn create_promotion(
         )
         .await?;
 
-    Ok(Json(promo.into()))
+    Ok((StatusCode::CREATED, Json(promo.into())))
 }
 
 pub async fn list_promotions(

@@ -68,3 +68,32 @@ pub struct AppliedRule {
     pub rule_name: String,
     pub adjustment: i64,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rule_type_roundtrip() {
+        for rt in [RuleType::Surge, RuleType::TimeBased, RuleType::DayOfWeek, RuleType::Demand] {
+            let s = rt.as_str();
+            assert_eq!(RuleType::from_str(s), Some(rt));
+        }
+        assert_eq!(RuleType::from_str("invalid"), None);
+    }
+
+    #[test]
+    fn price_calculation_fields() {
+        let calc = PriceCalculation {
+            base_price: 50000,
+            final_price: 75000,
+            applied_rules: vec![AppliedRule {
+                rule_id: Uuid::now_v7(),
+                rule_name: "Peak".into(),
+                adjustment: 25000,
+            }],
+        };
+        assert_eq!(calc.final_price - calc.base_price, 25000);
+        assert_eq!(calc.applied_rules.len(), 1);
+    }
+}

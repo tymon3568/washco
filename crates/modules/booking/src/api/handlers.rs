@@ -1,5 +1,6 @@
 use axum::{
     extract::{Path, Query, State},
+    http::StatusCode,
     Json,
 };
 use uuid::Uuid;
@@ -14,7 +15,7 @@ pub async fn create_booking(
     ctx: TenantContext,
     Path(location_id): Path<Uuid>,
     Json(body): Json<CreateBookingRequest>,
-) -> Result<Json<BookingResponse>, AppError> {
+) -> Result<(StatusCode, Json<BookingResponse>), AppError> {
     let booking = svc
         .create_booking(
             ctx.tenant_id,
@@ -31,7 +32,7 @@ pub async fn create_booking(
         )
         .await?;
 
-    Ok(Json(booking.into()))
+    Ok((StatusCode::CREATED, Json(booking.into())))
 }
 
 pub async fn list_by_location(

@@ -1,5 +1,6 @@
 use axum::{
     extract::{Path, State},
+    http::StatusCode,
     Json,
 };
 use uuid::Uuid;
@@ -13,7 +14,7 @@ pub async fn create_rule(
     State(svc): State<PricingState>,
     ctx: TenantContext,
     Json(body): Json<CreateRuleRequest>,
-) -> Result<Json<PricingRuleResponse>, AppError> {
+) -> Result<(StatusCode, Json<PricingRuleResponse>), AppError> {
     let rule = svc
         .create_rule(
             ctx.tenant_id,
@@ -33,7 +34,7 @@ pub async fn create_rule(
         )
         .await?;
 
-    Ok(Json(rule.into()))
+    Ok((StatusCode::CREATED, Json(rule.into())))
 }
 
 pub async fn list_rules(

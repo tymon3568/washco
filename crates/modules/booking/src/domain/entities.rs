@@ -113,3 +113,93 @@ impl Booking {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_booking() -> Booking {
+        Booking {
+            id: Uuid::now_v7(),
+            tenant_id: Uuid::now_v7(),
+            location_id: Uuid::now_v7(),
+            service_id: Uuid::now_v7(),
+            customer_name: "Test".into(),
+            customer_phone: "0900000000".into(),
+            vehicle_type: "sedan".into(),
+            booking_date: NaiveDate::from_ymd_opt(2026, 3, 22).unwrap(),
+            time_slot: NaiveTime::from_hms_opt(9, 0, 0).unwrap(),
+            status: BookingStatus::Pending,
+            notes: None,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+            cancelled_at: None,
+        }
+    }
+
+    #[test]
+    fn confirm_from_pending_succeeds() {
+        let mut b = make_booking();
+        assert!(b.confirm().is_ok());
+        assert_eq!(b.status, BookingStatus::Confirmed);
+    }
+
+    #[test]
+    fn complete_from_confirmed_succeeds() {
+        let mut b = make_booking();
+        b.confirm().unwrap();
+        assert!(b.complete().is_ok());
+        assert_eq!(b.status, BookingStatus::Completed);
+    }
+
+    #[test]
+    fn complete_from_pending_fails() {
+        let mut b = make_booking();
+        assert!(b.complete().is_err());
+    }
+
+    #[test]
+    fn cancel_from_pending_succeeds() {
+        let mut b = make_booking();
+        assert!(b.cancel().is_ok());
+        assert_eq!(b.status, BookingStatus::Cancelled);
+        assert!(b.cancelled_at.is_some());
+    }
+
+    #[test]
+    fn cancel_from_confirmed_succeeds() {
+        let mut b = make_booking();
+        b.confirm().unwrap();
+        assert!(b.cancel().is_ok());
+    }
+
+    #[test]
+    fn cancel_from_completed_fails() {
+        let mut b = make_booking();
+        b.confirm().unwrap();
+        b.complete().unwrap();
+        assert!(b.cancel().is_err());
+    }
+
+    #[test]
+    fn no_show_from_confirmed_succeeds() {
+        let mut b = make_booking();
+        b.confirm().unwrap();
+        assert!(b.no_show().is_ok());
+        assert_eq!(b.status, BookingStatus::NoShow);
+    }
+
+    #[test]
+    fn no_show_from_pending_fails() {
+        let mut b = make_booking();
+        assert!(b.no_show().is_err());
+    }
+
+    #[test]
+    fn status_roundtrip() {
+        for s in ["pending", "confirmed", "completed", "cancelled", "no_show"] {
+            let status = BookingStatus::from_str(s);
+            assert_eq!(status.as_str(), s);
+        }
+    }
+}

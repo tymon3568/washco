@@ -1,4 +1,4 @@
-use axum::{extract::State, Json};
+use axum::{extract::State, http::StatusCode, Json};
 use washco_shared::{AppError, TenantContext};
 
 use super::dto::*;
@@ -8,7 +8,7 @@ use crate::application::RegisterInput;
 pub async fn register(
     State(svc): State<IdentityState>,
     Json(body): Json<RegisterRequest>,
-) -> Result<Json<UserResponse>, AppError> {
+) -> Result<(StatusCode, Json<UserResponse>), AppError> {
     let user = svc
         .register(RegisterInput {
             phone: body.phone,
@@ -17,7 +17,7 @@ pub async fn register(
         })
         .await?;
 
-    Ok(Json(user.into()))
+    Ok((StatusCode::CREATED, Json(user.into())))
 }
 
 pub async fn request_otp(

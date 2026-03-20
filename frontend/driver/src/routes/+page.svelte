@@ -41,7 +41,7 @@
 	}
 </script>
 
-<div>
+<div class="pb-20">
 	<h1 class="text-xl font-semibold">Tiem rua xe gan ban</h1>
 	<p class="mt-1 text-sm text-muted-foreground">Tim va xem hang doi theo thoi gian thuc.</p>
 
@@ -67,7 +67,7 @@
 		</div>
 	{:else}
 		<div class="mt-4 space-y-3">
-			{#each locations as loc}
+			{#each locations as loc (loc.id)}
 				<a
 					href="/location/{loc.id}"
 					class="block rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-sm active:bg-muted"

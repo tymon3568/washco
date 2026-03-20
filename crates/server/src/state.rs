@@ -8,6 +8,8 @@ pub struct AppState {
     pub db: PgPool,
     pub redis: redis::Client,
     pub jwt: JwtConfig,
+    pub s3: aws_sdk_s3::Client,
+    pub s3_bucket: String,
 }
 
 impl AppState {
@@ -27,7 +29,30 @@ impl AppState {
             config.jwt_refresh_expiry_seconds,
         );
 
-        Ok(Self { db, redis, jwt })
+        let s3_creds = aws_sdk_s3::config::Credentials::new(
+            &config.s3_access_key,
+            &config.s3_secret_key,
+            None,
+            None,
+            "env",
+        );
+        let s3_config = aws_sdk_s3::config::Builder::new()
+            .endpoint_url(&config.s3_endpoint)
+            .region(aws_sdk_s3::config::Region::new(config.s3_region.clone()))
+            .credentials_provider(s3_creds)
+            .force_path_style(true)
+            .behavior_version_latest()
+            .build();
+        let s3 = aws_sdk_s3::Client::from_conf(s3_config);
+        tracing::info!("S3 client configured (endpoint: {})", config.s3_endpoint);
+
+        Ok(Self {
+            db,
+            redis,
+            jwt,
+            s3,
+            s3_bucket: config.s3_bucket.clone(),
+        })
     }
 }
 

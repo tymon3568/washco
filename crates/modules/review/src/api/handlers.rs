@@ -1,5 +1,6 @@
 use axum::{
     extract::{Path, Query, State},
+    http::StatusCode,
     Json,
 };
 use uuid::Uuid;
@@ -13,7 +14,7 @@ use crate::application::SubmitReviewInput;
 pub async fn submit_review(
     State(svc): State<ReviewState>,
     Json(body): Json<SubmitReviewRequest>,
-) -> Result<Json<ReviewResponse>, AppError> {
+) -> Result<(StatusCode, Json<ReviewResponse>), AppError> {
     let review = svc
         .submit_review(
             body.tenant_id,
@@ -28,7 +29,7 @@ pub async fn submit_review(
         )
         .await?;
 
-    Ok(Json(review.into()))
+    Ok((StatusCode::CREATED, Json(review.into())))
 }
 
 /// GET /locations/{location_id} — list reviews (public, tenant_id from query)

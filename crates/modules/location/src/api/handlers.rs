@@ -1,4 +1,5 @@
 use axum::extract::{Path, Query, State};
+use axum::http::StatusCode;
 use axum::Json;
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
@@ -11,7 +12,7 @@ pub async fn create(
     State(svc): State<LocationState>,
     ctx: TenantContext,
     Json(body): Json<CreateLocationRequest>,
-) -> Result<Json<LocationResponse>, AppError> {
+) -> Result<(StatusCode, Json<LocationResponse>), AppError> {
     let location = svc
         .create(
             ctx.tenant_id,
@@ -30,7 +31,7 @@ pub async fn create(
         )
         .await?;
 
-    Ok(Json(location.into()))
+    Ok((StatusCode::CREATED, Json(location.into())))
 }
 
 pub async fn list(
@@ -156,11 +157,11 @@ pub async fn create_bay(
     ctx: TenantContext,
     Path(location_id): Path<Uuid>,
     Json(body): Json<BayRequest>,
-) -> Result<Json<BayResponse>, AppError> {
+) -> Result<(StatusCode, Json<BayResponse>), AppError> {
     let bay = svc
         .create_bay(ctx.tenant_id, location_id, body.name)
         .await?;
-    Ok(Json(bay.into()))
+    Ok((StatusCode::CREATED, Json(bay.into())))
 }
 
 pub async fn update_bay(

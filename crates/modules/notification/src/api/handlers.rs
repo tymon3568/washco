@@ -1,5 +1,6 @@
 use axum::{
     extract::{Path, Query, State},
+    http::StatusCode,
     Json,
 };
 use uuid::Uuid;
@@ -13,7 +14,7 @@ pub async fn create_template(
     State(svc): State<NotificationState>,
     ctx: TenantContext,
     Json(body): Json<CreateTemplateRequest>,
-) -> Result<Json<TemplateResponse>, AppError> {
+) -> Result<(StatusCode, Json<TemplateResponse>), AppError> {
     let template = svc
         .create_template(
             ctx.tenant_id,
@@ -26,7 +27,7 @@ pub async fn create_template(
         )
         .await?;
 
-    Ok(Json(template.into()))
+    Ok((StatusCode::CREATED, Json(template.into())))
 }
 
 pub async fn list_templates(
@@ -73,7 +74,7 @@ pub async fn send_notification(
     State(svc): State<NotificationState>,
     ctx: TenantContext,
     Json(body): Json<SendNotificationRequest>,
-) -> Result<Json<NotificationResponse>, AppError> {
+) -> Result<(StatusCode, Json<NotificationResponse>), AppError> {
     let notification = svc
         .send_notification(
             ctx.tenant_id,
@@ -86,7 +87,7 @@ pub async fn send_notification(
         )
         .await?;
 
-    Ok(Json(notification.into()))
+    Ok((StatusCode::CREATED, Json(notification.into())))
 }
 
 pub async fn list_notifications(

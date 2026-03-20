@@ -1,11 +1,15 @@
-use axum::Router;
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
 use crate::state::AppState;
+use crate::uploads;
 
 pub fn build(state: AppState) -> Router {
-    let api = Router::new()
+    let module_routes = Router::new()
         .nest(
             "/api/v1/auth",
             washco_identity::api::routes(state.db.clone(), state.jwt.clone()),
@@ -47,8 +51,14 @@ pub fn build(state: AppState) -> Router {
             washco_promotion::api::routes(state.db.clone(), state.jwt.clone()),
         );
 
+    let upload_routes = Router::new()
+        .route("/api/v1/uploads/presign", post(uploads::presign_upload))
+        .route("/api/v1/files/{*key}", get(uploads::get_file))
+        .with_state(state);
+
     Router::new()
-        .merge(api)
+        .merge(module_routes)
+        .merge(upload_routes)
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::permissive())
 }

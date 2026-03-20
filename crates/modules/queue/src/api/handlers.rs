@@ -1,5 +1,6 @@
 use axum::{
     extract::{Path, State},
+    http::StatusCode,
     Json,
 };
 use uuid::Uuid;
@@ -30,7 +31,7 @@ pub async fn join(
     ctx: TenantContext,
     Path(location_id): Path<Uuid>,
     Json(body): Json<JoinQueueRequest>,
-) -> Result<Json<QueueEntryResponse>, AppError> {
+) -> Result<(StatusCode, Json<QueueEntryResponse>), AppError> {
     let entry = svc
         .join(
             ctx.tenant_id,
@@ -46,7 +47,7 @@ pub async fn join(
         .await?;
 
     svc.broadcast.notify(location_id, "queue_updated").await;
-    Ok(Json(entry.into()))
+    Ok((StatusCode::CREATED, Json(entry.into())))
 }
 
 pub async fn advance(

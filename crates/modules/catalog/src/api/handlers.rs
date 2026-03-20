@@ -1,4 +1,4 @@
-use axum::{extract::{Path, State}, Json};
+use axum::{extract::{Path, State}, http::StatusCode, Json};
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
 
@@ -21,7 +21,7 @@ pub async fn create(
     ctx: TenantContext,
     Path(location_id): Path<Uuid>,
     Json(body): Json<CreateServiceRequest>,
-) -> Result<Json<ServiceResponse>, AppError> {
+) -> Result<(StatusCode, Json<ServiceResponse>), AppError> {
     let service = svc
         .create_service(CreateServiceInput {
             tenant_id: ctx.tenant_id,
@@ -34,7 +34,7 @@ pub async fn create(
         })
         .await?;
 
-    Ok(Json(service.into()))
+    Ok((StatusCode::CREATED, Json(service.into())))
 }
 
 pub async fn get_by_id(

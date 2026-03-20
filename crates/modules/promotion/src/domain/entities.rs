@@ -57,3 +57,37 @@ pub struct DiscountResult {
     pub final_price: i64,
     pub promotion_code: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn discount_type_roundtrip() {
+        assert_eq!(DiscountType::from_str("percentage"), DiscountType::Percentage);
+        assert_eq!(DiscountType::from_str("fixed"), DiscountType::Fixed);
+        assert_eq!(DiscountType::from_str("unknown"), DiscountType::Percentage);
+    }
+
+    #[test]
+    fn discount_result_percentage() {
+        let result = DiscountResult {
+            original_price: 100000,
+            discount_amount: 15000,
+            final_price: 85000,
+            promotion_code: "TEST15".into(),
+        };
+        assert_eq!(result.final_price, result.original_price - result.discount_amount);
+    }
+
+    #[test]
+    fn discount_result_fixed() {
+        let result = DiscountResult {
+            original_price: 50000,
+            discount_amount: 10000,
+            final_price: 40000,
+            promotion_code: "FIXED10K".into(),
+        };
+        assert_eq!(result.final_price, 40000);
+    }
+}

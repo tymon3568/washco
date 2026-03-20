@@ -40,3 +40,19 @@ export interface QueueEntryResponse {
 	status: string;
 	joined_at: string;
 }
+
+export interface BookingResponse {
+	id: string;
+	location_id: string;
+	location_name?: string;
+	service_id: string;
+	service_name?: string;
+	customer_name: string;
+	customer_phone: string;
+	vehicle_type: string;
+	booking_date: string;
+	time_slot: string;
+	status: string;
+	notes: string | null;
+	created_at: string;
+}
