@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import { goto } from '$app/navigation';
 	import { auth } from '$lib/auth.svelte';
 	import { page } from '$app/state';
 
@@ -11,17 +12,18 @@
 	$effect(() => {
 		auth.init();
 	});
+
+	$effect(() => {
+		if (!auth.isLoading && !auth.isAuthenticated && !isPublicRoute) {
+			goto('/login');
+		}
+	});
 </script>
 
 {#if auth.isLoading}
 	<div class="flex min-h-screen items-center justify-center">
 		<div class="text-sm text-muted-foreground">Dang tai...</div>
 	</div>
-{:else if !auth.isAuthenticated && !isPublicRoute}
-	<script>
-		import { goto } from '$app/navigation';
-		goto('/login');
-	</script>
-{:else}
+{:else if auth.isAuthenticated || isPublicRoute}
 	{@render children()}
 {/if}
