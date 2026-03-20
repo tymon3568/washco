@@ -1,0 +1,53 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+	/* Neutral (luma-inspired warm gray) */
+	--color-background: hsl(0 0% 100%);
+	--color-foreground: hsl(240 10% 3.9%);
+	--color-muted: hsl(240 4.8% 95.9%);
+	--color-muted-foreground: hsl(240 3.8% 46.1%);
+	--color-card: hsl(0 0% 100%);
+	--color-card-foreground: hsl(240 10% 3.9%);
+	--color-border: hsl(240 5.9% 90%);
+	--color-input: hsl(240 5.9% 90%);
+	--color-ring: hsl(221 83% 53%);
+
+	/* Brand: WashCo Blue */
+	--color-primary: hsl(221 83% 53%);
+	--color-primary-foreground: hsl(0 0% 100%);
+
+	/* Secondary: Soft slate */
+	--color-secondary: hsl(240 4.8% 95.9%);
+	--color-secondary-foreground: hsl(240 5.9% 10%);
+
+	/* Accent: Warm teal */
+	--color-accent: hsl(172 66% 50%);
+	--color-accent-foreground: hsl(0 0% 100%);
+
+	/* Semantic */
+	--color-destructive: hsl(0 84% 60%);
+	--color-destructive-foreground: hsl(0 0% 100%);
+	--color-success: hsl(142 71% 45%);
+	--color-success-foreground: hsl(0 0% 100%);
+	--color-warning: hsl(38 92% 50%);
+	--color-warning-foreground: hsl(0 0% 100%);
+
+	/* Radius */
+	--radius: 0.5rem;
+
+	/* Shadows */
+	--shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+	/* Typography */
+	--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+body {
+	font-family: var(--font-sans);
+	background-color: var(--color-background);
+	color: var(--color-foreground);
+}

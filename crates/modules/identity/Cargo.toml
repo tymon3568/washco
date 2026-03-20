@@ -1,0 +1,20 @@
+[package]
+name = "washco-identity"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+washco-shared = { path = "../../shared" }
+axum = { workspace = true }
+sqlx = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+validator = { workspace = true }
+jsonwebtoken = { workspace = true }
+rand = "0.9"
+tokio = { workspace = true }

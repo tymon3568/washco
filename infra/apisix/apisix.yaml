@@ -1,0 +1,70 @@
+# APISIX declarative routes (standalone mode fallback)
+# In production, use Admin API or Dashboard to configure routes dynamically
+
+routes:
+  # Owner Dashboard
+  - id: 1
+    uri: /*
+    host: owner.washco.local
+    upstream:
+      type: roundrobin
+      nodes:
+        owner-dashboard:3000: 1
+    plugins:
+      cors:
+        allow_origins: "http://owner.washco.local"
+        allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
+        allow_headers: "Content-Type,Authorization"
+        allow_credential: true
+
+  # API routes
+  - id: 2
+    uri: /api/v1/*
+    host: api.washco.local
+    upstream:
+      type: roundrobin
+      nodes:
+        washco-api:8080: 1
+    plugins:
+      cors:
+        allow_origins: "http://owner.washco.local,http://app.washco.local"
+        allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
+        allow_headers: "Content-Type,Authorization"
+        allow_credential: true
+      limit-req:
+        rate: 100
+        burst: 50
+        key_type: "var"
+        key: "remote_addr"
+        rejected_code: 429
+
+  # WebSocket routes
+  - id: 3
+    uri: /ws/*
+    host: api.washco.local
+    upstream:
+      type: roundrobin
+      nodes:
+        washco-api:8080: 1
+    enable_websocket: true
+
+  # Health check (direct API access for dev)
+  - id: 4
+    uri: /api/v1/*
+    host: localhost
+    upstream:
+      type: roundrobin
+      nodes:
+        washco-api:8080: 1
+
+  # Owner dashboard via localhost (dev convenience)
+  - id: 5
+    uri: /*
+    host: localhost
+    priority: -1
+    upstream:
+      type: roundrobin
+      nodes:
+        owner-dashboard:3000: 1
+
+#END

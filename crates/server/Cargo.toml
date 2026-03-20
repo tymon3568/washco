@@ -1,0 +1,27 @@
+[package]
+name = "washco-server"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+washco-shared = { path = "../shared" }
+washco-identity = { path = "../modules/identity" }
+washco-location = { path = "../modules/location" }
+washco-catalog = { path = "../modules/catalog" }
+washco-queue = { path = "../modules/queue" }
+washco-analytics = { path = "../modules/analytics" }
+
+anyhow = { workspace = true }
+axum = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+tokio = { workspace = true }
+sqlx = { workspace = true }
+redis = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+dotenvy = { workspace = true }
+utoipa = { workspace = true }
+utoipa-swagger-ui = { workspace = true }

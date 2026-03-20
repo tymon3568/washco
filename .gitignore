@@ -1,0 +1,32 @@
+# Rust
+/target
+**/*.rs.bk
+
+# Node / Bun
+node_modules/
+.svelte-kit/
+build/
+dist/
+bun.lock
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Podman / Docker
+*.log
+.dev-*.pid
+
+# SQLx
+.sqlx/
