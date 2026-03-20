@@ -2,7 +2,7 @@ use chrono::Utc;
 use uuid::Uuid;
 use washco_shared::AppError;
 
-use crate::domain::{Location, LocationError, LocationStatus, QueueMode};
+use crate::domain::{Bay, Location, LocationError, LocationStatus, OperatingHours, QueueMode};
 
 use super::ports::LocationRepository;
 
@@ -35,6 +35,13 @@ pub struct UpdateLocationInput {
     pub queue_mode: Option<String>,
     pub status: Option<String>,
     pub amenities: Option<serde_json::Value>,
+}
+
+pub struct OperatingHoursInput {
+    pub day_of_week: i16,
+    pub open_time: String,
+    pub close_time: String,
+    pub is_closed: bool,
 }
 
 impl<R: LocationRepository> LocationService<R> {
@@ -203,5 +210,142 @@ impl<R: LocationRepository> LocationService<R> {
         }
         let results = self.repo.find_nearby(lat, lng, radius_meters).await?;
         Ok(results)
+    }
+
+    pub async fn get_operating_hours(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+    ) -> Result<Vec<OperatingHours>, AppError> {
+        // Verify location exists and belongs to tenant
+        self.repo
+            .find_by_id(tenant_id, location_id)
+            .await?
+            .ok_or(LocationError::NotFound)?;
+
+        let hours = self.repo.get_operating_hours(tenant_id, location_id).await?;
+        Ok(hours)
+    }
+
+    pub async fn set_operating_hours(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+        inputs: Vec<OperatingHoursInput>,
+    ) -> Result<Vec<OperatingHours>, AppError> {
+        // Verify location exists and belongs to tenant
+        self.repo
+            .find_by_id(tenant_id, location_id)
+            .await?
+            .ok_or(LocationError::NotFound)?;
+
+        let mut hours = Vec::with_capacity(inputs.len());
+        for input in &inputs {
+            if input.day_of_week < 0 || input.day_of_week > 6 {
+                return Err(AppError::Validation {
+                    message: format!("Invalid day_of_week: {}", input.day_of_week),
+                });
+            }
+            let open_time = chrono::NaiveTime::parse_from_str(&input.open_time, "%H:%M")
+                .map_err(|_| AppError::Validation {
+                    message: format!("Invalid open_time format: {}", input.open_time),
+                })?;
+            let close_time = chrono::NaiveTime::parse_from_str(&input.close_time, "%H:%M")
+                .map_err(|_| AppError::Validation {
+                    message: format!("Invalid close_time format: {}", input.close_time),
+                })?;
+            hours.push(OperatingHours::new(
+                location_id,
+                tenant_id,
+                input.day_of_week,
+                open_time,
+                close_time,
+                input.is_closed,
+            ));
+        }
+
+        self.repo
+            .set_operating_hours(tenant_id, location_id, &hours)
+            .await?;
+
+        Ok(hours)
+    }
+
+    pub async fn list_bays(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+    ) -> Result<Vec<Bay>, AppError> {
+        // Verify location exists and belongs to tenant
+        self.repo
+            .find_by_id(tenant_id, location_id)
+            .await?
+            .ok_or(LocationError::NotFound)?;
+
+        let bays = self.repo.list_bays(tenant_id, location_id).await?;
+        Ok(bays)
+    }
+
+    pub async fn create_bay(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+        name: String,
+    ) -> Result<Bay, AppError> {
+        // Verify location exists and belongs to tenant
+        self.repo
+            .find_by_id(tenant_id, location_id)
+            .await?
+            .ok_or(LocationError::NotFound)?;
+
+        let bay = Bay::new(location_id, tenant_id, name);
+        self.repo.create_bay(&bay).await?;
+        Ok(bay)
+    }
+
+    pub async fn update_bay(
+        &self,
+        tenant_id: Uuid,
+        bay_id: Uuid,
+        name: Option<String>,
+        is_active: Option<bool>,
+    ) -> Result<Bay, AppError> {
+        // Find existing bay by listing all bays for tenant locations
+        // We need to find the bay - search across all locations for this tenant
+        let locations = self.repo.find_by_tenant(tenant_id).await?;
+        let mut found_bay: Option<Bay> = None;
+        for loc in &locations {
+            let bays = self.repo.list_bays(tenant_id, loc.id).await?;
+            for bay in bays {
+                if bay.id == bay_id {
+                    found_bay = Some(bay);
+                    break;
+                }
+            }
+            if found_bay.is_some() {
+                break;
+            }
+        }
+
+        let mut bay = found_bay.ok_or(LocationError::NotFound)?;
+
+        if let Some(n) = name {
+            bay.name = n;
+        }
+        if let Some(active) = is_active {
+            bay.is_active = active;
+        }
+
+        self.repo.update_bay(&bay).await?;
+        Ok(bay)
+    }
+
+    pub async fn delete_bay(
+        &self,
+        tenant_id: Uuid,
+        bay_id: Uuid,
+    ) -> Result<(), AppError> {
+        self.repo.delete_bay(tenant_id, bay_id).await?;
+        Ok(())
     }
 }

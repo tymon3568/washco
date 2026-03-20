@@ -1,10 +1,17 @@
 use std::sync::Arc;
 
 use axum::{
+    extract::{
+        ws::{Message, WebSocket},
+        Path, State, WebSocketUpgrade,
+    },
+    response::IntoResponse,
     routing::{get, post, put},
     Router,
 };
+use tokio::sync::broadcast::error::RecvError;
 use sqlx::PgPool;
+use uuid::Uuid;
 use washco_shared::JwtConfig;
 
 use crate::application::QueueService;
@@ -12,6 +19,7 @@ use crate::infra::PgQueueRepository;
 
 pub mod dto;
 mod handlers;
+pub mod ws;
 
 type Service = QueueService<PgQueueRepository>;
 
@@ -19,6 +27,7 @@ type Service = QueueService<PgQueueRepository>;
 pub struct QueueState {
     service: Arc<Service>,
     jwt: JwtConfig,
+    pub broadcast: ws::QueueBroadcast,
 }
 
 impl std::ops::Deref for QueueState {
@@ -34,11 +43,55 @@ impl AsRef<JwtConfig> for QueueState {
     }
 }
 
+async fn ws_handler(
+    ws: WebSocketUpgrade,
+    State(state): State<QueueState>,
+    Path(location_id): Path<Uuid>,
+) -> impl IntoResponse {
+    ws.on_upgrade(move |socket| handle_socket(socket, state, location_id))
+}
+
+async fn handle_socket(mut socket: WebSocket, state: QueueState, location_id: Uuid) {
+    let mut rx = state.broadcast.subscribe(location_id).await;
+
+    loop {
+        tokio::select! {
+            msg = rx.recv() => {
+                match msg {
+                    Ok(event) => {
+                        if socket.send(Message::Text(event.into())).await.is_err() {
+                            break;
+                        }
+                    }
+                    Err(RecvError::Lagged(_)) => continue,
+                    Err(_) => break,
+                }
+            }
+            msg = socket.recv() => {
+                match msg {
+                    Some(Ok(Message::Close(_))) | None => break,
+                    Some(Ok(Message::Ping(data))) => {
+                        if socket.send(Message::Pong(data)).await.is_err() {
+                            break;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+}
+
 pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
     let repo = PgQueueRepository::new(pool);
     let service = Arc::new(QueueService::new(repo));
+    let broadcast = ws::QueueBroadcast::new();
 
-    let state = QueueState { service, jwt };
+    let state = QueueState {
+        service,
+        jwt,
+        broadcast,
+    };
 
     Router::new()
         .route("/locations/{location_id}", get(handlers::get_queue))
@@ -46,5 +99,6 @@ pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
         .route("/{id}/advance", put(handlers::advance))
         .route("/{id}/complete", put(handlers::complete))
         .route("/{id}/cancel", put(handlers::cancel))
+        .route("/ws/{location_id}", get(ws_handler))
         .with_state(state)
 }

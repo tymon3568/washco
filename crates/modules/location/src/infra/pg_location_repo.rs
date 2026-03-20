@@ -3,7 +3,7 @@ use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
 use crate::application::LocationRepository;
-use crate::domain::{Location, LocationStatus, QueueMode};
+use crate::domain::{Bay, Location, LocationStatus, OperatingHours, QueueMode};
 
 pub struct PgLocationRepository {
     pool: PgPool,
@@ -168,5 +168,136 @@ impl LocationRepository for PgLocationRepository {
                 (row_to_location(row), distance)
             })
             .collect())
+    }
+
+    async fn get_operating_hours(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+    ) -> Result<Vec<OperatingHours>, sqlx::Error> {
+        let rows = sqlx::query(
+            r#"SELECT oh.id, oh.location_id, l.tenant_id, oh.day_of_week, oh.open_time, oh.close_time, oh.is_closed
+               FROM operating_hours oh
+               JOIN locations l ON l.id = oh.location_id
+               WHERE oh.location_id = $1 AND l.tenant_id = $2 AND l.deleted_at IS NULL
+               ORDER BY oh.day_of_week"#,
+        )
+        .bind(location_id)
+        .bind(tenant_id)
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(rows
+            .iter()
+            .map(|row| OperatingHours {
+                id: row.get("id"),
+                location_id: row.get("location_id"),
+                tenant_id: row.get("tenant_id"),
+                day_of_week: row.get("day_of_week"),
+                open_time: row.get("open_time"),
+                close_time: row.get("close_time"),
+                is_closed: row.get("is_closed"),
+            })
+            .collect())
+    }
+
+    async fn set_operating_hours(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+        hours: &[OperatingHours],
+    ) -> Result<(), sqlx::Error> {
+        let mut tx = self.pool.begin().await?;
+
+        // Delete existing hours for this location (tenant-safe via join check)
+        sqlx::query(
+            r#"DELETE FROM operating_hours
+               WHERE location_id = $1
+                 AND location_id IN (SELECT id FROM locations WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL)"#,
+        )
+        .bind(location_id)
+        .bind(tenant_id)
+        .execute(&mut *tx)
+        .await?;
+
+        // Insert new hours
+        for h in hours {
+            sqlx::query(
+                r#"INSERT INTO operating_hours (id, location_id, day_of_week, open_time, close_time, is_closed)
+                   VALUES ($1, $2, $3, $4, $5, $6)"#,
+            )
+            .bind(h.id)
+            .bind(location_id)
+            .bind(h.day_of_week)
+            .bind(h.open_time)
+            .bind(h.close_time)
+            .bind(h.is_closed)
+            .execute(&mut *tx)
+            .await?;
+        }
+
+        tx.commit().await?;
+        Ok(())
+    }
+
+    async fn list_bays(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+    ) -> Result<Vec<Bay>, sqlx::Error> {
+        let rows = sqlx::query(
+            "SELECT id, location_id, tenant_id, name, is_active FROM bays WHERE tenant_id = $1 AND location_id = $2 ORDER BY name",
+        )
+        .bind(tenant_id)
+        .bind(location_id)
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(rows
+            .iter()
+            .map(|row| Bay {
+                id: row.get("id"),
+                location_id: row.get("location_id"),
+                tenant_id: row.get("tenant_id"),
+                name: row.get("name"),
+                is_active: row.get("is_active"),
+            })
+            .collect())
+    }
+
+    async fn create_bay(&self, bay: &Bay) -> Result<(), sqlx::Error> {
+        sqlx::query(
+            "INSERT INTO bays (id, location_id, tenant_id, name, is_active) VALUES ($1, $2, $3, $4, $5)",
+        )
+        .bind(bay.id)
+        .bind(bay.location_id)
+        .bind(bay.tenant_id)
+        .bind(&bay.name)
+        .bind(bay.is_active)
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
+
+    async fn update_bay(&self, bay: &Bay) -> Result<(), sqlx::Error> {
+        sqlx::query(
+            "UPDATE bays SET name = $1, is_active = $2 WHERE id = $3 AND tenant_id = $4",
+        )
+        .bind(&bay.name)
+        .bind(bay.is_active)
+        .bind(bay.id)
+        .bind(bay.tenant_id)
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
+
+    async fn delete_bay(&self, tenant_id: Uuid, id: Uuid) -> Result<(), sqlx::Error> {
+        sqlx::query("DELETE FROM bays WHERE id = $1 AND tenant_id = $2")
+            .bind(id)
+            .bind(tenant_id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
     }
 }

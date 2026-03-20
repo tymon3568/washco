@@ -10,6 +10,11 @@ washco-location = { path = "../modules/location" }
 washco-catalog = { path = "../modules/catalog" }
 washco-queue = { path = "../modules/queue" }
 washco-analytics = { path = "../modules/analytics" }
+washco-booking = { path = "../modules/booking" }
+washco-review = { path = "../modules/review" }
+washco-notification = { path = "../modules/notification" }
+washco-pricing = { path = "../modules/pricing" }
+washco-promotion = { path = "../modules/promotion" }
 
 anyhow = { workspace = true }
 axum = { workspace = true }

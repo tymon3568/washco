@@ -110,7 +110,7 @@ impl<R: QueueRepository> QueueService<R> {
         Ok(entry)
     }
 
-    pub async fn cancel(&self, tenant_id: Uuid, id: Uuid) -> Result<(), AppError> {
+    pub async fn cancel(&self, tenant_id: Uuid, id: Uuid) -> Result<QueueEntry, AppError> {
         let mut entry = self
             .repo
             .find_by_id(tenant_id, id)
@@ -125,7 +125,7 @@ impl<R: QueueRepository> QueueService<R> {
             .await
             .map_err(|e| AppError::Internal(e))?;
 
-        Ok(())
+        Ok(entry)
     }
 
     pub async fn get_queue(

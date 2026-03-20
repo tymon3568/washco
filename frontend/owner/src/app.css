@@ -50,4 +50,20 @@ body {
 	font-family: var(--font-sans);
 	background-color: var(--color-background);
 	color: var(--color-foreground);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile touch targets */
+@media (max-width: 1023px) {
+	button, a, select, input[type="submit"] {
+		min-height: 44px;
+	}
+}
+
+/* Safe area for mobile bottom nav */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+	nav:last-child {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
 }

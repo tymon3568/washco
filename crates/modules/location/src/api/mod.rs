@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{routing::get, Router};
+use axum::{routing::{get, put}, Router};
 use sqlx::PgPool;
 use washco_shared::JwtConfig;
 
@@ -46,5 +46,17 @@ pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
                 .delete(handlers::delete),
         )
         .route("/nearby", get(handlers::nearby))
+        .route(
+            "/{id}/hours",
+            get(handlers::get_operating_hours).put(handlers::set_operating_hours),
+        )
+        .route(
+            "/{id}/bays",
+            get(handlers::list_bays).post(handlers::create_bay),
+        )
+        .route(
+            "/bays/{bay_id}",
+            put(handlers::update_bay).delete(handlers::delete_bay),
+        )
         .with_state(state)
 }

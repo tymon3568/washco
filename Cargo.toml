@@ -7,6 +7,11 @@ members = [
     "crates/modules/catalog",
     "crates/modules/queue",
     "crates/modules/analytics",
+    "crates/modules/booking",
+    "crates/modules/review",
+    "crates/modules/notification",
+    "crates/modules/pricing",
+    "crates/modules/promotion",
     "crates/server",
 ]
 

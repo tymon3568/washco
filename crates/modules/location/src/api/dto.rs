@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::domain::Location;
+use crate::domain::{Bay, Location, OperatingHours};
 
 #[derive(Debug, Deserialize)]
 pub struct CreateLocationRequest {
@@ -93,4 +93,71 @@ pub struct NearbyLocationResponse {
 #[derive(Debug, Serialize)]
 pub struct MessageResponse {
     pub message: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct OperatingHoursEntry {
+    pub day_of_week: i16,
+    pub open_time: String,
+    pub close_time: String,
+    #[serde(default)]
+    pub is_closed: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SetOperatingHoursRequest {
+    pub hours: Vec<OperatingHoursEntry>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct OperatingHoursResponse {
+    pub id: Uuid,
+    pub location_id: Uuid,
+    pub day_of_week: i16,
+    pub open_time: String,
+    pub close_time: String,
+    pub is_closed: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BayRequest {
+    pub name: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateBayRequest {
+    pub name: Option<String>,
+    pub is_active: Option<bool>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct BayResponse {
+    pub id: Uuid,
+    pub location_id: Uuid,
+    pub name: String,
+    pub is_active: bool,
+}
+
+impl From<Bay> for BayResponse {
+    fn from(b: Bay) -> Self {
+        Self {
+            id: b.id,
+            location_id: b.location_id,
+            name: b.name,
+            is_active: b.is_active,
+        }
+    }
+}
+
+impl From<OperatingHours> for OperatingHoursResponse {
+    fn from(h: OperatingHours) -> Self {
+        Self {
+            id: h.id,
+            location_id: h.location_id,
+            day_of_week: h.day_of_week,
+            open_time: h.open_time.format("%H:%M").to_string(),
+            close_time: h.close_time.format("%H:%M").to_string(),
+            is_closed: h.is_closed,
+        }
+    }
 }

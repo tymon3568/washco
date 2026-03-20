@@ -1,13 +1,21 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { api } from '$lib/api/client';
-	import type { QueueEntryResponse, QueueStateResponse, ServiceResponse } from '$lib/api/types';
+	import { createQueueSocket } from '$lib/api/ws';
+	import type { QueueEntryResponse, QueueStateResponse, ServiceResponse, BayResponse } from '$lib/api/types';
 	import { formatVND } from '$lib/utils/format';
 
 	let queue: QueueStateResponse | null = $state(null);
 	let services: ServiceResponse[] = $state([]);
+	let bays: BayResponse[] = $state([]);
 	let locationId = $state('');
 	let showAddForm = $state(false);
 	let loading = $state(false);
+	let wsConnection: { close: () => void } | null = null;
+
+	// Bay selection for advance
+	let advancingEntryId: string | null = $state(null);
+	let selectedBayId = $state('');
 
 	// Add walk-in form
 	let customerName = $state('');
@@ -17,6 +25,9 @@
 
 	$effect(() => {
 		loadData();
+		return () => {
+			wsConnection?.close();
+		};
 	});
 
 	async function loadData() {
@@ -27,6 +38,12 @@
 				await refreshQueue();
 				services = await api.get<ServiceResponse[]>(`/catalog/locations/${locationId}/services`);
 				if (services.length > 0) selectedServiceId = services[0].id;
+				bays = await api.get<BayResponse[]>(`/locations/${locationId}/bays`);
+				bays = bays.filter((b) => b.is_active);
+
+				// Connect WebSocket for real-time updates
+				wsConnection?.close();
+				wsConnection = createQueueSocket(locationId, refreshQueue);
 			}
 		} catch {
 			// API not available
@@ -62,9 +79,30 @@
 		loading = false;
 	}
 
-	async function advanceEntry(id: string) {
-		await api.put(`/queue/${id}/advance`, {});
-		await refreshQueue();
+	function showBaySelect(entryId: string) {
+		if (bays.length === 0) {
+			// No bays configured, advance without bay
+			advanceEntry(entryId, undefined);
+			return;
+		}
+		advancingEntryId = entryId;
+		selectedBayId = bays.length > 0 ? bays[0].id : '';
+	}
+
+	async function advanceEntry(id: string, bayId: string | undefined) {
+		try {
+			await api.put(`/queue/${id}/advance`, { bay_id: bayId || undefined });
+			advancingEntryId = null;
+			selectedBayId = '';
+			await refreshQueue();
+		} catch (e: any) {
+			alert(e.message);
+		}
+	}
+
+	function cancelAdvance() {
+		advancingEntryId = null;
+		selectedBayId = '';
 	}
 
 	async function completeEntry(id: string) {
@@ -75,6 +113,12 @@
 	async function cancelEntry(id: string) {
 		await api.put(`/queue/${id}/cancel`, {});
 		await refreshQueue();
+	}
+
+	function getBayName(bayId: string | null): string | null {
+		if (!bayId) return null;
+		const bay = bays.find((b) => b.id === bayId);
+		return bay?.name ?? null;
 	}
 
 	const vehicleTypes = [
@@ -164,20 +208,45 @@
 							</div>
 							<p class="mt-1 text-sm">{entry.customer_name}</p>
 							<p class="text-xs text-muted-foreground">{entry.vehicle_type} - {entry.service_name}</p>
-							<div class="mt-2 flex gap-1">
-								<button
-									onclick={() => advanceEntry(entry.id)}
-									class="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
-								>
-									Bat dau rua
-								</button>
-								<button
-									onclick={() => cancelEntry(entry.id)}
-									class="rounded bg-destructive/10 px-2 py-1 text-xs text-destructive"
-								>
-									Huy
-								</button>
-							</div>
+							{#if advancingEntryId === entry.id}
+								<div class="mt-2 space-y-2">
+									<select bind:value={selectedBayId} class="w-full rounded-md border border-input bg-background px-2 py-1 text-xs">
+										<option value="">-- Khong chon bay --</option>
+										{#each bays as bay}
+											<option value={bay.id}>{bay.name}</option>
+										{/each}
+									</select>
+									<div class="flex gap-1">
+										<button
+											onclick={() => advanceEntry(entry.id, selectedBayId || undefined)}
+											class="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
+										>
+											Xac nhan
+										</button>
+										<button
+											onclick={cancelAdvance}
+											class="rounded bg-muted px-2 py-1 text-xs"
+										>
+											Huy
+										</button>
+									</div>
+								</div>
+							{:else}
+								<div class="mt-2 flex gap-1">
+									<button
+										onclick={() => showBaySelect(entry.id)}
+										class="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
+									>
+										Bat dau rua
+									</button>
+									<button
+										onclick={() => cancelEntry(entry.id)}
+										class="rounded bg-destructive/10 px-2 py-1 text-xs text-destructive"
+									>
+										Huy
+									</button>
+								</div>
+							{/if}
 						</div>
 					{/each}
 				{:else}
@@ -203,6 +272,9 @@
 							</div>
 							<p class="mt-1 text-sm">{entry.customer_name}</p>
 							<p class="text-xs text-muted-foreground">{entry.vehicle_type} - {entry.service_name}</p>
+							{#if getBayName(entry.bay_id)}
+								<p class="text-xs font-medium text-primary">{getBayName(entry.bay_id)}</p>
+							{/if}
 							<div class="mt-2">
 								<button
 									onclick={() => completeEntry(entry.id)}

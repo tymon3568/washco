@@ -43,6 +43,24 @@ export interface CreateLocationRequest {
 	queue_mode: string;
 }
 
+// Operating Hours
+export interface OperatingHoursEntry {
+	id?: string;
+	location_id?: string;
+	day_of_week: number;
+	open_time: string;
+	close_time: string;
+	is_closed: boolean;
+}
+
+// Bays
+export interface BayResponse {
+	id: string;
+	location_id: string;
+	name: string;
+	is_active: boolean;
+}
+
 // Catalog
 export interface ServiceResponse {
 	id: string;
@@ -73,6 +91,7 @@ export interface QueueEntryResponse {
 	customer_phone: string | null;
 	vehicle_type: string;
 	service_name: string;
+	bay_id: string | null;
 	status: string;
 	estimated_wait_minutes: number;
 	joined_at: string;

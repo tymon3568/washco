@@ -5,7 +5,7 @@ use washco_shared::{AppError, TenantContext};
 
 use super::dto::*;
 use super::LocationState;
-use crate::application::{CreateLocationInput, UpdateLocationInput};
+use crate::application::{CreateLocationInput, OperatingHoursInput, UpdateLocationInput};
 
 pub async fn create(
     State(svc): State<LocationState>,
@@ -107,4 +107,81 @@ pub async fn nearby(
             })
             .collect(),
     ))
+}
+
+pub async fn get_operating_hours(
+    State(svc): State<LocationState>,
+    ctx: TenantContext,
+    Path(id): Path<Uuid>,
+) -> Result<Json<Vec<OperatingHoursResponse>>, AppError> {
+    let hours = svc.get_operating_hours(ctx.tenant_id, id).await?;
+    Ok(Json(hours.into_iter().map(Into::into).collect()))
+}
+
+pub async fn set_operating_hours(
+    State(svc): State<LocationState>,
+    ctx: TenantContext,
+    Path(id): Path<Uuid>,
+    Json(body): Json<SetOperatingHoursRequest>,
+) -> Result<Json<Vec<OperatingHoursResponse>>, AppError> {
+    let inputs: Vec<OperatingHoursInput> = body
+        .hours
+        .into_iter()
+        .map(|e| OperatingHoursInput {
+            day_of_week: e.day_of_week,
+            open_time: e.open_time,
+            close_time: e.close_time,
+            is_closed: e.is_closed,
+        })
+        .collect();
+
+    let hours = svc
+        .set_operating_hours(ctx.tenant_id, id, inputs)
+        .await?;
+
+    Ok(Json(hours.into_iter().map(Into::into).collect()))
+}
+
+pub async fn list_bays(
+    State(svc): State<LocationState>,
+    ctx: TenantContext,
+    Path(location_id): Path<Uuid>,
+) -> Result<Json<Vec<BayResponse>>, AppError> {
+    let bays = svc.list_bays(ctx.tenant_id, location_id).await?;
+    Ok(Json(bays.into_iter().map(Into::into).collect()))
+}
+
+pub async fn create_bay(
+    State(svc): State<LocationState>,
+    ctx: TenantContext,
+    Path(location_id): Path<Uuid>,
+    Json(body): Json<BayRequest>,
+) -> Result<Json<BayResponse>, AppError> {
+    let bay = svc
+        .create_bay(ctx.tenant_id, location_id, body.name)
+        .await?;
+    Ok(Json(bay.into()))
+}
+
+pub async fn update_bay(
+    State(svc): State<LocationState>,
+    ctx: TenantContext,
+    Path(bay_id): Path<Uuid>,
+    Json(body): Json<UpdateBayRequest>,
+) -> Result<Json<BayResponse>, AppError> {
+    let bay = svc
+        .update_bay(ctx.tenant_id, bay_id, body.name, body.is_active)
+        .await?;
+    Ok(Json(bay.into()))
+}
+
+pub async fn delete_bay(
+    State(svc): State<LocationState>,
+    ctx: TenantContext,
+    Path(bay_id): Path<Uuid>,
+) -> Result<Json<MessageResponse>, AppError> {
+    svc.delete_bay(ctx.tenant_id, bay_id).await?;
+    Ok(Json(MessageResponse {
+        message: "Bay deleted".to_string(),
+    }))
 }

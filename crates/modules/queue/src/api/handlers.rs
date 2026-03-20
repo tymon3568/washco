@@ -45,6 +45,7 @@ pub async fn join(
         )
         .await?;
 
+    svc.broadcast.notify(location_id, "queue_updated").await;
     Ok(Json(entry.into()))
 }
 
@@ -55,6 +56,9 @@ pub async fn advance(
     Json(body): Json<AdvanceRequest>,
 ) -> Result<Json<QueueEntryResponse>, AppError> {
     let entry = svc.advance(ctx.tenant_id, id, body.bay_id).await?;
+    svc.broadcast
+        .notify(entry.location_id, "queue_updated")
+        .await;
     Ok(Json(entry.into()))
 }
 
@@ -64,6 +68,9 @@ pub async fn complete(
     Path(id): Path<Uuid>,
 ) -> Result<Json<QueueEntryResponse>, AppError> {
     let entry = svc.complete(ctx.tenant_id, id).await?;
+    svc.broadcast
+        .notify(entry.location_id, "queue_updated")
+        .await;
     Ok(Json(entry.into()))
 }
 
@@ -72,6 +79,9 @@ pub async fn cancel(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    svc.cancel(ctx.tenant_id, id).await?;
+    let entry = svc.cancel(ctx.tenant_id, id).await?;
+    svc.broadcast
+        .notify(entry.location_id, "queue_updated")
+        .await;
     Ok(Json(serde_json::json!({ "message": "Cancelled" })))
 }
