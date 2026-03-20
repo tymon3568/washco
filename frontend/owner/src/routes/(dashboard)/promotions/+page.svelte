@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { api } from '$lib/api/client';
 	import { formatVND } from '$lib/utils/format';
+	import { untrack } from 'svelte';
 
 	interface Promotion {
 		id: string;
@@ -45,7 +46,7 @@
 		return 'expired';
 	}
 
-	let statusLabels: Record<string, { label: string; classes: string }> = {
+	const statusLabels: Record<string, { label: string; classes: string }> = {
 		active: { label: 'Dang hoat dong', classes: 'bg-green-500/15 text-green-400' },
 		expired: { label: 'Het han', classes: 'bg-muted text-muted-foreground' },
 		used_up: { label: 'Het luot', classes: 'bg-red-500/15 text-red-400' }
@@ -62,7 +63,7 @@
 	}
 
 	$effect(() => {
-		refreshPromotions();
+		untrack(() => refreshPromotions());
 	});
 
 	async function refreshPromotions() {
@@ -173,36 +174,36 @@
 				}}
 				class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
 			>
-				<div>
-					<label class="block text-xs text-muted-foreground">Ma khuyen mai</label>
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">Ma khuyen mai</span>
 					<input
 						bind:value={code}
 						placeholder="VD: GIAM20"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono uppercase"
 						required
 					/>
-				</div>
-				<div>
-					<label class="block text-xs text-muted-foreground">Ten</label>
+				</label>
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">Ten</span>
 					<input
 						bind:value={name}
 						placeholder="Ten khuyen mai"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
-				</div>
-				<div>
-					<label class="block text-xs text-muted-foreground">Mo ta (tuy chon)</label>
+				</label>
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">Mo ta (tuy chon)</span>
 					<input
 						bind:value={description}
 						placeholder="Mo ta ngan"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 					/>
-				</div>
+				</label>
 
 				<!-- Discount type -->
-				<div>
-					<label class="block text-xs text-muted-foreground">Loai giam gia</label>
+				<fieldset>
+					<legend class="block text-xs text-muted-foreground">Loai giam gia</legend>
 					<div class="mt-1 flex gap-4">
 						<label class="flex items-center gap-1.5 text-sm">
 							<input
@@ -227,12 +228,12 @@
 							Co dinh
 						</label>
 					</div>
-				</div>
+				</fieldset>
 
-				<div>
-					<label class="block text-xs text-muted-foreground">
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">
 						Gia tri giam {discountType === 'percentage' ? '(%)' : '(VND)'}
-					</label>
+					</span>
 					<input
 						bind:value={discountValue}
 						type="number"
@@ -242,10 +243,10 @@
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
-				</div>
+				</label>
 
-				<div>
-					<label class="block text-xs text-muted-foreground">Don toi thieu (VND)</label>
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">Don toi thieu (VND)</span>
 					<input
 						bind:value={minOrder}
 						type="number"
@@ -253,10 +254,10 @@
 						step="1000"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 					/>
-				</div>
+				</label>
 
-				<div>
-					<label class="block text-xs text-muted-foreground">So luot dung toi da</label>
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">So luot dung toi da</span>
 					<input
 						bind:value={maxUses}
 						type="number"
@@ -264,27 +265,27 @@
 						placeholder="Khong gioi han"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 					/>
-				</div>
+				</label>
 
-				<div>
-					<label class="block text-xs text-muted-foreground">Ngay bat dau</label>
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">Ngay bat dau</span>
 					<input
 						bind:value={validFrom}
 						type="date"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
-				</div>
+				</label>
 
-				<div>
-					<label class="block text-xs text-muted-foreground">Ngay ket thuc</label>
+				<label class="block">
+					<span class="block text-xs text-muted-foreground">Ngay ket thuc</span>
 					<input
 						bind:value={validTo}
 						type="date"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
-				</div>
+				</label>
 
 				<div class="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
 					<button
