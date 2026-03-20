@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	server: {
-		port: 3001,
+		port: 5174,
 		proxy: {
 			'/api': {
 				target: 'http://localhost:8080',

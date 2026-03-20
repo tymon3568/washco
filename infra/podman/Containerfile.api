@@ -13,6 +13,11 @@ COPY crates/modules/location/Cargo.toml crates/modules/location/Cargo.toml
 COPY crates/modules/catalog/Cargo.toml crates/modules/catalog/Cargo.toml
 COPY crates/modules/queue/Cargo.toml crates/modules/queue/Cargo.toml
 COPY crates/modules/analytics/Cargo.toml crates/modules/analytics/Cargo.toml
+COPY crates/modules/booking/Cargo.toml crates/modules/booking/Cargo.toml
+COPY crates/modules/review/Cargo.toml crates/modules/review/Cargo.toml
+COPY crates/modules/notification/Cargo.toml crates/modules/notification/Cargo.toml
+COPY crates/modules/pricing/Cargo.toml crates/modules/pricing/Cargo.toml
+COPY crates/modules/promotion/Cargo.toml crates/modules/promotion/Cargo.toml
 
 # Create dummy source files for dependency caching
 RUN mkdir -p crates/shared/src && echo "pub fn _dummy() {}" > crates/shared/src/lib.rs && \
@@ -22,7 +27,12 @@ RUN mkdir -p crates/shared/src && echo "pub fn _dummy() {}" > crates/shared/src/
     mkdir -p crates/modules/catalog/src && echo "pub fn _dummy() {}" > crates/modules/catalog/src/lib.rs && \
     mkdir -p crates/modules/queue/src && echo "pub fn _dummy() {}" > crates/modules/queue/src/lib.rs && \
     mkdir -p crates/modules/analytics/src && echo "pub fn _dummy() {}" > crates/modules/analytics/src/lib.rs && \
-    mkdir -p migrations && touch migrations/001_initial.sql
+    mkdir -p crates/modules/booking/src && echo "pub fn _dummy() {}" > crates/modules/booking/src/lib.rs && \
+    mkdir -p crates/modules/review/src && echo "pub fn _dummy() {}" > crates/modules/review/src/lib.rs && \
+    mkdir -p crates/modules/notification/src && echo "pub fn _dummy() {}" > crates/modules/notification/src/lib.rs && \
+    mkdir -p crates/modules/pricing/src && echo "pub fn _dummy() {}" > crates/modules/pricing/src/lib.rs && \
+    mkdir -p crates/modules/promotion/src && echo "pub fn _dummy() {}" > crates/modules/promotion/src/lib.rs && \
+    mkdir -p migrations && touch migrations/20250101000000_initial.sql
 
 RUN cargo build --release -p washco-server 2>/dev/null || true
 

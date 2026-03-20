@@ -110,6 +110,20 @@ services:
     networks:
       - washco
 
+  driver-app:
+    build:
+      context: ./frontend/driver
+      dockerfile: ../../infra/podman/Containerfile.driver
+    container_name: washco-driver-app
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      HOST: 0.0.0.0
+      ORIGIN: http://localhost
+      PUBLIC_API_URL: /api/v1
+    networks:
+      - washco
+
   # ============================================================
   # DATA STORES
   # ============================================================

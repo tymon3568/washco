@@ -4,8 +4,10 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PIDFILE_API="$PROJECT_DIR/.dev-api.pid"
 PIDFILE_FE="$PROJECT_DIR/.dev-fe.pid"
+PIDFILE_DRIVER="$PROJECT_DIR/.dev-driver.pid"
 LOGFILE_API="$PROJECT_DIR/.dev-api.log"
 LOGFILE_FE="$PROJECT_DIR/.dev-fe.log"
+LOGFILE_DRIVER="$PROJECT_DIR/.dev-driver.log"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -82,26 +84,92 @@ cmd_start() {
         fi
     fi
 
+    # 5. Driver frontend
+    if is_running "$PIDFILE_DRIVER"; then
+        warn "Driver app already running (pid $(cat "$PIDFILE_DRIVER"))"
+    else
+        log "Starting driver app on :5174..."
+        cd "$PROJECT_DIR/frontend/driver"
+        bun run dev > "$LOGFILE_DRIVER" 2>&1 &
+        echo $! > "$PIDFILE_DRIVER"
+        sleep 3
+        if is_running "$PIDFILE_DRIVER"; then
+            log "Driver app running (pid $(cat "$PIDFILE_DRIVER"))"
+        else
+            err "Driver app failed to start. Check $LOGFILE_DRIVER"
+            exit 1
+        fi
+    fi
+
     echo ""
     log "All services running:"
-    echo "  Postgres   localhost:5432"
-    echo "  KeyDB      localhost:6379"
-    echo "  API        http://localhost:8080"
-    echo "  Frontend   http://localhost:5173"
+    echo "  Postgres       localhost:5432"
+    echo "  KeyDB          localhost:6379"
+    echo "  API            http://localhost:8080"
+    echo "  Owner App      http://localhost:5173"
+    echo "  Driver App     http://localhost:5174"
     echo ""
-    log "Logs: $LOGFILE_API | $LOGFILE_FE"
+    log "Logs: $LOGFILE_API | $LOGFILE_FE | $LOGFILE_DRIVER"
     log "Stop: ./dev.sh stop"
+}
+
+cmd_full() {
+    log "Starting WashCo FULL stack (with APISIX gateway)..."
+
+    if ! podman info &>/dev/null; then
+        log "Starting podman socket..."
+        systemctl --user start podman.socket
+        sleep 1
+    fi
+
+    cd "$PROJECT_DIR"
+    podman compose up -d 2>&1 | tail -5
+
+    log "Waiting for services..."
+    for i in $(seq 1 60); do
+        if curl -s http://localhost/api/v1/locations/nearby?lat=0\&lng=0\&radius=1 > /dev/null 2>&1; then
+            break
+        fi
+        sleep 2
+    done
+
+    echo ""
+    log "Full stack running (via APISIX):"
+    echo "  APISIX Gateway   http://localhost (port 80)"
+    echo "  APISIX Dashboard http://localhost:9090"
+    echo "  API (internal)   washco-api:8080"
+    echo "  Owner App        via APISIX → owner-dashboard:3000"
+    echo "  Driver App       via APISIX → driver-app:3001"
+    echo "  Postgres         localhost:5432"
+    echo "  KeyDB            localhost:6379"
+    echo "  RustFS           http://localhost:9001"
+    echo ""
+    log "Stop: ./dev.sh full-stop"
+}
+
+cmd_full_stop() {
+    log "Stopping full stack..."
+    cd "$PROJECT_DIR"
+    podman compose down 2>&1 | tail -5
+    log "All stopped"
 }
 
 cmd_stop() {
     log "Stopping WashCo dev environment..."
 
-    # Frontend
+    # Driver frontend
+    if is_running "$PIDFILE_DRIVER"; then
+        kill "$(cat "$PIDFILE_DRIVER")" 2>/dev/null && log "Driver app stopped"
+        rm -f "$PIDFILE_DRIVER"
+    else
+        rm -f "$PIDFILE_DRIVER"
+    fi
+
+    # Owner frontend
     if is_running "$PIDFILE_FE"; then
-        kill "$(cat "$PIDFILE_FE")" 2>/dev/null && log "Frontend stopped"
+        kill "$(cat "$PIDFILE_FE")" 2>/dev/null && log "Owner app stopped"
         rm -f "$PIDFILE_FE"
     else
-        warn "Frontend not running"
         rm -f "$PIDFILE_FE"
     fi
 
@@ -110,7 +178,6 @@ cmd_stop() {
         kill "$(cat "$PIDFILE_API")" 2>/dev/null && log "API stopped"
         rm -f "$PIDFILE_API"
     else
-        warn "API not running"
         rm -f "$PIDFILE_API"
     fi
 
@@ -151,19 +218,27 @@ cmd_status() {
     fi
 
     if is_running "$PIDFILE_FE"; then
-        echo -e "Frontend       ${GREEN}running${NC} (pid $(cat "$PIDFILE_FE"))"
+        echo -e "Owner App      ${GREEN}running${NC} (pid $(cat "$PIDFILE_FE"))"
     else
-        echo -e "Frontend       ${RED}stopped${NC}"
+        echo -e "Owner App      ${RED}stopped${NC}"
+    fi
+
+    if is_running "$PIDFILE_DRIVER"; then
+        echo -e "Driver App     ${GREEN}running${NC} (pid $(cat "$PIDFILE_DRIVER"))"
+    else
+        echo -e "Driver App     ${RED}stopped${NC}"
     fi
 }
 
 cmd_logs() {
     local svc="${1:-api}"
     case "$svc" in
-        api)      tail -f "$LOGFILE_API" ;;
-        fe|front) tail -f "$LOGFILE_FE" ;;
+        api)         tail -f "$LOGFILE_API" ;;
+        fe|owner)    tail -f "$LOGFILE_FE" ;;
+        driver)      tail -f "$LOGFILE_DRIVER" ;;
         pg|postgres) podman logs -f washco-postgres ;;
-        *)        err "Unknown: $svc (api|fe|pg)" ;;
+        apisix)      podman logs -f washco-apisix ;;
+        *)           err "Unknown: $svc (api|owner|driver|pg|apisix)" ;;
     esac
 }
 
@@ -183,21 +258,27 @@ cmd_db() {
 }
 
 case "${1:-help}" in
-    start)   cmd_start ;;
-    stop)    cmd_stop ;;
-    restart) cmd_restart ;;
-    status)  cmd_status ;;
-    logs)    cmd_logs "${2:-api}" ;;
-    db)      cmd_db "${2:-shell}" ;;
+    start)      cmd_start ;;
+    stop)       cmd_stop ;;
+    restart)    cmd_restart ;;
+    status)     cmd_status ;;
+    logs)       cmd_logs "${2:-api}" ;;
+    db)         cmd_db "${2:-shell}" ;;
+    full)       cmd_full ;;
+    full-stop)  cmd_full_stop ;;
     help|*)
         echo "Usage: ./dev.sh <command>"
         echo ""
-        echo "Commands:"
-        echo "  start     Start all services (postgres, keydb, api, frontend)"
+        echo "Commands (dev mode - local processes):"
+        echo "  start     Start all services (postgres, keydb, api, owner app, driver app)"
         echo "  stop      Stop all services"
         echo "  restart   Stop then start"
         echo "  status    Show service status"
-        echo "  logs      Tail logs (api|fe|pg)"
+        echo "  logs      Tail logs (api|owner|driver|pg|apisix)"
         echo "  db        Database (shell|reset)"
+        echo ""
+        echo "Commands (full stack - APISIX gateway):"
+        echo "  full       Start entire stack via podman compose (APISIX + all services)"
+        echo "  full-stop  Stop entire stack"
         ;;
 esac
