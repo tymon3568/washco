@@ -114,7 +114,7 @@ cmd_start() {
 }
 
 cmd_full() {
-    log "Starting WashCo FULL stack (with APISIX gateway)..."
+    log "Starting WashCo with APISIX gateway..."
 
     if ! podman info &>/dev/null; then
         log "Starting podman socket..."
@@ -123,34 +123,96 @@ cmd_full() {
     fi
 
     cd "$PROJECT_DIR"
-    podman compose up -d 2>&1 | tail -5
 
-    log "Waiting for services..."
-    for i in $(seq 1 60); do
-        if curl -s http://localhost/api/v1/locations/nearby?lat=0\&lng=0\&radius=1 > /dev/null 2>&1; then
+    # 1. Start infra + APISIX via dev compose
+    log "Starting APISIX + infra..."
+    podman compose -f compose.dev.yaml up -d 2>&1 | tail -5
+
+    # Wait for postgres
+    log "Waiting for postgres..."
+    for i in $(seq 1 30); do
+        if podman exec washco-postgres pg_isready -U washco &>/dev/null; then
+            break
+        fi
+        sleep 1
+    done
+
+    # 2. Build & start API
+    if is_running "$PIDFILE_API"; then
+        warn "API already running"
+    else
+        log "Building API..."
+        cargo build -p washco-server 2>&1 | tail -1
+        log "Starting API on :8080..."
+        ./target/debug/washco-server > "$LOGFILE_API" 2>&1 &
+        echo $! > "$PIDFILE_API"
+        sleep 2
+        is_running "$PIDFILE_API" && log "API running" || { err "API failed"; exit 1; }
+    fi
+
+    # 3. Owner frontend
+    if is_running "$PIDFILE_FE"; then
+        warn "Owner app already running"
+    else
+        log "Starting Owner app on :5173..."
+        cd "$PROJECT_DIR/frontend/owner"
+        bun run dev > "$LOGFILE_FE" 2>&1 &
+        echo $! > "$PIDFILE_FE"
+        sleep 3
+        is_running "$PIDFILE_FE" && log "Owner app running" || { err "Owner app failed"; exit 1; }
+    fi
+
+    # 4. Driver frontend
+    if is_running "$PIDFILE_DRIVER"; then
+        warn "Driver app already running"
+    else
+        log "Starting Driver app on :5174..."
+        cd "$PROJECT_DIR/frontend/driver"
+        bun run dev > "$LOGFILE_DRIVER" 2>&1 &
+        echo $! > "$PIDFILE_DRIVER"
+        sleep 3
+        is_running "$PIDFILE_DRIVER" && log "Driver app running" || { err "Driver app failed"; exit 1; }
+    fi
+
+    # Wait for APISIX
+    log "Waiting for APISIX..."
+    for i in $(seq 1 30); do
+        if curl -s -o /dev/null "http://localhost/api/v1/locations/nearby?lat=0&lng=0&radius=1" 2>/dev/null; then
             break
         fi
         sleep 2
     done
 
     echo ""
-    log "Full stack running (via APISIX):"
+    log "Full stack running (via APISIX gateway):"
     echo "  APISIX Gateway   http://localhost (port 80)"
-    echo "  APISIX Dashboard http://localhost:9090"
-    echo "  API (internal)   washco-api:8080"
-    echo "  Owner App        via APISIX → owner-dashboard:3000"
-    echo "  Driver App       via APISIX → driver-app:3001"
+    echo "    → /api/v1/*    → API :8080"
+    echo "    → /*           → Owner App :5173"
+    echo "    → /driver/*    → Driver App :5174"
+    echo "  API (direct)     http://localhost:8080"
+    echo "  Owner (direct)   http://localhost:5173"
+    echo "  Driver (direct)  http://localhost:5174"
     echo "  Postgres         localhost:5432"
     echo "  KeyDB            localhost:6379"
-    echo "  RustFS           http://localhost:9001"
     echo ""
     log "Stop: ./dev.sh full-stop"
 }
 
 cmd_full_stop() {
     log "Stopping full stack..."
+
+    # Stop local processes
+    for pidfile in "$PIDFILE_DRIVER" "$PIDFILE_FE" "$PIDFILE_API"; do
+        if is_running "$pidfile"; then
+            kill "$(cat "$pidfile")" 2>/dev/null
+            rm -f "$pidfile"
+        fi
+    done
+    log "Local processes stopped"
+
+    # Stop containers
     cd "$PROJECT_DIR"
-    podman compose down 2>&1 | tail -5
+    podman compose -f compose.dev.yaml down 2>&1 | tail -5
     log "All stopped"
 }
 
