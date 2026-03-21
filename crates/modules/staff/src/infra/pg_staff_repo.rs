@@ -239,7 +239,7 @@ impl StaffRepository for PgStaffRepository {
         let now = Utc::now();
 
         sqlx::query(
-            r#"INSERT INTO staff_shifts
+            r#"INSERT INTO shifts
                (id, tenant_id, location_id, staff_id, shift_date, start_time, end_time,
                 actual_start, actual_end, status, notes, created_at)
                VALUES ($1, $2, $3, $4, $5, $6, $7, NULL, NULL, 'scheduled', NULL, $8)"#,
@@ -255,7 +255,7 @@ impl StaffRepository for PgStaffRepository {
         .execute(&self.pool)
         .await?;
 
-        let q = format!("SELECT {SHIFT_COLS} FROM staff_shifts WHERE id = $1 AND tenant_id = $2");
+        let q = format!("SELECT {SHIFT_COLS} FROM shifts WHERE id = $1 AND tenant_id = $2");
         let row = sqlx::query(&q)
             .bind(id)
             .bind(tenant_id)
@@ -272,7 +272,7 @@ impl StaffRepository for PgStaffRepository {
         date: NaiveDate,
     ) -> anyhow::Result<Vec<Shift>> {
         let q = format!(
-            "SELECT {SHIFT_COLS} FROM staff_shifts
+            "SELECT {SHIFT_COLS} FROM shifts
              WHERE tenant_id = $1 AND location_id = $2 AND shift_date = $3
              ORDER BY start_time ASC"
         );
@@ -295,7 +295,7 @@ impl StaffRepository for PgStaffRepository {
         actual_end: Option<DateTime<Utc>>,
     ) -> anyhow::Result<Shift> {
         sqlx::query(
-            r#"UPDATE staff_shifts
+            r#"UPDATE shifts
                SET status = $1, actual_start = COALESCE($2, actual_start),
                    actual_end = COALESCE($3, actual_end)
                WHERE id = $4 AND tenant_id = $5"#,
@@ -308,7 +308,7 @@ impl StaffRepository for PgStaffRepository {
         .execute(&self.pool)
         .await?;
 
-        let q = format!("SELECT {SHIFT_COLS} FROM staff_shifts WHERE id = $1 AND tenant_id = $2");
+        let q = format!("SELECT {SHIFT_COLS} FROM shifts WHERE id = $1 AND tenant_id = $2");
         let row = sqlx::query(&q)
             .bind(id)
             .bind(tenant_id)

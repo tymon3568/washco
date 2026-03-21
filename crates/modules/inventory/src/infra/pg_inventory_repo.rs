@@ -231,7 +231,7 @@ impl InventoryRepository for PgInventoryRepository {
             r#"INSERT INTO material_norms
                (id, tenant_id, service_id, material_id, quantity_per_job, created_at)
                VALUES ($1, $2, $3, $4, $5, $6)
-               ON CONFLICT (tenant_id, service_id, material_id)
+               ON CONFLICT (service_id, material_id)
                DO UPDATE SET quantity_per_job = EXCLUDED.quantity_per_job
                RETURNING id, tenant_id, service_id, material_id, quantity_per_job, created_at"#,
         )

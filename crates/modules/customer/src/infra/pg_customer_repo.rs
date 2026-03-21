@@ -36,14 +36,14 @@ struct CustomerRow {
     last_visit_at: Option<DateTime<Utc>>,
     loyalty_points: i32,
     notes: Option<String>,
-    tags: serde_json::Value,
+    tags: Vec<String>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
 
 impl CustomerRow {
     fn into_customer(self) -> Customer {
-        let tags: Vec<String> = serde_json::from_value(self.tags).unwrap_or_default();
+        let tags = self.tags;
         Customer {
             id: self.id,
             tenant_id: self.tenant_id,
@@ -185,8 +185,6 @@ impl CustomerRepository for PgCustomerRepository {
     ) -> anyhow::Result<Customer> {
         let id = Uuid::now_v7();
         let now = Utc::now();
-        let tags_json = serde_json::to_value(&input.tags)?;
-
         sqlx::query(
             r#"INSERT INTO customers
                (id, tenant_id, phone, name, email, segment, total_visits, total_spent,
@@ -200,7 +198,7 @@ impl CustomerRepository for PgCustomerRepository {
         .bind(&input.email)
         .bind(CustomerSegment::New.as_str())
         .bind(&input.notes)
-        .bind(&tags_json)
+        .bind(&input.tags as &[String])
         .bind(now)
         .bind(now)
         .execute(&self.pool)
@@ -319,8 +317,6 @@ impl CustomerRepository for PgCustomerRepository {
         let notes = input.notes.as_ref().or(current.notes.as_ref());
         let tags = input.tags.as_ref().unwrap_or(&current.tags);
         let loyalty_points = input.loyalty_points.unwrap_or(current.loyalty_points);
-        let tags_json = serde_json::to_value(tags)?;
-
         sqlx::query(
             r#"UPDATE customers
                SET name = $1, email = $2, notes = $3, tags = $4,
@@ -330,7 +326,7 @@ impl CustomerRepository for PgCustomerRepository {
         .bind(name)
         .bind(email)
         .bind(notes)
-        .bind(&tags_json)
+        .bind(tags as &[String])
         .bind(loyalty_points)
         .bind(now)
         .bind(id)

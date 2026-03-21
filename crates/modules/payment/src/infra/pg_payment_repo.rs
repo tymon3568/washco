@@ -163,7 +163,7 @@ impl PaymentRepository for PgPaymentRepository {
                 COALESCE(SUM(CASE WHEN payment_status = 'completed' AND payment_method != 'cash' THEN final_amount ELSE 0 END), 0) as digital_amount, \
                 COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as pending_count \
              FROM payments \
-             WHERE tenant_id = $1 AND location_id = $2 AND created_at::date = $3",
+             WHERE tenant_id = $1 AND location_id = $2 AND created_at >= $3::date AND created_at < ($3::date + interval '1 day')",
         )
         .bind(tenant_id)
         .bind(location_id)

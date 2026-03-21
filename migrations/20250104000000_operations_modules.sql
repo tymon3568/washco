@@ -42,7 +42,7 @@ CREATE INDEX idx_payments_location_date ON payments (tenant_id, location_id, cre
 CREATE INDEX idx_payments_queue ON payments (queue_entry_id) WHERE queue_entry_id IS NOT NULL;
 CREATE INDEX idx_payments_booking ON payments (booking_id) WHERE booking_id IS NOT NULL;
 CREATE INDEX idx_payments_staff ON payments (staff_id, created_at DESC) WHERE staff_id IS NOT NULL;
-CREATE INDEX idx_payments_daily ON payments (location_id, paid_at::date) WHERE payment_status = 'completed';
+CREATE INDEX idx_payments_daily ON payments (location_id, created_at) WHERE payment_status = 'completed';
 
 -- Bảng chi tiết dịch vụ add-on trong 1 lần thanh toán
 CREATE TABLE payment_line_items (
