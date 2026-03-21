@@ -6,15 +6,32 @@
 	--color-muted: hsl(240 4.8% 95.9%);
 	--color-muted-foreground: hsl(240 3.8% 46.1%);
 	--color-card: hsl(0 0% 100%);
+	--color-card-foreground: hsl(240 10% 3.9%);
 	--color-border: hsl(240 5.9% 90%);
+	--color-input: hsl(240 5.9% 90%);
+	--color-ring: hsl(221 83% 53%);
+
 	--color-primary: hsl(221 83% 53%);
 	--color-primary-foreground: hsl(0 0% 100%);
+
+	--color-secondary: hsl(240 4.8% 95.9%);
+	--color-secondary-foreground: hsl(240 5.9% 10%);
+
+	--color-accent: hsl(172 66% 50%);
+	--color-accent-foreground: hsl(0 0% 100%);
+
+	--color-destructive: hsl(0 84% 60%);
+	--color-destructive-foreground: hsl(0 0% 100%);
 	--color-success: hsl(142 71% 45%);
 	--color-success-foreground: hsl(0 0% 100%);
 	--color-warning: hsl(38 92% 50%);
-	--color-destructive: hsl(0 84% 60%);
+	--color-warning-foreground: hsl(0 0% 100%);
 
 	--radius: 0.75rem;
+
+	--shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
 	--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -23,4 +40,51 @@ body {
 	background-color: var(--color-muted);
 	color: var(--color-foreground);
 	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overscroll-behavior-y: contain;
+}
+
+/* Mobile touch targets */
+@media (max-width: 767px) {
+	button,
+	a[role='button'],
+	select,
+	input[type='submit'] {
+		min-height: 44px;
+	}
+}
+
+/* Safe area for mobile bottom nav */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+	.pb-safe {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+}
+
+/* Pull-to-refresh prevention on PWA */
+html {
+	overscroll-behavior: none;
+}
+
+/* Skeleton animation */
+@keyframes shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+.skeleton {
+	background: linear-gradient(90deg, var(--color-muted) 25%, var(--color-border) 50%, var(--color-muted) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	border-radius: var(--radius);
+}
+
+/* Bottom sheet backdrop */
+.backdrop-blur-overlay {
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
 }
