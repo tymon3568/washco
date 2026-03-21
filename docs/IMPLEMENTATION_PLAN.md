@@ -148,13 +148,13 @@ D1 (Infra finalize) → D2 (Full deploy) → D3 (Backup/monitoring)
 
 | Phase | Task | Status |
 |-------|------|--------|
-| A1 | Notification page | TODO |
-| A2 | Pricing page | TODO |
-| A3 | Driver diacritics | TODO |
-| B1 | Seed data | TODO |
-| B2 | E2E verification | TODO |
-| C1 | Backend integration tests | TODO |
-| C2 | Frontend component tests | TODO |
-| D1 | Infra finalization | TODO |
-| D2 | Build & deploy | TODO |
-| D3 | Backup & monitoring | TODO |
+| A1 | Notification page | DONE |
+| A2 | Pricing page | DONE |
+| A3 | Driver diacritics | DONE |
+| B1 | Seed data | DONE |
+| B2 | E2E verification | NEEDS DB (manual) |
+| C1 | Backend integration tests | DONE |
+| C2 | Frontend component tests | DONE |
+| D1 | Infra finalization | DONE |
+| D2 | Build & deploy | READY (podman compose build) |
+| D3 | Backup & monitoring | DONE |
