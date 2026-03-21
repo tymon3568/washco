@@ -68,6 +68,22 @@ pub fn build(state: AppState, config: &AppConfig) -> Router {
         .nest(
             "/api/v1/promotions",
             washco_promotion::api::routes(state.db.clone(), state.jwt.clone()),
+        )
+        .nest(
+            "/api/v1/payments",
+            washco_payment::api::routes(state.db.clone(), state.jwt.clone()),
+        )
+        .nest(
+            "/api/v1/staff",
+            washco_staff::api::routes(state.db.clone(), state.jwt.clone()),
+        )
+        .nest(
+            "/api/v1/customers",
+            washco_customer::api::routes(state.db.clone(), state.jwt.clone()),
+        )
+        .nest(
+            "/api/v1/inventory",
+            washco_inventory::api::routes(state.db.clone(), state.jwt.clone()),
         );
 
     let upload_routes = Router::new()

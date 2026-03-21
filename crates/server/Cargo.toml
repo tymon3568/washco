@@ -15,6 +15,10 @@ washco-review = { path = "../modules/review" }
 washco-notification = { path = "../modules/notification" }
 washco-pricing = { path = "../modules/pricing" }
 washco-promotion = { path = "../modules/promotion" }
+washco-payment = { path = "../modules/payment" }
+washco-staff = { path = "../modules/staff" }
+washco-customer = { path = "../modules/customer" }
+washco-inventory = { path = "../modules/inventory" }
 
 anyhow = { workspace = true }
 aws-sdk-s3 = { workspace = true }

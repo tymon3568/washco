@@ -12,6 +12,10 @@ members = [
     "crates/modules/notification",
     "crates/modules/pricing",
     "crates/modules/promotion",
+    "crates/modules/payment",
+    "crates/modules/staff",
+    "crates/modules/customer",
+    "crates/modules/inventory",
     "crates/server",
 ]
 

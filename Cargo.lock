@@ -4037,6 +4037,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "washco-customer"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum 0.8.8",
+ "chrono",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "uuid",
+ "washco-shared",
+]
+
+[[package]]
 name = "washco-identity"
 version = "0.1.0"
 dependencies = [
@@ -4053,6 +4070,23 @@ dependencies = [
  "tracing",
  "uuid",
  "validator",
+ "washco-shared",
+]
+
+[[package]]
+name = "washco-inventory"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum 0.8.8",
+ "chrono",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "uuid",
  "washco-shared",
 ]
 
@@ -4084,6 +4118,23 @@ dependencies = [
  "serde_json",
  "sqlx",
  "thiserror",
+ "tracing",
+ "uuid",
+ "washco-shared",
+]
+
+[[package]]
+name = "washco-payment"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum 0.8.8",
+ "chrono",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
  "tracing",
  "uuid",
  "washco-shared",
@@ -4180,14 +4231,18 @@ dependencies = [
  "washco-analytics",
  "washco-booking",
  "washco-catalog",
+ "washco-customer",
  "washco-identity",
+ "washco-inventory",
  "washco-location",
  "washco-notification",
+ "washco-payment",
  "washco-pricing",
  "washco-promotion",
  "washco-queue",
  "washco-review",
  "washco-shared",
+ "washco-staff",
 ]
 
 [[package]]
@@ -4207,6 +4262,23 @@ dependencies = [
  "utoipa",
  "uuid",
  "validator",
+]
+
+[[package]]
+name = "washco-staff"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum 0.8.8",
+ "chrono",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "uuid",
+ "washco-shared",
 ]
 
 [[package]]
