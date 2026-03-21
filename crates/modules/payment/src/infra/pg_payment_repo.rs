@@ -157,17 +157,18 @@ impl PaymentRepository for PgPaymentRepository {
     ) -> anyhow::Result<DailyRevenueSummary> {
         let row = sqlx::query(
             "SELECT \
-                COALESCE(SUM(CASE WHEN payment_status = 'completed' THEN final_amount ELSE 0 END), 0) as total_revenue, \
-                COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as completed_count, \
-                COALESCE(SUM(CASE WHEN payment_status = 'completed' AND payment_method = 'cash' THEN final_amount ELSE 0 END), 0) as cash_amount, \
-                COALESCE(SUM(CASE WHEN payment_status = 'completed' AND payment_method != 'cash' THEN final_amount ELSE 0 END), 0) as digital_amount, \
-                COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as pending_count \
+                COALESCE(SUM(CASE WHEN payment_status = 'completed' THEN final_amount ELSE 0 END), 0)::bigint as total_revenue, \
+                COUNT(CASE WHEN payment_status = 'completed' THEN 1 END)::bigint as completed_count, \
+                COALESCE(SUM(CASE WHEN payment_status = 'completed' AND payment_method = 'cash' THEN final_amount ELSE 0 END), 0)::bigint as cash_amount, \
+                COALESCE(SUM(CASE WHEN payment_status = 'completed' AND payment_method != 'cash' THEN final_amount ELSE 0 END), 0)::bigint as digital_amount, \
+                COUNT(CASE WHEN payment_status = 'pending' THEN 1 END)::bigint as pending_count \
              FROM payments \
-             WHERE tenant_id = $1 AND location_id = $2 AND created_at >= $3::date AND created_at < ($3::date + interval '1 day')",
+             WHERE tenant_id = $1 AND location_id = $2 AND created_at >= $3 AND created_at < $4",
         )
         .bind(tenant_id)
         .bind(location_id)
-        .bind(date)
+        .bind(date.and_hms_opt(0, 0, 0).unwrap().and_utc())
+        .bind((date + chrono::Duration::days(1)).and_hms_opt(0, 0, 0).unwrap().and_utc())
         .fetch_one(&self.pool)
         .await?;
 
@@ -203,8 +204,8 @@ impl PaymentRepository for PgPaymentRepository {
             "SELECT \
                 staff_id, \
                 MIN(customer_name) as staff_name, \
-                COUNT(*) as job_count, \
-                COALESCE(SUM(final_amount), 0) as total_revenue, \
+                COUNT(*)::bigint as job_count, \
+                COALESCE(SUM(final_amount), 0)::bigint as total_revenue, \
                 0::bigint as total_commission \
              FROM payments \
              WHERE tenant_id = $1 AND staff_id = $2 \
