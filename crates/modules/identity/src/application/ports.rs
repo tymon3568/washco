@@ -27,6 +27,11 @@ pub trait UserRepository: Send + Sync {
         &self,
         user: &User,
     ) -> impl std::future::Future<Output = Result<(), sqlx::Error>> + Send;
+
+    fn find_tenant_tier_features(
+        &self,
+        tenant_id: Uuid,
+    ) -> impl std::future::Future<Output = Result<(Option<String>, Vec<String>), sqlx::Error>> + Send;
 }
 
 pub trait OtpStore: Send + Sync {

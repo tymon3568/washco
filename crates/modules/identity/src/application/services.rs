@@ -93,7 +93,7 @@ impl<R: UserRepository, O: OtpStore> IdentityService<R, O> {
             self.repo.update_user(&user).await?;
         }
 
-        self.generate_tokens(&user)
+        self.generate_tokens(&user).await
     }
 
     pub async fn get_user(&self, user_id: Uuid) -> Result<User, AppError> {
@@ -117,10 +117,20 @@ impl<R: UserRepository, O: OtpStore> IdentityService<R, O> {
         })
     }
 
-    fn generate_tokens(&self, user: &User) -> Result<TokenPair, AppError> {
-        let access = self
-            .jwt
-            .generate_access_token(user.id, user.tenant_id, user.role.clone())?;
+    async fn generate_tokens(&self, user: &User) -> Result<TokenPair, AppError> {
+        let (tier, features) = self
+            .repo
+            .find_tenant_tier_features(user.tenant_id)
+            .await
+            .unwrap_or((None, vec![]));
+
+        let access = self.jwt.generate_access_token_with_tier(
+            user.id,
+            user.tenant_id,
+            user.role.clone(),
+            tier,
+            features,
+        )?;
         let refresh =
             self.jwt
                 .generate_refresh_token(user.id, user.tenant_id, user.role.clone())?;

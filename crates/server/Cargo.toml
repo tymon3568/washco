@@ -19,6 +19,8 @@ washco-payment = { path = "../modules/payment" }
 washco-staff = { path = "../modules/staff" }
 washco-customer = { path = "../modules/customer" }
 washco-inventory = { path = "../modules/inventory" }
+washco-admin = { path = "../modules/admin" }
+washco-weather = { path = "../modules/weather" }
 
 anyhow = { workspace = true }
 aws-sdk-s3 = { workspace = true }

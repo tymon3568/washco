@@ -50,5 +50,14 @@ pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
             "/locations/{location_id}/services",
             get(handlers::service_breakdown),
         )
+        .route(
+            "/locations/{location_id}/trend",
+            get(handlers::trend),
+        )
+        .route(
+            "/locations/{location_id}/period",
+            get(handlers::period_summary),
+        )
+        .route("/compare", get(handlers::compare_locations))
         .with_state(state)
 }

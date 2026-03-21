@@ -3988,6 +3988,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "washco-admin"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum 0.8.8",
+ "chrono",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tracing",
+ "uuid",
+ "washco-shared",
+]
+
+[[package]]
 name = "washco-analytics"
 version = "0.1.0"
 dependencies = [
@@ -4228,6 +4244,7 @@ dependencies = [
  "utoipa",
  "utoipa-swagger-ui",
  "uuid",
+ "washco-admin",
  "washco-analytics",
  "washco-booking",
  "washco-catalog",
@@ -4243,6 +4260,7 @@ dependencies = [
  "washco-review",
  "washco-shared",
  "washco-staff",
+ "washco-weather",
 ]
 
 [[package]]
@@ -4276,6 +4294,22 @@ dependencies = [
  "sqlx",
  "thiserror",
  "tokio",
+ "tracing",
+ "uuid",
+ "washco-shared",
+]
+
+[[package]]
+name = "washco-weather"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum 0.8.8",
+ "chrono",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
  "tracing",
  "uuid",
  "washco-shared",

@@ -12,6 +12,10 @@ pub struct Claims {
     pub role: Role,
     pub exp: i64,
     pub iat: i64,
+    #[serde(default)]
+    pub tier: Option<String>,
+    #[serde(default)]
+    pub features: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, sqlx::Type)]
@@ -44,6 +48,8 @@ pub struct TenantContext {
     pub tenant_id: Uuid,
     pub user_id: Uuid,
     pub role: Role,
+    pub tier: Option<String>,
+    pub features: Vec<String>,
 }
 
 #[derive(Clone)]
@@ -70,6 +76,17 @@ impl JwtConfig {
         tenant_id: Uuid,
         role: Role,
     ) -> Result<String, AppError> {
+        self.generate_access_token_with_tier(user_id, tenant_id, role, None, vec![])
+    }
+
+    pub fn generate_access_token_with_tier(
+        &self,
+        user_id: Uuid,
+        tenant_id: Uuid,
+        role: Role,
+        tier: Option<String>,
+        features: Vec<String>,
+    ) -> Result<String, AppError> {
         let now = chrono::Utc::now().timestamp();
         let claims = Claims {
             sub: user_id,
@@ -77,6 +94,8 @@ impl JwtConfig {
             role,
             iat: now,
             exp: now + self.expiry_seconds,
+            tier,
+            features,
         };
         jsonwebtoken::encode(&Header::default(), &claims, &self.encoding_key)
             .map_err(|e| AppError::Internal(anyhow::anyhow!("JWT encode error: {e}")))
@@ -95,6 +114,8 @@ impl JwtConfig {
             role,
             iat: now,
             exp: now + self.refresh_expiry_seconds,
+            tier: None,
+            features: vec![],
         };
         jsonwebtoken::encode(&Header::default(), &claims, &self.encoding_key)
             .map_err(|e| AppError::Internal(anyhow::anyhow!("JWT encode error: {e}")))
@@ -134,6 +155,23 @@ impl TenantContext {
     pub fn require_manager_or_above(&self) -> Result<(), AppError> {
         self.require_role(&[Role::Owner, Role::Admin, Role::Manager])
     }
+
+    /// Check if the tenant's tier includes a specific feature
+    pub fn require_feature(&self, feature: &str) -> Result<(), AppError> {
+        // Admin bypasses feature gates
+        if self.role == Role::Admin {
+            return Ok(());
+        }
+        // If no features are set (legacy token), allow all
+        if self.features.is_empty() {
+            return Ok(());
+        }
+        if self.features.iter().any(|f| f == feature) {
+            Ok(())
+        } else {
+            Err(AppError::Forbidden)
+        }
+    }
 }
 
 /// Axum extractor that validates JWT and provides TenantContext
@@ -161,6 +199,8 @@ where
             tenant_id: claims.tenant_id,
             user_id: claims.sub,
             role: claims.role,
+            tier: claims.tier,
+            features: claims.features,
         })
     }
 }

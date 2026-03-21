@@ -85,6 +85,38 @@ impl UserRepository for PgUserRepository {
         .await?;
         Ok(())
     }
+
+    async fn find_tenant_tier_features(
+        &self,
+        tenant_id: Uuid,
+    ) -> Result<(Option<String>, Vec<String>), sqlx::Error> {
+        let row = sqlx::query(
+            r#"SELECT st.name, st.features
+               FROM tenants t
+               JOIN subscription_tiers st ON st.id = t.tier_id
+               WHERE t.id = $1"#,
+        )
+        .bind(tenant_id)
+        .fetch_optional(&self.pool)
+        .await?;
+
+        match row {
+            Some(r) => {
+                let name: String = r.get("name");
+                let features_json: serde_json::Value = r.get("features");
+                let features: Vec<String> = features_json
+                    .as_array()
+                    .map(|arr| {
+                        arr.iter()
+                            .filter_map(|v| v.as_str().map(String::from))
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                Ok((Some(name), features))
+            }
+            None => Ok((None, vec![])),
+        }
+    }
 }
 
 fn row_to_user(row: &sqlx::postgres::PgRow) -> User {

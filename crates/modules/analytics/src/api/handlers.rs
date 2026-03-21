@@ -51,3 +51,39 @@ pub async fn service_breakdown(
         .await?;
     Ok(Json(metrics.into_iter().map(Into::into).collect()))
 }
+
+pub async fn trend(
+    State(svc): State<AnalyticsState>,
+    ctx: TenantContext,
+    Path(location_id): Path<Uuid>,
+    Query(params): Query<TrendQuery>,
+) -> Result<Json<Vec<TrendDataPointResponse>>, AppError> {
+    let (from, to) = params.resolve();
+    let points = svc.trend(ctx.tenant_id, location_id, from, to).await?;
+    Ok(Json(points.into_iter().map(Into::into).collect()))
+}
+
+pub async fn period_summary(
+    State(svc): State<AnalyticsState>,
+    ctx: TenantContext,
+    Path(location_id): Path<Uuid>,
+    Query(params): Query<TrendQuery>,
+) -> Result<Json<PeriodSummaryResponse>, AppError> {
+    let (from, to) = params.resolve();
+    let summary = svc.period_summary(ctx.tenant_id, location_id, from, to).await?;
+    Ok(Json(summary.into()))
+}
+
+pub async fn compare_locations(
+    State(svc): State<AnalyticsState>,
+    ctx: TenantContext,
+    Query(params): Query<CompareQuery>,
+) -> Result<Json<Vec<LocationComparisonResponse>>, AppError> {
+    let ids = params.parse_location_ids();
+    if ids.is_empty() {
+        return Err(AppError::Validation { message: "location_ids is required".into() });
+    }
+    let (from, to) = params.resolve_dates();
+    let comparisons = svc.compare_locations(ctx.tenant_id, &ids, from, to).await?;
+    Ok(Json(comparisons.into_iter().map(Into::into).collect()))
+}

@@ -16,6 +16,8 @@ members = [
     "crates/modules/staff",
     "crates/modules/customer",
     "crates/modules/inventory",
+    "crates/modules/admin",
+    "crates/modules/weather",
     "crates/server",
 ]
 

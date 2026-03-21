@@ -437,3 +437,111 @@ export interface ServiceMetricResponse {
 	revenue: number;
 	average_duration_minutes: number;
 }
+
+export interface TrendDataPointResponse {
+	date: string;
+	revenue: number;
+	completed_jobs: number;
+	walk_ins: number;
+	cancellations: number;
+	average_wait_minutes: number;
+}
+
+export interface PeriodSummaryResponse {
+	location_id: string;
+	from: string;
+	to: string;
+	total_revenue: number;
+	total_completed: number;
+	total_walk_ins: number;
+	total_cancellations: number;
+	average_wait_minutes: number;
+	busiest_day: string | null;
+	peak_revenue: number;
+}
+
+export interface LocationComparisonResponse {
+	location_id: string;
+	location_name: string;
+	total_revenue: number;
+	total_completed: number;
+	average_wait_minutes: number;
+}
+
+// Weather Triggers
+export interface WeatherTriggerResponse {
+	id: string;
+	promotion_id: string;
+	location_id: string;
+	trigger_condition: string;
+	auto_activate: boolean;
+	is_active: boolean;
+	last_triggered: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface CreateWeatherTriggerRequest {
+	promotion_id: string;
+	location_id: string;
+	trigger_condition: string;
+	auto_activate?: boolean;
+}
+
+export interface UpdateWeatherTriggerRequest {
+	trigger_condition?: string;
+	auto_activate?: boolean;
+	is_active?: boolean;
+}
+
+export interface WeatherDataResponse {
+	id: string;
+	city: string;
+	temperature_c: number | null;
+	condition: string;
+	humidity: number | null;
+	fetched_at: string;
+	forecast_for: string;
+}
+
+// Admin
+export interface PlatformMetricsResponse {
+	total_tenants: number;
+	total_locations: number;
+	active_locations: number;
+	suspended_locations: number;
+	total_users: number;
+	total_queue_entries_today: number;
+}
+
+export interface AdminLocationResponse {
+	id: string;
+	tenant_id: string;
+	tenant_name: string;
+	name: string;
+	city: string;
+	status: string;
+	created_at: string;
+}
+
+export interface AdminActionResponse {
+	id: string;
+	admin_user_id: string;
+	action_type: string;
+	target_type: string;
+	target_id: string;
+	reason: string | null;
+	metadata: Record<string, unknown>;
+	created_at: string;
+}
+
+export interface SubscriptionTierResponse {
+	id: string;
+	name: string;
+	display_name: string;
+	max_locations: number;
+	max_staff: number;
+	features: string[];
+	sort_order: number;
+	is_active: boolean;
+}
