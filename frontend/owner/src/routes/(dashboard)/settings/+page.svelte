@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { api } from '$lib/api/client';
+	import { api, ApiError } from '$lib/api/client';
 	import { auth } from '$lib/auth.svelte';
+	import { toast } from '$lib/toast.svelte';
 	import type {
 		LocationResponse,
 		OperatingHoursEntry,
@@ -131,54 +132,76 @@
 		try {
 			await api.put(`/locations/${location.id}/hours`, { hours });
 			hoursSuccess = true;
+			toast.success('Da luu gio hoat dong!');
 			setTimeout(() => (hoursSuccess = false), 3000);
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		savingHours = false;
 	}
 
+	function validateLocation(): string | null {
+		if (!name.trim()) return 'Vui long nhap ten cua hang';
+		if (!address.trim()) return 'Vui long nhap dia chi';
+		if (!district.trim()) return 'Vui long nhap quan/huyen';
+		if (!city.trim()) return 'Vui long nhap thanh pho';
+		if (bayCount < 1 || bayCount > 50) return 'So bay phai tu 1 den 50';
+		return null;
+	}
+
 	async function saveSettings() {
 		if (!location) return;
+		const validationError = validateLocation();
+		if (validationError) {
+			toast.error(validationError);
+			return;
+		}
 		saving = true;
 		success = false;
 		try {
 			await api.put(`/locations/${location.id}`, {
-				name,
-				address,
-				district,
-				city,
-				phone: phone || undefined,
+				name: name.trim(),
+				address: address.trim(),
+				district: district.trim(),
+				city: city.trim(),
+				phone: phone.trim() || undefined,
 				bay_count: bayCount,
 				queue_mode: queueMode
 			});
 			success = true;
+			toast.success('Da luu thay doi!');
 			setTimeout(() => (success = false), 3000);
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		saving = false;
 	}
 
 	async function createLocation() {
+		const validationError = validateLocation();
+		if (validationError) {
+			toast.error(validationError);
+			return;
+		}
 		saving = true;
 		try {
 			const created = await api.post<LocationResponse>('/locations', {
-				name,
-				address,
-				district,
-				city,
+				name: name.trim(),
+				address: address.trim(),
+				district: district.trim(),
+				city: city.trim(),
 				latitude: 10.7769,
 				longitude: 106.7009,
-				phone: phone || undefined,
+				phone: phone.trim() || undefined,
 				bay_count: bayCount,
 				queue_mode: queueMode
 			});
 			location = created;
+			toast.success('Da tao cua hang thanh cong!');
 			success = true;
 			setTimeout(() => (success = false), 3000);
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		saving = false;
 	}
@@ -201,7 +224,7 @@
 			bays = [...bays, bay];
 			newBayName = '';
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		addingBay = false;
 	}
@@ -213,7 +236,7 @@
 			});
 			bays = bays.map((b) => (b.id === bay.id ? updated : b));
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 	}
 
@@ -232,7 +255,7 @@
 			editingBayId = null;
 			editingBayName = '';
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 	}
 
@@ -247,7 +270,7 @@
 			await api.del(`/locations/bays/${bay.id}`);
 			bays = bays.filter((b) => b.id !== bay.id);
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 	}
 </script>

@@ -1,4 +1,6 @@
+use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use std::time::Duration;
 use washco_shared::JwtConfig;
 
 use crate::config::AppConfig;
@@ -14,8 +16,17 @@ pub struct AppState {
 
 impl AppState {
     pub async fn new(config: &AppConfig) -> anyhow::Result<Self> {
-        let db = PgPool::connect(&config.database_url).await?;
-        tracing::info!("Connected to PostgreSQL");
+        let db = PgPoolOptions::new()
+            .max_connections(config.db_max_connections)
+            .acquire_timeout(Duration::from_secs(30))
+            .idle_timeout(Duration::from_secs(config.db_idle_timeout_seconds))
+            .max_lifetime(Duration::from_secs(config.db_max_lifetime_seconds))
+            .connect(&config.database_url)
+            .await?;
+        tracing::info!(
+            max_conn = config.db_max_connections,
+            "Connected to PostgreSQL"
+        );
 
         sqlx::migrate!("../../migrations").run(&db).await?;
         tracing::info!("Migrations applied");

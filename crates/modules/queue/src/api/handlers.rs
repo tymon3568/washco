@@ -4,7 +4,7 @@ use axum::{
     Json,
 };
 use uuid::Uuid;
-use washco_shared::{AppError, TenantContext};
+use washco_shared::{AppError, Role, TenantContext};
 
 use super::dto::*;
 use super::QueueState;
@@ -56,6 +56,7 @@ pub async fn advance(
     Path(id): Path<Uuid>,
     Json(body): Json<AdvanceRequest>,
 ) -> Result<Json<QueueEntryResponse>, AppError> {
+    ctx.require_role(&[Role::Owner, Role::Manager, Role::Cashier, Role::Staff])?;
     let entry = svc.advance(ctx.tenant_id, id, body.bay_id).await?;
     svc.broadcast
         .notify(entry.location_id, "queue_updated")
@@ -68,6 +69,7 @@ pub async fn complete(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<QueueEntryResponse>, AppError> {
+    ctx.require_role(&[Role::Owner, Role::Manager, Role::Cashier, Role::Staff])?;
     let entry = svc.complete(ctx.tenant_id, id).await?;
     svc.broadcast
         .notify(entry.location_id, "queue_updated")
@@ -80,6 +82,7 @@ pub async fn cancel(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, AppError> {
+    ctx.require_role(&[Role::Owner, Role::Manager, Role::Cashier, Role::Staff])?;
     let entry = svc.cancel(ctx.tenant_id, id).await?;
     svc.broadcast
         .notify(entry.location_id, "queue_updated")

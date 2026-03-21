@@ -69,6 +69,7 @@ pub async fn reply_to_review(
     Path(id): Path<Uuid>,
     Json(body): Json<ReplyRequest>,
 ) -> Result<Json<serde_json::Value>, AppError> {
+    ctx.require_manager_or_above()?;
     svc.reply_to_review(ctx.tenant_id, id, &body.reply).await?;
 
     Ok(Json(serde_json::json!({ "message": "Reply added" })))

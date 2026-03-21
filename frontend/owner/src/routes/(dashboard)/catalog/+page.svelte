@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { api } from '$lib/api/client';
+	import { api, ApiError } from '$lib/api/client';
+	import { toast } from '$lib/toast.svelte';
 	import type { ServiceResponse } from '$lib/api/types';
 	import { formatVND } from '$lib/utils/format';
 
@@ -75,7 +76,7 @@
 			showForm = false;
 			await refreshServices();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		loading = false;
 	}

@@ -15,6 +15,7 @@ pub async fn create_promotion(
     ctx: TenantContext,
     Json(body): Json<CreatePromotionRequest>,
 ) -> Result<(StatusCode, Json<PromotionResponse>), AppError> {
+    ctx.require_manager_or_above()?;
     let promo = svc
         .create_promotion(
             ctx.tenant_id,
@@ -51,6 +52,7 @@ pub async fn update_promotion(
     Path(id): Path<Uuid>,
     Json(body): Json<UpdatePromotionRequest>,
 ) -> Result<Json<PromotionResponse>, AppError> {
+    ctx.require_manager_or_above()?;
     let promo = svc
         .update_promotion(
             ctx.tenant_id,
@@ -79,6 +81,7 @@ pub async fn delete_promotion(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, AppError> {
+    ctx.require_owner_or_admin()?;
     svc.delete_promotion(ctx.tenant_id, id).await?;
     Ok(Json(serde_json::json!({ "message": "Deleted" })))
 }

@@ -4,7 +4,7 @@ use axum::{
     Json,
 };
 use uuid::Uuid;
-use washco_shared::{AppError, TenantContext};
+use washco_shared::{AppError, Role, TenantContext};
 
 use super::dto::*;
 use super::BookingState;
@@ -64,6 +64,7 @@ pub async fn confirm(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<BookingResponse>, AppError> {
+    ctx.require_role(&[Role::Owner, Role::Admin, Role::Manager, Role::Cashier, Role::Staff])?;
     let booking = svc.confirm(ctx.tenant_id, id).await?;
     Ok(Json(booking.into()))
 }
@@ -73,6 +74,7 @@ pub async fn complete(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<BookingResponse>, AppError> {
+    ctx.require_role(&[Role::Owner, Role::Admin, Role::Manager, Role::Cashier, Role::Staff])?;
     let booking = svc.complete(ctx.tenant_id, id).await?;
     Ok(Json(booking.into()))
 }
@@ -82,6 +84,7 @@ pub async fn cancel(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<BookingResponse>, AppError> {
+    ctx.require_role(&[Role::Owner, Role::Admin, Role::Manager, Role::Cashier, Role::Staff])?;
     let booking = svc.cancel(ctx.tenant_id, id).await?;
     Ok(Json(booking.into()))
 }

@@ -13,6 +13,7 @@ pub async fn create(
     ctx: TenantContext,
     Json(body): Json<CreateLocationRequest>,
 ) -> Result<(StatusCode, Json<LocationResponse>), AppError> {
+    ctx.require_owner_or_admin()?;
     let location = svc
         .create(
             ctx.tenant_id,
@@ -57,6 +58,7 @@ pub async fn update(
     Path(id): Path<Uuid>,
     Json(body): Json<UpdateLocationRequest>,
 ) -> Result<Json<LocationResponse>, AppError> {
+    ctx.require_manager_or_above()?;
     let location = svc
         .update(
             ctx.tenant_id,
@@ -85,6 +87,7 @@ pub async fn delete(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<MessageResponse>, AppError> {
+    ctx.require_owner_or_admin()?;
     svc.delete(ctx.tenant_id, id).await?;
     Ok(Json(MessageResponse {
         message: "Location deleted".to_string(),
@@ -125,6 +128,7 @@ pub async fn set_operating_hours(
     Path(id): Path<Uuid>,
     Json(body): Json<SetOperatingHoursRequest>,
 ) -> Result<Json<Vec<OperatingHoursResponse>>, AppError> {
+    ctx.require_manager_or_above()?;
     let inputs: Vec<OperatingHoursInput> = body
         .hours
         .into_iter()
@@ -158,6 +162,7 @@ pub async fn create_bay(
     Path(location_id): Path<Uuid>,
     Json(body): Json<BayRequest>,
 ) -> Result<(StatusCode, Json<BayResponse>), AppError> {
+    ctx.require_manager_or_above()?;
     let bay = svc
         .create_bay(ctx.tenant_id, location_id, body.name)
         .await?;
@@ -181,6 +186,7 @@ pub async fn delete_bay(
     ctx: TenantContext,
     Path(bay_id): Path<Uuid>,
 ) -> Result<Json<MessageResponse>, AppError> {
+    ctx.require_manager_or_above()?;
     svc.delete_bay(ctx.tenant_id, bay_id).await?;
     Ok(Json(MessageResponse {
         message: "Bay deleted".to_string(),

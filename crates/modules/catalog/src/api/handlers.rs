@@ -22,6 +22,7 @@ pub async fn create(
     Path(location_id): Path<Uuid>,
     Json(body): Json<CreateServiceRequest>,
 ) -> Result<(StatusCode, Json<ServiceResponse>), AppError> {
+    ctx.require_manager_or_above()?;
     let service = svc
         .create_service(CreateServiceInput {
             tenant_id: ctx.tenant_id,
@@ -52,6 +53,7 @@ pub async fn update(
     Path(id): Path<Uuid>,
     Json(body): Json<UpdateServiceRequest>,
 ) -> Result<Json<ServiceResponse>, AppError> {
+    ctx.require_manager_or_above()?;
     let service = svc
         .update_service(UpdateServiceInput {
             tenant_id: ctx.tenant_id,
@@ -73,6 +75,7 @@ pub async fn delete(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<MessageResponse>, AppError> {
+    ctx.require_owner_or_admin()?;
     svc.delete_service(ctx.tenant_id, id).await?;
     Ok(Json(MessageResponse {
         message: "Service deleted".to_string(),

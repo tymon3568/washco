@@ -15,6 +15,7 @@ pub async fn create_template(
     ctx: TenantContext,
     Json(body): Json<CreateTemplateRequest>,
 ) -> Result<(StatusCode, Json<TemplateResponse>), AppError> {
+    ctx.require_manager_or_above()?;
     let template = svc
         .create_template(
             ctx.tenant_id,
@@ -44,6 +45,7 @@ pub async fn update_template(
     Path(id): Path<Uuid>,
     Json(body): Json<UpdateTemplateRequest>,
 ) -> Result<Json<TemplateResponse>, AppError> {
+    ctx.require_manager_or_above()?;
     let template = svc
         .update_template(
             ctx.tenant_id,
@@ -66,6 +68,7 @@ pub async fn delete_template(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, AppError> {
+    ctx.require_manager_or_above()?;
     svc.delete_template(ctx.tenant_id, id).await?;
     Ok(Json(serde_json::json!({ "message": "Deleted" })))
 }

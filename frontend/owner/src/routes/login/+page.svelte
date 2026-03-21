@@ -10,11 +10,19 @@
 	let error = $state('');
 	let loading = $state(false);
 
+	function validatePhone(p: string): boolean {
+		return /^0[0-9]{9}$/.test(p.replace(/\s/g, ''));
+	}
+
 	async function handleRequestOtp() {
 		error = '';
+		if (!validatePhone(phone)) {
+			error = 'So dien thoai khong hop le (VD: 0901234567)';
+			return;
+		}
 		loading = true;
 		try {
-			await auth.requestOtp(phone);
+			await auth.requestOtp(phone.replace(/\s/g, ''));
 			step = 'otp';
 		} catch (e: any) {
 			if (e.message?.includes('not found')) {
@@ -40,10 +48,22 @@
 
 	async function handleRegister() {
 		error = '';
+		if (!validatePhone(phone)) {
+			error = 'So dien thoai khong hop le (VD: 0901234567)';
+			return;
+		}
+		if (!ownerName.trim()) {
+			error = 'Vui long nhap ho ten';
+			return;
+		}
+		if (!businessName.trim()) {
+			error = 'Vui long nhap ten doanh nghiep';
+			return;
+		}
 		loading = true;
 		try {
-			await auth.register(phone, businessName, ownerName);
-			await auth.requestOtp(phone);
+			await auth.register(phone.replace(/\s/g, ''), businessName.trim(), ownerName.trim());
+			await auth.requestOtp(phone.replace(/\s/g, ''));
 			step = 'otp';
 		} catch (e: any) {
 			error = e.message;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { api } from '$lib/api/client';
+	import { api, ApiError } from '$lib/api/client';
+	import { toast } from '$lib/toast.svelte';
 	import { createQueueSocket } from '$lib/api/ws';
 	import type { QueueEntryResponse, QueueStateResponse, ServiceResponse, BayResponse } from '$lib/api/types';
 	import { formatVND } from '$lib/utils/format';
@@ -74,7 +75,7 @@
 			showAddForm = false;
 			await refreshQueue();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		loading = false;
 	}
@@ -96,7 +97,7 @@
 			selectedBayId = '';
 			await refreshQueue();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 	}
 

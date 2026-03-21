@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/auth.svelte';
 	import { page } from '$app/state';
+	import Toast from '$lib/components/Toast.svelte';
 
 	let { children } = $props();
 
@@ -19,6 +20,8 @@
 		}
 	});
 </script>
+
+<Toast />
 
 {#if auth.isLoading}
 	<div class="flex min-h-screen items-center justify-center">

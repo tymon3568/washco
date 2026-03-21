@@ -108,6 +108,27 @@ impl std::fmt::Debug for JwtConfig {
     }
 }
 
+impl TenantContext {
+    /// Check if the current user has one of the allowed roles
+    pub fn require_role(&self, allowed: &[Role]) -> Result<(), AppError> {
+        if allowed.contains(&self.role) {
+            Ok(())
+        } else {
+            Err(AppError::Forbidden)
+        }
+    }
+
+    /// Check if user is owner or admin
+    pub fn require_owner_or_admin(&self) -> Result<(), AppError> {
+        self.require_role(&[Role::Owner, Role::Admin])
+    }
+
+    /// Check if user is at least manager level
+    pub fn require_manager_or_above(&self) -> Result<(), AppError> {
+        self.require_role(&[Role::Owner, Role::Admin, Role::Manager])
+    }
+}
+
 /// Axum extractor that validates JWT and provides TenantContext
 impl<S> FromRequestParts<S> for TenantContext
 where

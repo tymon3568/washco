@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { api } from '$lib/api/client';
+	import { api, ApiError } from '$lib/api/client';
+	import { toast } from '$lib/toast.svelte';
 	import { formatVND } from '$lib/utils/format';
 	import { untrack } from 'svelte';
 
@@ -124,7 +125,7 @@
 			showForm = false;
 			await refreshPromotions();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		loading = false;
 	}
@@ -134,7 +135,7 @@
 			await api.put(`/promotions/${promo.id}`, { is_active: !promo.is_active });
 			await refreshPromotions();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 	}
 
@@ -144,7 +145,7 @@
 			deleteConfirmId = null;
 			await refreshPromotions();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 	}
 </script>

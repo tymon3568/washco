@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { api } from '$lib/api/client';
+	import { api, ApiError } from '$lib/api/client';
+	import { toast } from '$lib/toast.svelte';
 
 	interface Location {
 		id: string;
@@ -83,7 +84,7 @@
 			await api.put(`/bookings/${id}/confirm`, {});
 			await loadBookings();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		actionLoading = null;
 	}
@@ -94,7 +95,7 @@
 			await api.put(`/bookings/${id}/complete`, {});
 			await loadBookings();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		actionLoading = null;
 	}
@@ -105,7 +106,7 @@
 			await api.put(`/bookings/${id}/cancel`, {});
 			await loadBookings();
 		} catch (e: any) {
-			alert(e.message);
+			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
 		}
 		actionLoading = null;
 	}

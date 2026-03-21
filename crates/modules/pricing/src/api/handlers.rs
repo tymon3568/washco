@@ -15,6 +15,7 @@ pub async fn create_rule(
     ctx: TenantContext,
     Json(body): Json<CreateRuleRequest>,
 ) -> Result<(StatusCode, Json<PricingRuleResponse>), AppError> {
+    ctx.require_manager_or_above()?;
     let rule = svc
         .create_rule(
             ctx.tenant_id,
@@ -52,6 +53,7 @@ pub async fn update_rule(
     Path(id): Path<Uuid>,
     Json(body): Json<UpdateRuleRequest>,
 ) -> Result<Json<PricingRuleResponse>, AppError> {
+    ctx.require_manager_or_above()?;
     let rule = svc
         .update_rule(
             ctx.tenant_id,
@@ -79,6 +81,7 @@ pub async fn delete_rule(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, AppError> {
+    ctx.require_manager_or_above()?;
     svc.delete_rule(ctx.tenant_id, id).await?;
     Ok(Json(serde_json::json!({ "message": "Deleted" })))
 }
