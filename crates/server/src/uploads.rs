@@ -1,8 +1,4 @@
-use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
-};
+use axum::{Json, extract::State, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
@@ -28,20 +24,10 @@ pub async fn presign_upload(
     ctx: TenantContext,
     Json(body): Json<PresignRequest>,
 ) -> Result<(StatusCode, Json<PresignResponse>), AppError> {
-    let ext = body
-        .filename
-        .rsplit('.')
-        .next()
-        .unwrap_or("bin");
+    let ext = body.filename.rsplit('.').next().unwrap_or("bin");
 
     let folder = body.folder.as_deref().unwrap_or("uploads");
-    let object_key = format!(
-        "{}/{}/{}.{}",
-        ctx.tenant_id,
-        folder,
-        Uuid::now_v7(),
-        ext
-    );
+    let object_key = format!("{}/{}/{}.{}", ctx.tenant_id, folder, Uuid::now_v7(), ext);
 
     let presigned = state
         .s3

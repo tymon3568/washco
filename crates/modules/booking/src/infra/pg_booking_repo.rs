@@ -64,9 +64,7 @@ impl BookingRepository for PgBookingRepository {
     }
 
     async fn find_by_id(&self, tenant_id: Uuid, id: Uuid) -> anyhow::Result<Option<Booking>> {
-        let q = format!(
-            "SELECT {BOOKING_COLS} FROM bookings WHERE id = $1 AND tenant_id = $2"
-        );
+        let q = format!("SELECT {BOOKING_COLS} FROM bookings WHERE id = $1 AND tenant_id = $2");
         let row = sqlx::query(&q)
             .bind(id)
             .bind(tenant_id)
@@ -109,11 +107,7 @@ impl BookingRepository for PgBookingRepository {
         Ok(rows.iter().map(row_to_booking).collect())
     }
 
-    async fn list_by_phone(
-        &self,
-        phone: &str,
-        date: NaiveDate,
-    ) -> anyhow::Result<Vec<Booking>> {
+    async fn list_by_phone(&self, phone: &str, date: NaiveDate) -> anyhow::Result<Vec<Booking>> {
         let q = format!(
             "SELECT {BOOKING_COLS} FROM bookings
              WHERE customer_phone = $1 AND booking_date = $2

@@ -43,10 +43,7 @@ pub trait NotificationRepository: Send + Sync {
         offset: i64,
     ) -> impl std::future::Future<Output = anyhow::Result<Vec<Notification>>> + Send;
 
-    fn mark_sent(
-        &self,
-        id: Uuid,
-    ) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
+    fn mark_sent(&self, id: Uuid) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
 
     fn mark_failed(
         &self,

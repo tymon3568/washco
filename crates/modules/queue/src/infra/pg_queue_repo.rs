@@ -139,7 +139,11 @@ impl QueueRepository for PgQueueRepository {
         })
     }
 
-    async fn completed_today_count(&self, tenant_id: Uuid, location_id: Uuid) -> anyhow::Result<i64> {
+    async fn completed_today_count(
+        &self,
+        tenant_id: Uuid,
+        location_id: Uuid,
+    ) -> anyhow::Result<i64> {
         let row = sqlx::query(
             "SELECT COUNT(*) as cnt FROM queue_entries WHERE tenant_id = $1 AND location_id = $2 AND status = 'completed' AND completed_at::date = CURRENT_DATE",
         )

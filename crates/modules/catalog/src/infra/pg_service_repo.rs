@@ -40,8 +40,7 @@ impl ServiceRow {
             location_id: self.location_id,
             name: self.name,
             description: self.description,
-            vehicle_type: VehicleType::from_str(&self.vehicle_type)
-                .unwrap_or(VehicleType::Sedan),
+            vehicle_type: VehicleType::from_str(&self.vehicle_type).unwrap_or(VehicleType::Sedan),
             base_price: Money::new(self.base_price),
             duration_minutes: self.duration_minutes,
             is_active: self.is_active,
@@ -78,11 +77,7 @@ impl ServiceRepository for PgServiceRepository {
         Ok(rows.into_iter().map(ServiceRow::into_service).collect())
     }
 
-    async fn find_by_id(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> anyhow::Result<Option<Service>> {
+    async fn find_by_id(&self, tenant_id: Uuid, id: Uuid) -> anyhow::Result<Option<Service>> {
         let row = sqlx::query_as::<_, ServiceRow>(
             r#"SELECT id, tenant_id, location_id, name, description,
                       vehicle_type, base_price, duration_minutes,
@@ -152,11 +147,7 @@ impl ServiceRepository for PgServiceRepository {
         Ok(())
     }
 
-    async fn soft_delete(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> anyhow::Result<()> {
+    async fn soft_delete(&self, tenant_id: Uuid, id: Uuid) -> anyhow::Result<()> {
         sqlx::query(
             r#"UPDATE services
                SET deleted_at = NOW(), updated_at = NOW()

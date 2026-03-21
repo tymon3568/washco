@@ -68,9 +68,7 @@ impl PromotionRepository for PgPromotionRepository {
     }
 
     async fn find_by_id(&self, tenant_id: Uuid, id: Uuid) -> anyhow::Result<Option<Promotion>> {
-        let q = format!(
-            "SELECT {PROMO_COLS} FROM promotions WHERE id = $1 AND tenant_id = $2"
-        );
+        let q = format!("SELECT {PROMO_COLS} FROM promotions WHERE id = $1 AND tenant_id = $2");
         let row = sqlx::query(&q)
             .bind(id)
             .bind(tenant_id)
@@ -80,9 +78,7 @@ impl PromotionRepository for PgPromotionRepository {
     }
 
     async fn find_by_code(&self, tenant_id: Uuid, code: &str) -> anyhow::Result<Option<Promotion>> {
-        let q = format!(
-            "SELECT {PROMO_COLS} FROM promotions WHERE tenant_id = $1 AND code = $2"
-        );
+        let q = format!("SELECT {PROMO_COLS} FROM promotions WHERE tenant_id = $1 AND code = $2");
         let row = sqlx::query(&q)
             .bind(tenant_id)
             .bind(code)

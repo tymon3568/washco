@@ -1,13 +1,13 @@
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use uuid::Uuid;
 use washco_shared::{AppError, Role, TenantContext};
 
-use super::dto::*;
 use super::BookingState;
+use super::dto::*;
 use crate::application::CreateBookingInput;
 
 pub async fn create_booking(
@@ -64,7 +64,13 @@ pub async fn confirm(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<BookingResponse>, AppError> {
-    ctx.require_role(&[Role::Owner, Role::Admin, Role::Manager, Role::Cashier, Role::Staff])?;
+    ctx.require_role(&[
+        Role::Owner,
+        Role::Admin,
+        Role::Manager,
+        Role::Cashier,
+        Role::Staff,
+    ])?;
     let booking = svc.confirm(ctx.tenant_id, id).await?;
     Ok(Json(booking.into()))
 }
@@ -74,7 +80,13 @@ pub async fn complete(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<BookingResponse>, AppError> {
-    ctx.require_role(&[Role::Owner, Role::Admin, Role::Manager, Role::Cashier, Role::Staff])?;
+    ctx.require_role(&[
+        Role::Owner,
+        Role::Admin,
+        Role::Manager,
+        Role::Cashier,
+        Role::Staff,
+    ])?;
     let booking = svc.complete(ctx.tenant_id, id).await?;
     Ok(Json(booking.into()))
 }
@@ -84,7 +96,13 @@ pub async fn cancel(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<BookingResponse>, AppError> {
-    ctx.require_role(&[Role::Owner, Role::Admin, Role::Manager, Role::Cashier, Role::Staff])?;
+    ctx.require_role(&[
+        Role::Owner,
+        Role::Admin,
+        Role::Manager,
+        Role::Cashier,
+        Role::Staff,
+    ])?;
     let booking = svc.cancel(ctx.tenant_id, id).await?;
     Ok(Json(booking.into()))
 }

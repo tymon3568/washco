@@ -75,7 +75,12 @@ mod tests {
 
     #[test]
     fn rule_type_roundtrip() {
-        for rt in [RuleType::Surge, RuleType::TimeBased, RuleType::DayOfWeek, RuleType::Demand] {
+        for rt in [
+            RuleType::Surge,
+            RuleType::TimeBased,
+            RuleType::DayOfWeek,
+            RuleType::Demand,
+        ] {
             let s = rt.as_str();
             assert_eq!(RuleType::from_str(s), Some(rt));
         }

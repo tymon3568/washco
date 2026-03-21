@@ -1,9 +1,6 @@
 use std::sync::Arc;
 
-use axum::{
-    routing::get,
-    Router,
-};
+use axum::{Router, routing::get};
 use sqlx::PgPool;
 use washco_shared::JwtConfig;
 
@@ -41,7 +38,15 @@ pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
     let state = CatalogState { service, jwt };
 
     Router::new()
-        .route("/locations/{location_id}/services", get(handlers::list).post(handlers::create))
-        .route("/services/{id}", get(handlers::get_by_id).put(handlers::update).delete(handlers::delete))
+        .route(
+            "/locations/{location_id}/services",
+            get(handlers::list).post(handlers::create),
+        )
+        .route(
+            "/services/{id}",
+            get(handlers::get_by_id)
+                .put(handlers::update)
+                .delete(handlers::delete),
+        )
         .with_state(state)
 }

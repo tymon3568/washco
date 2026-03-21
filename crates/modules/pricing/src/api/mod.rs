@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use axum::{
-    routing::{delete, get, post, put},
     Router,
+    routing::{delete, get, post, put},
 };
 use sqlx::PgPool;
 use washco_shared::JwtConfig;

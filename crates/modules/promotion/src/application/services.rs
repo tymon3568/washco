@@ -79,10 +79,7 @@ impl<R: PromotionRepository> PromotionService<R> {
             updated_at: now,
         };
 
-        self.repo
-            .create(&promo)
-            .await
-            .map_err(AppError::Internal)?;
+        self.repo.create(&promo).await.map_err(AppError::Internal)?;
 
         Ok(promo)
     }
@@ -126,19 +123,12 @@ impl<R: PromotionRepository> PromotionService<R> {
         promo.is_active = input.is_active;
         promo.updated_at = Utc::now();
 
-        self.repo
-            .update(&promo)
-            .await
-            .map_err(AppError::Internal)?;
+        self.repo.update(&promo).await.map_err(AppError::Internal)?;
 
         Ok(promo)
     }
 
-    pub async fn delete_promotion(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> Result<(), AppError> {
+    pub async fn delete_promotion(&self, tenant_id: Uuid, id: Uuid) -> Result<(), AppError> {
         // Verify it exists
         self.repo
             .find_by_id(tenant_id, id)
@@ -154,14 +144,8 @@ impl<R: PromotionRepository> PromotionService<R> {
         Ok(())
     }
 
-    pub async fn list_promotions(
-        &self,
-        tenant_id: Uuid,
-    ) -> Result<Vec<Promotion>, AppError> {
-        self.repo
-            .list(tenant_id)
-            .await
-            .map_err(AppError::Internal)
+    pub async fn list_promotions(&self, tenant_id: Uuid) -> Result<Vec<Promotion>, AppError> {
+        self.repo.list(tenant_id).await.map_err(AppError::Internal)
     }
 
     pub async fn validate_code(

@@ -1,10 +1,10 @@
-use axum::extract::{Path, Query, State};
 use axum::Json;
+use axum::extract::{Path, Query, State};
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
 
-use super::dto::*;
 use super::AnalyticsState;
+use super::dto::*;
 
 pub async fn daily_summary(
     State(svc): State<AnalyticsState>,
@@ -13,9 +13,7 @@ pub async fn daily_summary(
     Query(params): Query<DateRangeQuery>,
 ) -> Result<Json<DailySummaryResponse>, AppError> {
     let date = params.date_or_today();
-    let summary = svc
-        .daily_summary(ctx.tenant_id, location_id, date)
-        .await?;
+    let summary = svc.daily_summary(ctx.tenant_id, location_id, date).await?;
     Ok(Json(summary.into()))
 }
 
@@ -30,7 +28,13 @@ pub async fn utilization(
     let bay_count = 4;
     let operating_hours_minutes = 720;
     let utilization = svc
-        .bay_utilization(ctx.tenant_id, location_id, date, bay_count, operating_hours_minutes)
+        .bay_utilization(
+            ctx.tenant_id,
+            location_id,
+            date,
+            bay_count,
+            operating_hours_minutes,
+        )
         .await?;
     Ok(Json(utilization.into()))
 }

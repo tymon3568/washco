@@ -105,9 +105,9 @@ impl<R: UserRepository, O: OtpStore> IdentityService<R, O> {
 
     pub fn refresh_token(&self, refresh_token: &str) -> Result<TokenPair, AppError> {
         let claims = self.jwt.verify_token(refresh_token)?;
-        let access = self
-            .jwt
-            .generate_access_token(claims.sub, claims.tenant_id, claims.role.clone())?;
+        let access =
+            self.jwt
+                .generate_access_token(claims.sub, claims.tenant_id, claims.role.clone())?;
         let refresh = self
             .jwt
             .generate_refresh_token(claims.sub, claims.tenant_id, claims.role)?;
@@ -121,9 +121,9 @@ impl<R: UserRepository, O: OtpStore> IdentityService<R, O> {
         let access = self
             .jwt
             .generate_access_token(user.id, user.tenant_id, user.role.clone())?;
-        let refresh = self
-            .jwt
-            .generate_refresh_token(user.id, user.tenant_id, user.role.clone())?;
+        let refresh =
+            self.jwt
+                .generate_refresh_token(user.id, user.tenant_id, user.role.clone())?;
         Ok(TokenPair {
             access_token: access,
             refresh_token: refresh,

@@ -28,11 +28,11 @@ impl From<IdentityError> for washco_shared::AppError {
             IdentityError::PhoneAlreadyExists => washco_shared::AppError::Conflict {
                 message: err.to_string(),
             },
-            IdentityError::InvalidOtp
-            | IdentityError::OtpExpired
-            | IdentityError::NoOtpRequest => washco_shared::AppError::Validation {
-                message: err.to_string(),
-            },
+            IdentityError::InvalidOtp | IdentityError::OtpExpired | IdentityError::NoOtpRequest => {
+                washco_shared::AppError::Validation {
+                    message: err.to_string(),
+                }
+            }
             IdentityError::UserNotFound => washco_shared::AppError::NotFound { entity: "User" },
             IdentityError::NotVerified => washco_shared::AppError::Forbidden,
             IdentityError::Database(e) => {

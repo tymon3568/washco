@@ -1,13 +1,13 @@
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
 
-use super::dto::*;
 use super::PromotionState;
+use super::dto::*;
 use crate::application::{CreatePromotionInput, UpdatePromotionInput};
 
 pub async fn create_promotion(
@@ -92,7 +92,12 @@ pub async fn validate_code(
     Json(body): Json<ValidateCodeRequest>,
 ) -> Result<Json<DiscountResultResponse>, AppError> {
     let result = svc
-        .validate_code(ctx.tenant_id, &body.code, body.location_id, body.order_amount)
+        .validate_code(
+            ctx.tenant_id,
+            &body.code,
+            body.location_id,
+            body.order_amount,
+        )
         .await?;
 
     Ok(Json(DiscountResultResponse {
@@ -109,7 +114,12 @@ pub async fn redeem(
     Json(body): Json<RedeemRequest>,
 ) -> Result<Json<DiscountResultResponse>, AppError> {
     let result = svc
-        .redeem(ctx.tenant_id, &body.code, body.location_id, body.order_amount)
+        .redeem(
+            ctx.tenant_id,
+            &body.code,
+            body.location_id,
+            body.order_amount,
+        )
         .await?;
 
     Ok(Json(DiscountResultResponse {

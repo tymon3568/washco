@@ -2,9 +2,7 @@ use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
 use crate::application::NotificationRepository;
-use crate::domain::{
-    Notification, NotificationChannel, NotificationStatus, NotificationTemplate,
-};
+use crate::domain::{Notification, NotificationChannel, NotificationStatus, NotificationTemplate};
 
 pub struct PgNotificationRepository {
     pool: PgPool,
@@ -48,8 +46,7 @@ fn row_to_notification(row: &sqlx::postgres::PgRow) -> Notification {
 const TEMPLATE_COLS: &str =
     "id, tenant_id, template_type, channel, subject, body_template, is_active, created_at";
 
-const NOTIFICATION_COLS: &str =
-    "id, tenant_id, recipient_phone, channel, template_type, payload, rendered_body, status, sent_at, error, created_at";
+const NOTIFICATION_COLS: &str = "id, tenant_id, recipient_phone, channel, template_type, payload, rendered_body, status, sent_at, error, created_at";
 
 impl NotificationRepository for PgNotificationRepository {
     async fn create_template(&self, template: &NotificationTemplate) -> anyhow::Result<()> {
@@ -90,10 +87,7 @@ impl NotificationRepository for PgNotificationRepository {
         Ok(row.as_ref().map(row_to_template))
     }
 
-    async fn list_templates(
-        &self,
-        tenant_id: Uuid,
-    ) -> anyhow::Result<Vec<NotificationTemplate>> {
+    async fn list_templates(&self, tenant_id: Uuid) -> anyhow::Result<Vec<NotificationTemplate>> {
         let q = format!(
             "SELECT {TEMPLATE_COLS} FROM notification_templates
              WHERE tenant_id = $1 ORDER BY created_at DESC"
@@ -172,23 +166,19 @@ impl NotificationRepository for PgNotificationRepository {
     }
 
     async fn mark_sent(&self, id: Uuid) -> anyhow::Result<()> {
-        sqlx::query(
-            "UPDATE notifications SET status = 'sent', sent_at = now() WHERE id = $1",
-        )
-        .bind(id)
-        .execute(&self.pool)
-        .await?;
+        sqlx::query("UPDATE notifications SET status = 'sent', sent_at = now() WHERE id = $1")
+            .bind(id)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 
     async fn mark_failed(&self, id: Uuid, error: &str) -> anyhow::Result<()> {
-        sqlx::query(
-            "UPDATE notifications SET status = 'failed', error = $1 WHERE id = $2",
-        )
-        .bind(error)
-        .bind(id)
-        .execute(&self.pool)
-        .await?;
+        sqlx::query("UPDATE notifications SET status = 'failed', error = $1 WHERE id = $2")
+            .bind(error)
+            .bind(id)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 }

@@ -9,15 +9,14 @@
 //!   cargo test -p washco-server --test api_test -- --test-threads=1
 
 use reqwest::Client;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 async fn base_url() -> String {
     dotenvy::dotenv().ok();
 
     let db_url = std::env::var("DATABASE_URL")
         .unwrap_or_else(|_| "postgres://washco:washco@localhost:5432/washco_test".to_string());
-    let jwt_secret =
-        std::env::var("JWT_SECRET").unwrap_or_else(|_| "test-secret-key".to_string());
+    let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| "test-secret-key".to_string());
 
     unsafe {
         std::env::set_var("DATABASE_URL", &db_url);
@@ -383,9 +382,7 @@ async fn queue_join_advance_complete_flow() {
 
     // Join queue
     let res = c
-        .post(format!(
-            "{base}/api/v1/queue/locations/{location_id}/join"
-        ))
+        .post(format!("{base}/api/v1/queue/locations/{location_id}/join"))
         .bearer_auth(&token)
         .json(&json!({
             "customer_name": "Nguyễn Test",
@@ -505,9 +502,7 @@ async fn booking_create_and_list() {
 
     // List bookings
     let res = c
-        .get(format!(
-            "{base}/api/v1/bookings/locations/{location_id}"
-        ))
+        .get(format!("{base}/api/v1/bookings/locations/{location_id}"))
         .bearer_auth(&token)
         .send()
         .await

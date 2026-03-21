@@ -19,9 +19,7 @@ pub enum BookingError {
 impl From<BookingError> for washco_shared::AppError {
     fn from(err: BookingError) -> Self {
         match err {
-            BookingError::NotFound => washco_shared::AppError::NotFound {
-                entity: "Booking",
-            },
+            BookingError::NotFound => washco_shared::AppError::NotFound { entity: "Booking" },
             BookingError::InvalidTransition { .. } => washco_shared::AppError::Validation {
                 message: err.to_string(),
             },

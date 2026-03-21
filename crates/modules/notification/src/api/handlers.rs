@@ -1,13 +1,13 @@
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
 
-use super::dto::*;
 use super::NotificationState;
+use super::dto::*;
 use crate::application::{CreateTemplateInput, SendNotificationInput, UpdateTemplateInput};
 
 pub async fn create_template(

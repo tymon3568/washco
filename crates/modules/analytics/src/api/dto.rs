@@ -10,8 +10,7 @@ pub struct DateRangeQuery {
 
 impl DateRangeQuery {
     pub fn date_or_today(&self) -> NaiveDate {
-        self.date
-            .unwrap_or_else(|| chrono::Utc::now().date_naive())
+        self.date.unwrap_or_else(|| chrono::Utc::now().date_naive())
     }
 }
 

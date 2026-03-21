@@ -1,8 +1,8 @@
 use axum::{
+    Json, Router,
     http::{HeaderValue, Method, StatusCode},
     response::IntoResponse,
     routing::{get, post},
-    Json, Router,
 };
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
@@ -19,7 +19,10 @@ async fn health() -> impl IntoResponse {
 /// Readiness probe - checks database connectivity
 async fn ready(state: axum::extract::State<AppState>) -> impl IntoResponse {
     match sqlx::query("SELECT 1").execute(&state.db).await {
-        Ok(_) => (StatusCode::OK, Json(serde_json::json!({ "status": "ready" }))),
+        Ok(_) => (
+            StatusCode::OK,
+            Json(serde_json::json!({ "status": "ready" })),
+        ),
         Err(_) => (
             StatusCode::SERVICE_UNAVAILABLE,
             Json(serde_json::json!({ "status": "unavailable", "reason": "database" })),
@@ -122,9 +125,7 @@ pub fn build(state: AppState, config: &AppConfig) -> Router {
 }
 
 fn build_cors(config: &AppConfig) -> CorsLayer {
-    if config.allowed_origins.is_empty()
-        || config.allowed_origins.iter().any(|o| o == "*")
-    {
+    if config.allowed_origins.is_empty() || config.allowed_origins.iter().any(|o| o == "*") {
         return CorsLayer::permissive();
     }
 

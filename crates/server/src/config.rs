@@ -22,8 +22,7 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn from_env() -> anyhow::Result<Self> {
-        let jwt_secret =
-            std::env::var("JWT_SECRET").context("JWT_SECRET is required")?;
+        let jwt_secret = std::env::var("JWT_SECRET").context("JWT_SECRET is required")?;
 
         if jwt_secret == "change-me-in-production" {
             tracing::warn!("JWT_SECRET is using the default value! Change it in production.");

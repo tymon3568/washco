@@ -40,8 +40,5 @@ pub trait OtpStore: Send + Sync {
         phone: &str,
     ) -> impl std::future::Future<Output = anyhow::Result<Option<OtpEntry>>> + Send;
 
-    fn remove(
-        &self,
-        phone: &str,
-    ) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
+    fn remove(&self, phone: &str) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
 }

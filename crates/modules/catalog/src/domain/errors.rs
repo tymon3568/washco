@@ -16,9 +16,9 @@ pub enum CatalogError {
 impl From<CatalogError> for washco_shared::AppError {
     fn from(err: CatalogError) -> Self {
         match err {
-            CatalogError::ServiceNotFound => washco_shared::AppError::NotFound {
-                entity: "Service",
-            },
+            CatalogError::ServiceNotFound => {
+                washco_shared::AppError::NotFound { entity: "Service" }
+            }
             CatalogError::DuplicateName => washco_shared::AppError::Conflict {
                 message: err.to_string(),
             },

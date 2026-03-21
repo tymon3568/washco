@@ -1,6 +1,6 @@
 use uuid::Uuid;
-use washco_shared::money::Money;
 use washco_shared::AppError;
+use washco_shared::money::Money;
 
 use crate::domain::{CatalogError, Service, VehicleType};
 
@@ -47,11 +47,7 @@ impl<R: ServiceRepository> CatalogService<R> {
             .map_err(|e| AppError::Internal(e))
     }
 
-    pub async fn get_service(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> Result<Service, AppError> {
+    pub async fn get_service(&self, tenant_id: Uuid, id: Uuid) -> Result<Service, AppError> {
         self.repo
             .find_by_id(tenant_id, id)
             .await
@@ -59,10 +55,7 @@ impl<R: ServiceRepository> CatalogService<R> {
             .ok_or_else(|| CatalogError::ServiceNotFound.into())
     }
 
-    pub async fn create_service(
-        &self,
-        input: CreateServiceInput,
-    ) -> Result<Service, AppError> {
+    pub async fn create_service(&self, input: CreateServiceInput) -> Result<Service, AppError> {
         let vehicle_type = VehicleType::from_str(&input.vehicle_type)
             .ok_or_else(|| CatalogError::InvalidVehicleType(input.vehicle_type.clone()))?;
 
@@ -84,10 +77,7 @@ impl<R: ServiceRepository> CatalogService<R> {
         Ok(service)
     }
 
-    pub async fn update_service(
-        &self,
-        input: UpdateServiceInput,
-    ) -> Result<Service, AppError> {
+    pub async fn update_service(&self, input: UpdateServiceInput) -> Result<Service, AppError> {
         let mut service = self
             .repo
             .find_by_id(input.tenant_id, input.id)
@@ -124,11 +114,7 @@ impl<R: ServiceRepository> CatalogService<R> {
         Ok(service)
     }
 
-    pub async fn delete_service(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> Result<(), AppError> {
+    pub async fn delete_service(&self, tenant_id: Uuid, id: Uuid) -> Result<(), AppError> {
         // Verify existence first
         self.repo
             .find_by_id(tenant_id, id)

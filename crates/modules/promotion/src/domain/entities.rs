@@ -64,7 +64,10 @@ mod tests {
 
     #[test]
     fn discount_type_roundtrip() {
-        assert_eq!(DiscountType::from_str("percentage"), DiscountType::Percentage);
+        assert_eq!(
+            DiscountType::from_str("percentage"),
+            DiscountType::Percentage
+        );
         assert_eq!(DiscountType::from_str("fixed"), DiscountType::Fixed);
         assert_eq!(DiscountType::from_str("unknown"), DiscountType::Percentage);
     }
@@ -77,7 +80,10 @@ mod tests {
             final_price: 85000,
             promotion_code: "TEST15".into(),
         };
-        assert_eq!(result.final_price, result.original_price - result.discount_amount);
+        assert_eq!(
+            result.final_price,
+            result.original_price - result.discount_amount
+        );
     }
 
     #[test]

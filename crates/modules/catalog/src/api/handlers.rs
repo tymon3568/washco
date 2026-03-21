@@ -1,9 +1,13 @@
-use axum::{extract::{Path, State}, http::StatusCode, Json};
+use axum::{
+    Json,
+    extract::{Path, State},
+    http::StatusCode,
+};
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
 
-use super::dto::*;
 use super::CatalogState;
+use super::dto::*;
 use crate::application::{CreateServiceInput, UpdateServiceInput};
 
 pub async fn list(

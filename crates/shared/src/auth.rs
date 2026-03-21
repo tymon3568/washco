@@ -1,7 +1,4 @@
-use axum::{
-    extract::FromRequestParts,
-    http::request::Parts,
-};
+use axum::{extract::FromRequestParts, http::request::Parts};
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -67,7 +64,12 @@ impl JwtConfig {
         }
     }
 
-    pub fn generate_access_token(&self, user_id: Uuid, tenant_id: Uuid, role: Role) -> Result<String, AppError> {
+    pub fn generate_access_token(
+        &self,
+        user_id: Uuid,
+        tenant_id: Uuid,
+        role: Role,
+    ) -> Result<String, AppError> {
         let now = chrono::Utc::now().timestamp();
         let claims = Claims {
             sub: user_id,
@@ -80,7 +82,12 @@ impl JwtConfig {
             .map_err(|e| AppError::Internal(anyhow::anyhow!("JWT encode error: {e}")))
     }
 
-    pub fn generate_refresh_token(&self, user_id: Uuid, tenant_id: Uuid, role: Role) -> Result<String, AppError> {
+    pub fn generate_refresh_token(
+        &self,
+        user_id: Uuid,
+        tenant_id: Uuid,
+        role: Role,
+    ) -> Result<String, AppError> {
         let now = chrono::Utc::now().timestamp();
         let claims = Claims {
             sub: user_id,

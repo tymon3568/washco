@@ -25,9 +25,7 @@ pub enum LocationError {
 impl From<LocationError> for washco_shared::AppError {
     fn from(err: LocationError) -> Self {
         match err {
-            LocationError::NotFound => washco_shared::AppError::NotFound {
-                entity: "Location",
-            },
+            LocationError::NotFound => washco_shared::AppError::NotFound { entity: "Location" },
             LocationError::SlugConflict => washco_shared::AppError::Conflict {
                 message: err.to_string(),
             },

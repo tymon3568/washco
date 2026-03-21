@@ -68,9 +68,7 @@ impl PricingRepository for PgPricingRepository {
     }
 
     async fn find_by_id(&self, tenant_id: Uuid, id: Uuid) -> anyhow::Result<Option<PricingRule>> {
-        let q = format!(
-            "SELECT {RULE_COLS} FROM pricing_rules WHERE id = $1 AND tenant_id = $2"
-        );
+        let q = format!("SELECT {RULE_COLS} FROM pricing_rules WHERE id = $1 AND tenant_id = $2");
         let row = sqlx::query(&q)
             .bind(id)
             .bind(tenant_id)

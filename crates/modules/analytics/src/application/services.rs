@@ -36,7 +36,13 @@ impl<R: AnalyticsRepository> AnalyticsService<R> {
         operating_hours_minutes: i32,
     ) -> Result<BayUtilization, AppError> {
         self.repo
-            .bay_utilization(tenant_id, location_id, date, bay_count, operating_hours_minutes)
+            .bay_utilization(
+                tenant_id,
+                location_id,
+                date,
+                bay_count,
+                operating_hours_minutes,
+            )
             .await
             .map_err(AppError::Internal)
     }

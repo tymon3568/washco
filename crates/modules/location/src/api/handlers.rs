@@ -1,11 +1,11 @@
+use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
-use axum::Json;
 use uuid::Uuid;
 use washco_shared::{AppError, TenantContext};
 
-use super::dto::*;
 use super::LocationState;
+use super::dto::*;
 use crate::application::{CreateLocationInput, OperatingHoursInput, UpdateLocationInput};
 
 pub async fn create(
@@ -140,9 +140,7 @@ pub async fn set_operating_hours(
         })
         .collect();
 
-    let hours = svc
-        .set_operating_hours(ctx.tenant_id, id, inputs)
-        .await?;
+    let hours = svc.set_operating_hours(ctx.tenant_id, id, inputs).await?;
 
     Ok(Json(hours.into_iter().map(Into::into).collect()))
 }

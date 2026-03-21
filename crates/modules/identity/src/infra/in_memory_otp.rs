@@ -27,10 +27,7 @@ impl Default for InMemoryOtpStore {
 
 impl OtpStore for InMemoryOtpStore {
     async fn store(&self, entry: OtpEntry) -> anyhow::Result<()> {
-        self.store
-            .write()
-            .await
-            .insert(entry.phone.clone(), entry);
+        self.store.write().await.insert(entry.phone.clone(), entry);
         Ok(())
     }
 

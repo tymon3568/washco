@@ -1,13 +1,13 @@
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use uuid::Uuid;
 use washco_shared::{AppError, Role, TenantContext};
 
-use super::dto::*;
 use super::QueueState;
+use super::dto::*;
 use crate::application::JoinInput;
 
 pub async fn get_queue(

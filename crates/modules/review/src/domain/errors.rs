@@ -16,9 +16,7 @@ pub enum ReviewError {
 impl From<ReviewError> for washco_shared::AppError {
     fn from(err: ReviewError) -> Self {
         match err {
-            ReviewError::NotFound => washco_shared::AppError::NotFound {
-                entity: "Review",
-            },
+            ReviewError::NotFound => washco_shared::AppError::NotFound { entity: "Review" },
             ReviewError::AlreadyReviewed => washco_shared::AppError::Conflict {
                 message: err.to_string(),
             },

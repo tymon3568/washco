@@ -1,8 +1,8 @@
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use washco_shared::{AppError, TenantContext};
 
-use super::dto::*;
 use super::IdentityState;
+use super::dto::*;
 use crate::application::RegisterInput;
 
 pub async fn register(

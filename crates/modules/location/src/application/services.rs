@@ -94,21 +94,14 @@ impl<R: LocationRepository> LocationService<R> {
         Ok(location)
     }
 
-    pub async fn get_by_id(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> Result<Location, AppError> {
+    pub async fn get_by_id(&self, tenant_id: Uuid, id: Uuid) -> Result<Location, AppError> {
         self.repo
             .find_by_id(tenant_id, id)
             .await?
             .ok_or_else(|| LocationError::NotFound.into())
     }
 
-    pub async fn list_by_tenant(
-        &self,
-        tenant_id: Uuid,
-    ) -> Result<Vec<Location>, AppError> {
+    pub async fn list_by_tenant(&self, tenant_id: Uuid) -> Result<Vec<Location>, AppError> {
         let locations = self.repo.find_by_tenant(tenant_id).await?;
         Ok(locations)
     }
@@ -184,11 +177,7 @@ impl<R: LocationRepository> LocationService<R> {
         Ok(location)
     }
 
-    pub async fn delete(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> Result<(), AppError> {
+    pub async fn delete(&self, tenant_id: Uuid, id: Uuid) -> Result<(), AppError> {
         // Verify it exists first
         self.repo
             .find_by_id(tenant_id, id)
@@ -223,7 +212,10 @@ impl<R: LocationRepository> LocationService<R> {
             .await?
             .ok_or(LocationError::NotFound)?;
 
-        let hours = self.repo.get_operating_hours(tenant_id, location_id).await?;
+        let hours = self
+            .repo
+            .get_operating_hours(tenant_id, location_id)
+            .await?;
         Ok(hours)
     }
 
@@ -246,9 +238,11 @@ impl<R: LocationRepository> LocationService<R> {
                     message: format!("Invalid day_of_week: {}", input.day_of_week),
                 });
             }
-            let open_time = chrono::NaiveTime::parse_from_str(&input.open_time, "%H:%M")
-                .map_err(|_| AppError::Validation {
-                    message: format!("Invalid open_time format: {}", input.open_time),
+            let open_time =
+                chrono::NaiveTime::parse_from_str(&input.open_time, "%H:%M").map_err(|_| {
+                    AppError::Validation {
+                        message: format!("Invalid open_time format: {}", input.open_time),
+                    }
                 })?;
             let close_time = chrono::NaiveTime::parse_from_str(&input.close_time, "%H:%M")
                 .map_err(|_| AppError::Validation {
@@ -340,11 +334,7 @@ impl<R: LocationRepository> LocationService<R> {
         Ok(bay)
     }
 
-    pub async fn delete_bay(
-        &self,
-        tenant_id: Uuid,
-        bay_id: Uuid,
-    ) -> Result<(), AppError> {
+    pub async fn delete_bay(&self, tenant_id: Uuid, bay_id: Uuid) -> Result<(), AppError> {
         self.repo.delete_bay(tenant_id, bay_id).await?;
         Ok(())
     }

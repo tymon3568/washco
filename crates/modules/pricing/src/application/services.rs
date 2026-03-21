@@ -2,9 +2,7 @@ use chrono::Utc;
 use uuid::Uuid;
 use washco_shared::AppError;
 
-use crate::domain::{
-    AppliedRule, PriceCalculation, PricingError, PricingRule, RuleType,
-};
+use crate::domain::{AppliedRule, PriceCalculation, PricingError, PricingRule, RuleType};
 
 use super::ports::PricingRepository;
 
@@ -77,10 +75,7 @@ impl<R: PricingRepository> PricingService<R> {
             updated_at: now,
         };
 
-        self.repo
-            .create(&rule)
-            .await
-            .map_err(AppError::Internal)?;
+        self.repo.create(&rule).await.map_err(AppError::Internal)?;
 
         Ok(rule)
     }
@@ -113,19 +108,12 @@ impl<R: PricingRepository> PricingService<R> {
         rule.valid_to = input.valid_to;
         rule.updated_at = Utc::now();
 
-        self.repo
-            .update(&rule)
-            .await
-            .map_err(AppError::Internal)?;
+        self.repo.update(&rule).await.map_err(AppError::Internal)?;
 
         Ok(rule)
     }
 
-    pub async fn delete_rule(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> Result<(), AppError> {
+    pub async fn delete_rule(&self, tenant_id: Uuid, id: Uuid) -> Result<(), AppError> {
         // Verify rule exists
         self.repo
             .find_by_id(tenant_id, id)

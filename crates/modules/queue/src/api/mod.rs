@@ -1,16 +1,16 @@
 use std::sync::Arc;
 
 use axum::{
+    Router,
     extract::{
-        ws::{Message, WebSocket},
         Path, State, WebSocketUpgrade,
+        ws::{Message, WebSocket},
     },
     response::IntoResponse,
     routing::{get, post, put},
-    Router,
 };
-use tokio::sync::broadcast::error::RecvError;
 use sqlx::PgPool;
+use tokio::sync::broadcast::error::RecvError;
 use uuid::Uuid;
 use washco_shared::JwtConfig;
 

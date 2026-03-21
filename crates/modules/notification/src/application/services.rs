@@ -3,8 +3,7 @@ use uuid::Uuid;
 use washco_shared::AppError;
 
 use crate::domain::{
-    Notification, NotificationChannel, NotificationError, NotificationStatus,
-    NotificationTemplate,
+    Notification, NotificationChannel, NotificationError, NotificationStatus, NotificationTemplate,
 };
 
 use super::ports::NotificationRepository;
@@ -102,11 +101,7 @@ impl<R: NotificationRepository> NotificationService<R> {
         Ok(template)
     }
 
-    pub async fn delete_template(
-        &self,
-        tenant_id: Uuid,
-        id: Uuid,
-    ) -> Result<(), AppError> {
+    pub async fn delete_template(&self, tenant_id: Uuid, id: Uuid) -> Result<(), AppError> {
         self.repo
             .delete_template(tenant_id, id)
             .await
@@ -171,14 +166,9 @@ impl<R: NotificationRepository> NotificationService<R> {
 }
 
 /// Simple template rendering: replaces `{{key}}` with values from payload JSON object.
-fn render_template(
-    body_template: &str,
-    payload: &serde_json::Value,
-) -> Result<String, AppError> {
+fn render_template(body_template: &str, payload: &serde_json::Value) -> Result<String, AppError> {
     let empty = serde_json::Map::new();
-    let obj = payload
-        .as_object()
-        .unwrap_or(&empty);
+    let obj = payload.as_object().unwrap_or(&empty);
 
     let mut result = body_template.to_string();
 

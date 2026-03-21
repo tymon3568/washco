@@ -28,8 +28,10 @@ fn row_to_location(row: &sqlx::postgres::PgRow) -> Location {
         latitude: row.get("latitude"),
         longitude: row.get("longitude"),
         bay_count: row.get("bay_count"),
-        queue_mode: QueueMode::from_str(row.get::<String, _>("queue_mode").as_str()).unwrap_or(QueueMode::Hybrid),
-        status: LocationStatus::from_str(row.get::<String, _>("status").as_str()).unwrap_or(LocationStatus::Pending),
+        queue_mode: QueueMode::from_str(row.get::<String, _>("queue_mode").as_str())
+            .unwrap_or(QueueMode::Hybrid),
+        status: LocationStatus::from_str(row.get::<String, _>("status").as_str())
+            .unwrap_or(LocationStatus::Pending),
         amenities: row.get("amenities"),
         created_at: row.get("created_at"),
         updated_at: row.get("updated_at"),
@@ -55,7 +57,11 @@ impl LocationRepository for PgLocationRepository {
             .map(|r| r.map(|row| row_to_location(&row)))
     }
 
-    async fn find_by_slug(&self, tenant_id: Uuid, slug: &str) -> Result<Option<Location>, sqlx::Error> {
+    async fn find_by_slug(
+        &self,
+        tenant_id: Uuid,
+        slug: &str,
+    ) -> Result<Option<Location>, sqlx::Error> {
         let q = format!(
             "SELECT {SELECT_COLS} FROM locations WHERE slug = $1 AND tenant_id = $2 AND deleted_at IS NULL"
         );
@@ -147,7 +153,12 @@ impl LocationRepository for PgLocationRepository {
         Ok(())
     }
 
-    async fn find_nearby(&self, lat: f64, lng: f64, radius_meters: f64) -> Result<Vec<(Location, f64)>, sqlx::Error> {
+    async fn find_nearby(
+        &self,
+        lat: f64,
+        lng: f64,
+        radius_meters: f64,
+    ) -> Result<Vec<(Location, f64)>, sqlx::Error> {
         let q = format!(
             "SELECT {SELECT_COLS}, ST_Distance(coordinates, ST_MakePoint($1, $2)::geography) as distance
              FROM locations
@@ -240,11 +251,7 @@ impl LocationRepository for PgLocationRepository {
         Ok(())
     }
 
-    async fn list_bays(
-        &self,
-        tenant_id: Uuid,
-        location_id: Uuid,
-    ) -> Result<Vec<Bay>, sqlx::Error> {
+    async fn list_bays(&self, tenant_id: Uuid, location_id: Uuid) -> Result<Vec<Bay>, sqlx::Error> {
         let rows = sqlx::query(
             "SELECT id, location_id, tenant_id, name, is_active FROM bays WHERE tenant_id = $1 AND location_id = $2 ORDER BY name",
         )
@@ -280,15 +287,13 @@ impl LocationRepository for PgLocationRepository {
     }
 
     async fn update_bay(&self, bay: &Bay) -> Result<(), sqlx::Error> {
-        sqlx::query(
-            "UPDATE bays SET name = $1, is_active = $2 WHERE id = $3 AND tenant_id = $4",
-        )
-        .bind(&bay.name)
-        .bind(bay.is_active)
-        .bind(bay.id)
-        .bind(bay.tenant_id)
-        .execute(&self.pool)
-        .await?;
+        sqlx::query("UPDATE bays SET name = $1, is_active = $2 WHERE id = $3 AND tenant_id = $4")
+            .bind(&bay.name)
+            .bind(bay.is_active)
+            .bind(bay.id)
+            .bind(bay.tenant_id)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 

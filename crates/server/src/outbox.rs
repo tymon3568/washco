@@ -38,12 +38,10 @@ async fn process_outbox_events(pool: &PgPool) -> anyhow::Result<()> {
 
         match dispatch_event(&event_type, &payload).await {
             Ok(()) => {
-                sqlx::query(
-                    "UPDATE outbox_events SET processed_at = now() WHERE id = $1",
-                )
-                .bind(id)
-                .execute(pool)
-                .await?;
+                sqlx::query("UPDATE outbox_events SET processed_at = now() WHERE id = $1")
+                    .bind(id)
+                    .execute(pool)
+                    .await?;
             }
             Err(e) => {
                 tracing::warn!(id = %id, error = %e, "Outbox event failed, incrementing retry");
@@ -89,13 +87,11 @@ async fn process_pending_notifications(pool: &PgPool) -> anyhow::Result<()> {
                 tracing::info!(id = %id, phone = %phone, channel = %channel, "Notification sent");
             }
             Err(e) => {
-                sqlx::query(
-                    "UPDATE notifications SET status = 'failed', error = $2 WHERE id = $1",
-                )
-                .bind(id)
-                .bind(e.to_string())
-                .execute(pool)
-                .await?;
+                sqlx::query("UPDATE notifications SET status = 'failed', error = $2 WHERE id = $1")
+                    .bind(id)
+                    .bind(e.to_string())
+                    .execute(pool)
+                    .await?;
                 tracing::warn!(id = %id, error = %e, "Notification failed");
             }
         }
@@ -108,7 +104,10 @@ async fn dispatch_event(event_type: &str, payload: &serde_json::Value) -> anyhow
     // Route events to appropriate handlers
     match event_type {
         "booking.confirmed" | "booking.cancelled" => {
-            tracing::info!(event_type, "Booking event processed (would trigger notification)");
+            tracing::info!(
+                event_type,
+                "Booking event processed (would trigger notification)"
+            );
         }
         "queue.completed" => {
             tracing::info!(event_type, "Queue completion event processed");
@@ -125,11 +124,7 @@ async fn dispatch_event(event_type: &str, payload: &serde_json::Value) -> anyhow
 
 /// Send notification via appropriate channel.
 /// In dev mode, logs the message. In production, integrate real SMS/push providers.
-async fn send_notification(
-    phone: &str,
-    channel: &str,
-    body: Option<&str>,
-) -> anyhow::Result<()> {
+async fn send_notification(phone: &str, channel: &str, body: Option<&str>) -> anyhow::Result<()> {
     let body = body.unwrap_or("(no body)");
 
     match channel {
