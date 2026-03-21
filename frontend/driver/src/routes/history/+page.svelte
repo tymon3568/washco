@@ -19,7 +19,7 @@
 			const cleanPhone = phone.trim().replace(/\s+/g, '');
 			bookings = await api.get<BookingResponse[]>(`/bookings/phone/${encodeURIComponent(cleanPhone)}`);
 		} catch (e: any) {
-			error = e.message || 'Khong the tai lich su.';
+			error = e.message || 'Không thể tải lịch sử.';
 			bookings = [];
 		}
 		loading = false;
@@ -43,13 +43,13 @@
 	function statusLabel(status: string): string {
 		switch (status) {
 			case 'pending':
-				return 'Cho xac nhan';
+				return 'Chờ xác nhận';
 			case 'confirmed':
-				return 'Da xac nhan';
+				return 'Đã xác nhận';
 			case 'completed':
-				return 'Hoan thanh';
+				return 'Hoàn thành';
 			case 'cancelled':
-				return 'Da huy';
+				return 'Đã hủy';
 			default:
 				return status;
 		}
@@ -66,8 +66,8 @@
 </script>
 
 <div class="pb-20">
-	<h1 class="text-xl font-semibold">Lich su dat lich</h1>
-	<p class="mt-1 text-sm text-muted-foreground">Nhap so dien thoai de xem lich su.</p>
+	<h1 class="text-xl font-semibold">Lịch sử đặt lịch</h1>
+	<p class="mt-1 text-sm text-muted-foreground">Nhập số điện thoại để xem lịch sử.</p>
 
 	<form
 		onsubmit={(e) => { e.preventDefault(); fetchHistory(); }}
@@ -77,7 +77,7 @@
 			bind:value={phone}
 			type="tel"
 			inputmode="tel"
-			placeholder="So dien thoai"
+			placeholder="Số điện thoại"
 			class="min-h-12 flex-1 rounded-lg border border-border bg-background px-4 text-sm"
 		/>
 		<button
@@ -85,7 +85,7 @@
 			disabled={loading || !phone.trim()}
 			class="min-h-12 shrink-0 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground disabled:opacity-50"
 		>
-			{loading ? 'Dang tim...' : 'Tim'}
+			{loading ? 'Đang tìm...' : 'Tìm'}
 		</button>
 	</form>
 
@@ -96,7 +96,7 @@
 	{#if searched && !loading && !error}
 		{#if bookings.length === 0}
 			<div class="mt-6 rounded-xl bg-card p-6 text-center">
-				<p class="text-sm text-muted-foreground">Khong tim thay lich su dat lich nao.</p>
+				<p class="text-sm text-muted-foreground">Không tìm thấy lịch sử đặt lịch nào.</p>
 			</div>
 		{:else}
 			<div class="mt-4 space-y-3">
@@ -104,9 +104,9 @@
 					<div class="rounded-xl border border-border bg-card p-4">
 						<div class="flex items-start justify-between">
 							<div>
-								<p class="text-sm font-semibold">{booking.location_name ?? 'Tiem rua xe'}</p>
+								<p class="text-sm font-semibold">{booking.location_name ?? 'Tiệm rửa xe'}</p>
 								<p class="mt-0.5 text-xs text-muted-foreground">
-									{booking.service_name ?? 'Dich vu'}
+									{booking.service_name ?? 'Dịch vụ'}
 								</p>
 							</div>
 							<span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium {statusColor(booking.status)}">

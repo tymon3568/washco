@@ -147,7 +147,7 @@
 			<p class="mt-2 text-2xl font-bold font-mono">{formatVND(revenue?.digital_amount ?? 0)}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">
-			<p class="text-sm text-muted-foreground">TB/don</p>
+			<p class="text-sm text-muted-foreground">TB/đơn</p>
 			<p class="mt-2 text-2xl font-bold font-mono">{formatVND(revenue?.avg_per_job ?? 0)}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">

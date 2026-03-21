@@ -11,7 +11,7 @@
 	<header class="sticky top-0 z-50 border-b border-border bg-card px-4 py-3">
 		<div class="mx-auto flex max-w-lg items-center justify-between">
 			<a href="/" class="text-lg font-bold text-primary">WashCo</a>
-			<span class="text-xs text-muted-foreground">Tim tiem rua xe</span>
+			<span class="text-xs text-muted-foreground">Tìm tiệm rửa xe</span>
 		</div>
 	</header>
 	<main class="mx-auto max-w-lg px-4 py-4">
@@ -29,7 +29,7 @@
 				<circle cx="11" cy="11" r="8" />
 				<path d="m21 21-4.3-4.3" />
 			</svg>
-			Tim kiem
+			Tìm kiếm
 		</a>
 		<a
 			href="/history"
@@ -39,7 +39,7 @@
 				<circle cx="12" cy="12" r="10" />
 				<path d="M12 6v6l4 2" />
 			</svg>
-			Lich su
+			Lịch sử
 		</a>
 	</div>
 </nav>

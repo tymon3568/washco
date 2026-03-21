@@ -49,9 +49,9 @@
 	};
 
 	const tabs: { key: Tab; label: string }[] = [
-		{ key: 'materials', label: 'Vat tu' },
-		{ key: 'alerts', label: 'Canh bao' },
-		{ key: 'variance', label: 'Do lech' }
+		{ key: 'materials', label: 'Vật tư' },
+		{ key: 'alerts', label: 'Cảnh báo' },
+		{ key: 'variance', label: 'Độ lệch' }
 	];
 
 	$effect(() => {
@@ -77,7 +77,7 @@
 				`/inventory/locations/${locationId}/materials`
 			);
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Khong the tai danh sach vat tu');
+			toast.error(e instanceof ApiError ? e.message : 'Không thể tải danh sách vật tư');
 		}
 	}
 
@@ -88,7 +88,7 @@
 				`/inventory/locations/${locationId}/low-stock`
 			);
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Khong the tai canh bao');
+			toast.error(e instanceof ApiError ? e.message : 'Không thể tải cảnh báo');
 		}
 	}
 
@@ -99,7 +99,7 @@
 				`/inventory/locations/${locationId}/variance?from=${varianceFrom}&to=${varianceTo}`
 			);
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Khong the tai bao cao do lech');
+			toast.error(e instanceof ApiError ? e.message : 'Không thể tải báo cáo độ lệch');
 		}
 	}
 
@@ -130,12 +130,12 @@
 				current_stock: addCurrentStock,
 				min_stock: addMinStock
 			});
-			toast.success('Them vat tu thanh cong');
+			toast.success('Thêm vật tư thành công');
 			showAddForm = false;
 			resetAddForm();
 			await refreshMaterials();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		loading = false;
 	}
@@ -164,11 +164,11 @@
 				unit_cost: txUnitCost || undefined,
 				notes: txNotes || undefined
 			});
-			toast.success(txType === 'purchase' ? 'Nhap kho thanh cong' : 'Xuat kho thanh cong');
+			toast.success(txType === 'purchase' ? 'Nhập kho thành công' : 'Xuất kho thành công');
 			closeTransaction();
 			await refreshMaterials();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		loading = false;
 	}
@@ -178,7 +178,7 @@
 			await api.put(`/inventory/materials/${mat.id}`, { is_active: !mat.is_active });
 			await refreshMaterials();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 
@@ -192,15 +192,15 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Kho vat tu</h1>
-			<p class="mt-1 text-sm text-muted-foreground">Quan ly vat tu, ton kho va bao cao do lech.</p>
+			<h1 class="text-2xl font-semibold">Kho vật tư</h1>
+			<p class="mt-1 text-sm text-muted-foreground">Quản lý vật tư, tồn kho và báo cáo độ lệch.</p>
 		</div>
 		{#if activeTab === 'materials'}
 			<button
 				onclick={() => { showAddForm = !showAddForm; if (!showAddForm) resetAddForm(); }}
 				class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 			>
-				{showAddForm ? 'Dong' : 'Them vat tu'}
+				{showAddForm ? 'Đóng' : 'Thêm vật tư'}
 			</button>
 		{/if}
 	</div>
@@ -224,14 +224,14 @@
 		<!-- Add material form -->
 		{#if showAddForm}
 			<div class="mt-4 rounded-lg border border-border bg-card p-4">
-				<h3 class="text-sm font-medium">Them vat tu moi</h3>
+				<h3 class="text-sm font-medium">Thêm vật tư mới</h3>
 				<form
 					onsubmit={(e) => { e.preventDefault(); handleAddMaterial(); }}
 					class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
 				>
 					<input
 						bind:value={addName}
-						placeholder="Ten vat tu"
+						placeholder="Tên vật tư"
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
@@ -245,12 +245,12 @@
 					</select>
 					<input
 						bind:value={addUnit}
-						placeholder="Don vi (lit, kg, cai...)"
+						placeholder="Đơn vị (lít, kg, cái...)"
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
 					<div>
-						<label class="block text-xs text-muted-foreground" for="add-unit-cost">Don gia (VND)</label>
+						<label class="block text-xs text-muted-foreground" for="add-unit-cost">Đơn giá (VND)</label>
 						<input
 							id="add-unit-cost"
 							bind:value={addUnitCost}
@@ -262,7 +262,7 @@
 						/>
 					</div>
 					<div>
-						<label class="block text-xs text-muted-foreground" for="add-current-stock">Ton kho ban dau</label>
+						<label class="block text-xs text-muted-foreground" for="add-current-stock">Tồn kho ban đầu</label>
 						<input
 							id="add-current-stock"
 							bind:value={addCurrentStock}
@@ -273,7 +273,7 @@
 						/>
 					</div>
 					<div>
-						<label class="block text-xs text-muted-foreground" for="add-min-stock">Ton toi thieu</label>
+						<label class="block text-xs text-muted-foreground" for="add-min-stock">Tồn tối thiểu</label>
 						<input
 							id="add-min-stock"
 							bind:value={addMinStock}
@@ -289,14 +289,14 @@
 							disabled={loading}
 							class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 						>
-							Them
+							Thêm
 						</button>
 						<button
 							type="button"
 							onclick={() => { showAddForm = false; resetAddForm(); }}
 							class="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
 						>
-							Huy
+							Hủy
 						</button>
 					</div>
 				</form>
@@ -308,13 +308,13 @@
 			<table class="w-full">
 				<thead>
 					<tr class="border-b border-border bg-muted/50">
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Ten</th>
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Danh muc</th>
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Don vi</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Don gia</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Ton kho</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Ton toi thieu</th>
-						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Trang thai</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Tên</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Danh mục</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Đơn vị</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Đơn giá</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Tồn kho</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Tồn tối thiểu</th>
+						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Trạng thái</th>
 						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground"></th>
 					</tr>
 				</thead>
@@ -322,7 +322,7 @@
 					{#if materials.length === 0}
 						<tr>
 							<td colspan="8" class="px-4 py-8 text-center text-sm text-muted-foreground">
-								Chua co vat tu nao. Bam "Them vat tu" de bat dau.
+								Chưa có vật tư nào. Bấm "Thêm vật tư" để bắt đầu.
 							</td>
 						</tr>
 					{:else}
@@ -351,7 +351,7 @@
 											? 'bg-green-100 text-green-800'
 											: 'bg-gray-100 text-gray-600'}"
 									>
-										{mat.is_active ? 'Hoat dong' : 'Ngung'}
+										{mat.is_active ? 'Hoạt động' : 'Ngưng'}
 									</button>
 								</td>
 								<td class="px-4 py-3 text-right">
@@ -359,13 +359,13 @@
 										onclick={() => openTransaction(mat.id, 'purchase')}
 										class="text-xs text-blue-600 hover:underline"
 									>
-										Nhap kho
+										Nhập kho
 									</button>
 									<button
 										onclick={() => openTransaction(mat.id, 'usage')}
 										class="ml-2 text-xs text-amber-600 hover:underline"
 									>
-										Xuat kho
+										Xuất kho
 									</button>
 								</td>
 							</tr>
@@ -378,10 +378,10 @@
 											class="flex flex-wrap items-end gap-3"
 										>
 											<span class="text-sm font-medium">
-												{txType === 'purchase' ? 'Nhap kho' : 'Xuat kho'}: {mat.name}
+												{txType === 'purchase' ? 'Nhập kho' : 'Xuất kho'}: {mat.name}
 											</span>
 											<div>
-												<label class="block text-xs text-muted-foreground" for="tx-quantity-{mat.id}">So luong</label>
+												<label class="block text-xs text-muted-foreground" for="tx-quantity-{mat.id}">Số lượng</label>
 												<input
 													id="tx-quantity-{mat.id}"
 													bind:value={txQuantity}
@@ -393,7 +393,7 @@
 											</div>
 											{#if txType === 'purchase'}
 												<div>
-													<label class="block text-xs text-muted-foreground" for="tx-unit-cost-{mat.id}">Don gia (VND, tuy chon)</label>
+													<label class="block text-xs text-muted-foreground" for="tx-unit-cost-{mat.id}">Đơn giá (VND, tùy chọn)</label>
 													<input
 														id="tx-unit-cost-{mat.id}"
 														bind:value={txUnitCost}
@@ -405,11 +405,11 @@
 												</div>
 											{/if}
 											<div>
-												<label class="block text-xs text-muted-foreground" for="tx-notes-{mat.id}">Ghi chu</label>
+												<label class="block text-xs text-muted-foreground" for="tx-notes-{mat.id}">Ghi chú</label>
 												<input
 													id="tx-notes-{mat.id}"
 													bind:value={txNotes}
-													placeholder="Tuy chon"
+													placeholder="Tùy chọn"
 													class="mt-1 w-40 rounded-md border border-input bg-background px-2 py-1 text-sm"
 												/>
 											</div>
@@ -418,14 +418,14 @@
 												disabled={loading}
 												class="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 											>
-												Xac nhan
+												Xác nhận
 											</button>
 											<button
 												type="button"
 												onclick={closeTransaction}
 												class="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
 											>
-												Huy
+												Hủy
 											</button>
 										</form>
 									</td>
@@ -442,7 +442,7 @@
 		<div class="mt-6">
 			{#if alerts.length === 0}
 				<div class="rounded-lg border border-border p-8 text-center text-sm text-muted-foreground">
-					Khong co canh bao ton kho thap.
+					Không có cảnh báo tồn kho thấp.
 				</div>
 			{:else}
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -451,16 +451,16 @@
 							<div class="flex items-start justify-between">
 								<h3 class="text-sm font-semibold text-red-800 dark:text-red-300">{alert.name}</h3>
 								<span class="rounded-full bg-red-200 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
-									Thap
+									Thấp
 								</span>
 							</div>
 							<div class="mt-3 space-y-1">
 								<div class="flex justify-between text-sm">
-									<span class="text-red-700 dark:text-red-400">Ton kho hien tai</span>
+									<span class="text-red-700 dark:text-red-400">Tồn kho hiện tại</span>
 									<span class="font-mono font-semibold text-red-800 dark:text-red-300">{alert.current_stock} {alert.unit}</span>
 								</div>
 								<div class="flex justify-between text-sm">
-									<span class="text-red-700 dark:text-red-400">Ton toi thieu</span>
+									<span class="text-red-700 dark:text-red-400">Tồn tối thiểu</span>
 									<span class="font-mono text-red-700 dark:text-red-400">{alert.min_stock} {alert.unit}</span>
 								</div>
 							</div>
@@ -472,7 +472,7 @@
 									></div>
 								</div>
 								<p class="mt-1 text-xs text-red-600 dark:text-red-400">
-									Con {Math.round((alert.current_stock / alert.min_stock) * 100)}% muc toi thieu
+									Còn {Math.round((alert.current_stock / alert.min_stock) * 100)}% mức tối thiểu
 								</p>
 							</div>
 						</div>
@@ -485,7 +485,7 @@
 	{:else if activeTab === 'variance'}
 		<div class="mt-4 flex flex-wrap items-end gap-3">
 			<div>
-				<label class="block text-xs text-muted-foreground" for="variance-from">Tu ngay</label>
+				<label class="block text-xs text-muted-foreground" for="variance-from">Từ ngày</label>
 				<input
 					id="variance-from"
 					bind:value={varianceFrom}
@@ -494,7 +494,7 @@
 				/>
 			</div>
 			<div>
-				<label class="block text-xs text-muted-foreground" for="variance-to">Den ngay</label>
+				<label class="block text-xs text-muted-foreground" for="variance-to">Đến ngày</label>
 				<input
 					id="variance-to"
 					bind:value={varianceTo}
@@ -507,7 +507,7 @@
 				disabled={!varianceFrom || !varianceTo}
 				class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 			>
-				Xem bao cao
+				Xem báo cáo
 			</button>
 		</div>
 
@@ -515,12 +515,12 @@
 			<table class="w-full">
 				<thead>
 					<tr class="border-b border-border bg-muted/50">
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Vat tu</th>
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Don vi</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">So luot</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Du kien</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Thuc te</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Do lech</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Vật tư</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Đơn vị</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Số lượt</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Dự kiến</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Thực tế</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Độ lệch</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -528,8 +528,8 @@
 						<tr>
 							<td colspan="6" class="px-4 py-8 text-center text-sm text-muted-foreground">
 								{varianceFrom && varianceTo
-									? 'Khong co du lieu do lech trong khoang thoi gian nay.'
-									: 'Chon khoang thoi gian va bam "Xem bao cao".'}
+									? 'Không có dữ liệu độ lệch trong khoảng thời gian này.'
+									: 'Chọn khoảng thời gian và bấm "Xem báo cáo".'}
 							</td>
 						</tr>
 					{:else}

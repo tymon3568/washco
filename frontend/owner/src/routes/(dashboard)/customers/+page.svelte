@@ -280,7 +280,7 @@
 					<thead>
 						<tr class="bg-muted/50">
 							<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
-								>Ten</th
+								>Tên</th
 							>
 							<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
 								>SDT</th

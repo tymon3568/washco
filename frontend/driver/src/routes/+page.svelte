@@ -17,7 +17,7 @@
 		error = '';
 
 		if (!navigator.geolocation) {
-			geoError = 'Trinh duyet khong ho tro dinh vi.';
+			geoError = 'Trình duyệt không hỗ trợ định vị.';
 			loading = false;
 			return;
 		}
@@ -29,12 +29,12 @@
 						`/locations/nearby?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}&radius=10000`
 					);
 				} catch (e: any) {
-					error = e.message || 'Khong the tai danh sach.';
+					error = e.message || 'Không thể tải danh sách.';
 				}
 				loading = false;
 			},
 			() => {
-				geoError = 'Vui long cho phep truy cap vi tri de tim tiem gan ban.';
+				geoError = 'Vui lòng cho phép truy cập vị trí để tìm tiệm gần bạn.';
 				loading = false;
 			}
 		);
@@ -42,12 +42,12 @@
 </script>
 
 <div class="pb-20">
-	<h1 class="text-xl font-semibold">Tiem rua xe gan ban</h1>
-	<p class="mt-1 text-sm text-muted-foreground">Tim va xem hang doi theo thoi gian thuc.</p>
+	<h1 class="text-xl font-semibold">Tiệm rửa xe gần bạn</h1>
+	<p class="mt-1 text-sm text-muted-foreground">Tìm và xem hàng đợi theo thời gian thực.</p>
 
 	{#if loading}
 		<div class="mt-8 text-center text-sm text-muted-foreground">
-			Dang tim tiem gan ban...
+			Đang tìm tiệm gần bạn...
 		</div>
 	{:else if geoError}
 		<div class="mt-8 rounded-xl bg-card p-6 text-center">
@@ -56,14 +56,14 @@
 				onclick={findNearby}
 				class="mt-4 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground"
 			>
-				Thu lai
+				Thử lại
 			</button>
 		</div>
 	{:else if error}
 		<div class="mt-8 rounded-xl bg-destructive/10 p-4 text-sm text-destructive">{error}</div>
 	{:else if locations.length === 0}
 		<div class="mt-8 rounded-xl bg-card p-6 text-center">
-			<p class="text-sm text-muted-foreground">Khong tim thay tiem rua xe nao gan ban.</p>
+			<p class="text-sm text-muted-foreground">Không tìm thấy tiệm rửa xe nào gần bạn.</p>
 		</div>
 	{:else}
 		<div class="mt-4 space-y-3">
@@ -89,7 +89,7 @@
 							<span>{loc.phone}</span>
 						{/if}
 						<span class="rounded-full px-2 py-0.5 {loc.status === 'active' ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'}">
-							{loc.status === 'active' ? 'Dang mo' : 'Dong'}
+							{loc.status === 'active' ? 'Đang mở' : 'Đóng'}
 						</span>
 					</div>
 				</a>

@@ -1,10 +1,5 @@
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-mod config;
-mod outbox;
-mod router;
-mod state;
-mod uploads;
+use washco_server::{config, outbox, router, state};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

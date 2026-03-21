@@ -39,3 +39,8 @@ uuid = { workspace = true }
 chrono = { workspace = true }
 utoipa = { workspace = true }
 utoipa-swagger-ui = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+tokio = { workspace = true }

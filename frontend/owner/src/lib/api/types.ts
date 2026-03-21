@@ -312,6 +312,115 @@ export interface MaterialVarianceResponse {
 	variance: number;
 }
 
+// Notification
+export interface TemplateResponse {
+	id: string;
+	template_type: string;
+	channel: string;
+	subject: string | null;
+	body_template: string;
+	is_active: boolean;
+	created_at: string;
+}
+
+export interface CreateTemplateRequest {
+	template_type: string;
+	channel?: string;
+	subject?: string;
+	body_template: string;
+}
+
+export interface UpdateTemplateRequest {
+	template_type: string;
+	channel?: string;
+	subject?: string;
+	body_template: string;
+	is_active: boolean;
+}
+
+export interface SendNotificationRequest {
+	recipient_phone: string;
+	template_type: string;
+	channel?: string;
+	payload?: Record<string, unknown>;
+}
+
+export interface NotificationResponse {
+	id: string;
+	recipient_phone: string;
+	channel: string;
+	template_type: string;
+	payload: Record<string, unknown>;
+	rendered_body: string | null;
+	status: string;
+	sent_at: string | null;
+	error: string | null;
+	created_at: string;
+}
+
+// Pricing
+export interface PricingRuleResponse {
+	id: string;
+	location_id: string;
+	service_id: string | null;
+	name: string;
+	rule_type: string;
+	multiplier: number;
+	fixed_adjustment: number;
+	conditions: Record<string, unknown>;
+	priority: number;
+	is_active: boolean;
+	valid_from: string | null;
+	valid_to: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface CreatePricingRuleRequest {
+	location_id: string;
+	service_id?: string;
+	name: string;
+	rule_type: string;
+	multiplier: number;
+	fixed_adjustment: number;
+	conditions: Record<string, unknown>;
+	priority: number;
+	is_active: boolean;
+	valid_from?: string;
+	valid_to?: string;
+}
+
+export interface UpdatePricingRuleRequest {
+	name: string;
+	rule_type: string;
+	multiplier: number;
+	fixed_adjustment: number;
+	conditions: Record<string, unknown>;
+	priority: number;
+	is_active: boolean;
+	service_id?: string;
+	valid_from?: string;
+	valid_to?: string;
+}
+
+export interface PriceCalculationRequest {
+	location_id: string;
+	service_id?: string;
+	base_price: number;
+}
+
+export interface AppliedRuleResponse {
+	rule_id: string;
+	rule_name: string;
+	adjustment: number;
+}
+
+export interface PriceCalculationResponse {
+	base_price: number;
+	final_price: number;
+	applied_rules: AppliedRuleResponse[];
+}
+
 // Analytics
 export interface DailySummaryResponse {
 	date: string;
