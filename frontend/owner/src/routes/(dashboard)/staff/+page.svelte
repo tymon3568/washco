@@ -48,16 +48,16 @@
 	};
 
 	const shiftStatusColors: Record<string, { class: string; label: string }> = {
-		Scheduled: { class: 'bg-blue-100 text-blue-700', label: 'Da len lich' },
-		CheckedIn: { class: 'bg-green-100 text-green-700', label: 'Da check-in' },
-		Completed: { class: 'bg-gray-100 text-gray-600', label: 'Hoan thanh' },
-		Absent: { class: 'bg-red-100 text-red-700', label: 'Vang mat' }
+		Scheduled: { class: 'bg-blue-100 text-blue-700', label: 'Đã lên lịch' },
+		CheckedIn: { class: 'bg-green-100 text-green-700', label: 'Đã check-in' },
+		Completed: { class: 'bg-gray-100 text-gray-600', label: 'Hoàn thành' },
+		Absent: { class: 'bg-red-100 text-red-700', label: 'Vắng mặt' }
 	};
 
 	const tabs: { key: Tab; label: string }[] = [
-		{ key: 'staff', label: 'Nhan vien' },
-		{ key: 'shifts', label: 'Ca lam viec' },
-		{ key: 'commission', label: 'Hoa hong' }
+		{ key: 'staff', label: 'Nhân viên' },
+		{ key: 'shifts', label: 'Ca làm việc' },
+		{ key: 'commission', label: 'Hoa hồng' }
 	];
 
 	$effect(() => {
@@ -109,10 +109,10 @@
 				hourly_rate: staffHourlyRate
 			});
 			showStaffForm = false;
-			toast.success('Da them nhan vien');
+			toast.success('Đã thêm nhân viên');
 			await refreshStaff();
 		} catch (e: unknown) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		loading = false;
 	}
@@ -122,7 +122,7 @@
 			await api.put(`/staff/staff/${staff.id}`, { is_active: !staff.is_active });
 			await refreshStaff();
 		} catch (e: unknown) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 
@@ -157,10 +157,10 @@
 				end_time: shiftEndTime
 			});
 			showShiftForm = false;
-			toast.success('Da them ca lam viec');
+			toast.success('Đã thêm ca làm việc');
 			await loadShifts();
 		} catch (e: unknown) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		loading = false;
 	}
@@ -196,10 +196,10 @@
 				commission_value: ruleCommissionValue
 			});
 			showCommissionForm = false;
-			toast.success('Da them quy tac hoa hong');
+			toast.success('Đã thêm quy tắc hoa hồng');
 			await loadCommissionRules();
 		} catch (e: unknown) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		loading = false;
 	}
@@ -212,8 +212,8 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Nhan vien & Hoa hong</h1>
-			<p class="mt-1 text-sm text-muted-foreground">Quan ly nhan vien, ca lam viec va hoa hong.</p>
+			<h1 class="text-2xl font-semibold">Nhân viên & Hoa hồng</h1>
+			<p class="mt-1 text-sm text-muted-foreground">Quản lý nhân viên, ca làm việc và hoa hồng.</p>
 		</div>
 	</div>
 
@@ -238,13 +238,13 @@
 				onclick={openStaffForm}
 				class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 			>
-				Them nhan vien
+				Thêm nhân viên
 			</button>
 		</div>
 
 		{#if showStaffForm}
 			<div class="mt-4 rounded-lg border border-border bg-card p-4">
-				<h3 class="text-sm font-medium">Them nhan vien moi</h3>
+				<h3 class="text-sm font-medium">Thêm nhân viên mới</h3>
 				<form
 					onsubmit={(e) => {
 						e.preventDefault();
@@ -260,7 +260,7 @@
 					/>
 					<input
 						bind:value={staffDisplayName}
-						placeholder="Ten hien thi"
+						placeholder="Tên hiển thị"
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
@@ -274,7 +274,7 @@
 						<option value="Lead">Lead</option>
 					</select>
 					<div>
-						<label for="staff-hourly-rate" class="block text-xs text-muted-foreground">Luong/gio (VND)</label>
+						<label for="staff-hourly-rate" class="block text-xs text-muted-foreground">Lương/giờ (VND)</label>
 						<input
 							id="staff-hourly-rate"
 							bind:value={staffHourlyRate}
@@ -291,14 +291,14 @@
 							disabled={loading}
 							class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 						>
-							Them
+							Thêm
 						</button>
 						<button
 							type="button"
 							onclick={() => (showStaffForm = false)}
 							class="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
 						>
-							Huy
+							Hủy
 						</button>
 					</div>
 				</form>
@@ -309,16 +309,16 @@
 			<table class="w-full">
 				<thead>
 					<tr class="border-b border-border bg-muted/50">
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Ten</th>
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Cap do</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Tên</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Cấp độ</th>
 						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground"
-							>Luong/gio</th
+							>Lương/giờ</th
 						>
 						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground"
-							>Trang thai</th
+							>Trạng thái</th
 						>
 						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
-							>Ngay vao lam</th
+							>Ngày vào làm</th
 						>
 						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground"></th>
 					</tr>
@@ -327,7 +327,7 @@
 					{#if staffList.length === 0}
 						<tr>
 							<td colspan="6" class="px-4 py-8 text-center text-sm text-muted-foreground">
-								Chua co nhan vien nao. Bam "Them nhan vien" de bat dau.
+								Chưa có nhân viên nào. Bấm "Thêm nhân viên" để bắt đầu.
 							</td>
 						</tr>
 					{:else}
@@ -349,13 +349,13 @@
 										<span
 											class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
 										>
-											Hoat dong
+											Hoạt động
 										</span>
 									{:else}
 										<span
 											class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500"
 										>
-											Nghi viec
+											Nghỉ việc
 										</span>
 									{/if}
 								</td>
@@ -365,7 +365,7 @@
 										onclick={() => toggleStaffActive(staff)}
 										class="text-xs text-primary hover:underline"
 									>
-										{staff.is_active ? 'Vo hieu hoa' : 'Kich hoat'}
+										{staff.is_active ? 'Vô hiệu hóa' : 'Kích hoạt'}
 									</button>
 								</td>
 							</tr>
@@ -380,7 +380,7 @@
 	{#if activeTab === 'shifts'}
 		<div class="mt-4 flex items-center justify-between gap-4">
 			<div class="flex items-center gap-2">
-				<label for="shift-date" class="text-sm text-muted-foreground">Ngay:</label>
+				<label for="shift-date" class="text-sm text-muted-foreground">Ngày:</label>
 				<input
 					id="shift-date"
 					type="date"
@@ -393,13 +393,13 @@
 				onclick={openShiftForm}
 				class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 			>
-				Them ca
-			</button>
+				Thêm ca
+	</button>
 		</div>
 
 		{#if showShiftForm}
 			<div class="mt-4 rounded-lg border border-border bg-card p-4">
-				<h3 class="text-sm font-medium">Them ca lam viec</h3>
+				<h3 class="text-sm font-medium">Thêm ca làm việc</h3>
 				<form
 					onsubmit={(e) => {
 						e.preventDefault();
@@ -417,7 +417,7 @@
 						{/each}
 					</select>
 					<div>
-						<label for="shift-start" class="block text-xs text-muted-foreground">Gio bat dau</label>
+						<label for="shift-start" class="block text-xs text-muted-foreground">Giờ bắt đầu</label>
 						<input
 							id="shift-start"
 							bind:value={shiftStartTime}
@@ -427,7 +427,7 @@
 						/>
 					</div>
 					<div>
-						<label for="shift-end" class="block text-xs text-muted-foreground">Gio ket thuc</label>
+						<label for="shift-end" class="block text-xs text-muted-foreground">Giờ kết thúc</label>
 						<input
 							id="shift-end"
 							bind:value={shiftEndTime}
@@ -442,14 +442,14 @@
 							disabled={loading}
 							class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 						>
-							Them
+							Thêm
 						</button>
 						<button
 							type="button"
 							onclick={() => (showShiftForm = false)}
 							class="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
 						>
-							Huy
+							Hủy
 						</button>
 					</div>
 				</form>
@@ -459,7 +459,7 @@
 		<div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 			{#if shifts.length === 0}
 				<div class="col-span-full py-8 text-center text-sm text-muted-foreground">
-					Khong co ca lam viec nao cho ngay nay.
+					Không có ca làm việc nào cho ngày này.
 				</div>
 			{:else}
 				{#each shifts as shift (shift.id)}
@@ -491,13 +491,13 @@
 				onclick={openCommissionForm}
 				class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 			>
-				Them quy tac
-			</button>
+				Thêm quy tắc
+	</button>
 		</div>
 
 		{#if showCommissionForm}
 			<div class="mt-4 rounded-lg border border-border bg-card p-4">
-				<h3 class="text-sm font-medium">Them quy tac hoa hong</h3>
+				<h3 class="text-sm font-medium">Thêm quy tắc hoa hồng</h3>
 				<form
 					onsubmit={(e) => {
 						e.preventDefault();
@@ -507,7 +507,7 @@
 				>
 					<input
 						bind:value={ruleName}
-						placeholder="Ten quy tac"
+						placeholder="Tên quy tắc"
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
@@ -515,19 +515,19 @@
 						bind:value={ruleRoleInJob}
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 					>
-						<option value="primary">Chinh (Primary)</option>
-						<option value="assistant">Phu (Assistant)</option>
+						<option value="primary">Chính (Primary)</option>
+						<option value="assistant">Phụ (Assistant)</option>
 					</select>
 					<select
 						bind:value={ruleCommissionType}
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 					>
-						<option value="Fixed">Co dinh (Fixed)</option>
-						<option value="Percentage">Phan tram (%)</option>
+						<option value="Fixed">Cố định (Fixed)</option>
+						<option value="Percentage">Phần trăm (%)</option>
 					</select>
 					<div>
 						<label for="commission-value" class="block text-xs text-muted-foreground">
-							Gia tri {ruleCommissionType === 'Percentage' ? '(%)' : '(VND)'}
+							Giá trị {ruleCommissionType === 'Percentage' ? '(%)' : '(VND)'}
 						</label>
 						<input
 							id="commission-value"
@@ -541,14 +541,14 @@
 					</div>
 					<input
 						bind:value={ruleServiceId}
-						placeholder="Service ID (tuy chon)"
+						placeholder="Service ID (tùy chọn)"
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 					/>
 					<select
 						bind:value={ruleSkillLevel}
 						class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 					>
-						<option value="">Tat ca cap do</option>
+						<option value="">Tất cả cấp độ</option>
 						<option value="Junior">Junior</option>
 						<option value="Mid">Mid</option>
 						<option value="Senior">Senior</option>
@@ -560,14 +560,14 @@
 							disabled={loading}
 							class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 						>
-							Them
+							Thêm
 						</button>
 						<button
 							type="button"
 							onclick={() => (showCommissionForm = false)}
 							class="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
 						>
-							Huy
+							Hủy
 						</button>
 					</div>
 				</form>
@@ -579,13 +579,13 @@
 				<thead>
 					<tr class="border-b border-border bg-muted/50">
 						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
-							>Ten quy tac</th
+							>Tên quy tắc</th
 						>
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Vai tro</th>
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Loai</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Gia tri</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Vai trò</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Loại</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Giá trị</th>
 						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground"
-							>Trang thai</th
+							>Trạng thái</th
 						>
 					</tr>
 				</thead>
@@ -593,7 +593,7 @@
 					{#if commissionRules.length === 0}
 						<tr>
 							<td colspan="5" class="px-4 py-8 text-center text-sm text-muted-foreground">
-								Chua co quy tac hoa hong nao. Bam "Them quy tac" de bat dau.
+								Chưa có quy tắc hoa hồng nào. Bấm "Thêm quy tắc" để bắt đầu.
 							</td>
 						</tr>
 					{:else}
@@ -610,10 +610,10 @@
 									{/if}
 								</td>
 								<td class="px-4 py-3 text-sm text-muted-foreground">
-									{rule.role_in_job === 'primary' ? 'Chinh' : 'Phu'}
+									{rule.role_in_job === 'primary' ? 'Chính' : 'Phụ'}
 								</td>
 								<td class="px-4 py-3 text-sm text-muted-foreground">
-									{rule.commission_type === 'Fixed' ? 'Co dinh' : 'Phan tram'}
+									{rule.commission_type === 'Fixed' ? 'Cố định' : 'Phần trăm'}
 								</td>
 								<td class="px-4 py-3 text-right text-sm font-mono">
 									{formatCommissionValue(rule.commission_type, rule.commission_value)}
@@ -623,13 +623,13 @@
 										<span
 											class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
 										>
-											Hoat dong
+											Hoạt động
 										</span>
 									{:else}
 										<span
 											class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500"
 										>
-											Tat
+											Tắt
 										</span>
 									{/if}
 								</td>

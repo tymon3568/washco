@@ -44,10 +44,10 @@
 		completingId = id;
 		try {
 			await api.put(`/payments/${id}/complete`, {});
-			toast.success('Da xac nhan thanh toan');
+			toast.success('Đã xác nhận thanh toán');
 			await refreshPayments();
 		} catch (e: unknown) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		completingId = null;
 	}
@@ -73,11 +73,11 @@
 	function statusLabel(status: string): string {
 		switch (status.toLowerCase()) {
 			case 'completed':
-				return 'Hoan thanh';
+				return 'Hoàn thành';
 			case 'pending':
-				return 'Cho xu ly';
+				return 'Chờ xử lý';
 			case 'refunded':
-				return 'Hoan tien';
+				return 'Hoàn tiền';
 			default:
 				return status;
 		}
@@ -101,13 +101,13 @@
 	function methodLabel(method: string): string {
 		switch (method.toLowerCase()) {
 			case 'cash':
-				return 'Tien mat';
+				return 'Tiền mặt';
 			case 'banktransfer':
-				return 'Chuyen khoan';
+				return 'Chuyển khoản';
 			case 'qr':
 				return 'QR';
 			case 'ewallet':
-				return 'Vi dien tu';
+				return 'Ví điện tử';
 			default:
 				return method;
 		}
@@ -117,8 +117,8 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Thanh toan</h1>
-			<p class="mt-1 text-sm text-muted-foreground">Quan ly thanh toan va doanh thu.</p>
+			<h1 class="text-2xl font-semibold">Thanh toán</h1>
+			<p class="mt-1 text-sm text-muted-foreground">Quản lý thanh toán và doanh thu.</p>
 		</div>
 		<input
 			type="date"
@@ -135,15 +135,15 @@
 			<p class="mt-2 text-2xl font-bold font-mono">{formatVND(revenue?.total_revenue ?? 0)}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">
-			<p class="text-sm text-muted-foreground">Hoan thanh</p>
+			<p class="text-sm text-muted-foreground">Hoàn thành</p>
 			<p class="mt-2 text-2xl font-bold">{revenue?.completed_count ?? 0}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">
-			<p class="text-sm text-muted-foreground">Tien mat</p>
+			<p class="text-sm text-muted-foreground">Tiền mặt</p>
 			<p class="mt-2 text-2xl font-bold font-mono">{formatVND(revenue?.cash_amount ?? 0)}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">
-			<p class="text-sm text-muted-foreground">Chuyen khoan</p>
+			<p class="text-sm text-muted-foreground">Chuyển khoản</p>
 			<p class="mt-2 text-2xl font-bold font-mono">{formatVND(revenue?.digital_amount ?? 0)}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">
@@ -151,7 +151,7 @@
 			<p class="mt-2 text-2xl font-bold font-mono">{formatVND(revenue?.avg_per_job ?? 0)}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">
-			<p class="text-sm text-muted-foreground">Cho xu ly</p>
+			<p class="text-sm text-muted-foreground">Chờ xử lý</p>
 			<p class="mt-2 text-2xl font-bold">{revenue?.pending_count ?? 0}</p>
 		</div>
 	</div>
@@ -159,20 +159,20 @@
 	<!-- Payments Table -->
 	<div class="mt-6 rounded-lg border border-border bg-card">
 		<div class="border-b border-border p-4">
-			<h2 class="text-lg font-medium">Danh sach thanh toan</h2>
+			<h2 class="text-lg font-medium">Danh sách thanh toán</h2>
 		</div>
 		<div class="overflow-x-auto">
 			<table class="min-w-full divide-y divide-border">
 				<thead>
 					<tr class="bg-muted/50">
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Khach hang</th>
-						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Dich vu</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Gia goc</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Giam gia</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Thanh toan</th>
-						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Phuong thuc</th>
-						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Trang thai</th>
-						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Thoi gian</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Khách hàng</th>
+						<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Dịch vụ</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Giá gốc</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Giảm giá</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Thanh toán</th>
+						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Phương thức</th>
+						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Trạng thái</th>
+						<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Thời gian</th>
 						<th class="px-4 py-3 text-center text-sm font-medium text-muted-foreground"></th>
 					</tr>
 				</thead>
@@ -180,7 +180,7 @@
 					{#if payments.length === 0}
 						<tr>
 							<td colspan="9" class="px-4 py-8 text-center text-sm text-muted-foreground">
-								Chua co thanh toan nao cho ngay nay.
+								Chưa có thanh toán nào cho ngày này.
 							</td>
 						</tr>
 					{:else}
@@ -222,7 +222,7 @@
 											disabled={completingId === payment.id}
 											class="rounded bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 										>
-											{completingId === payment.id ? '...' : 'Xac nhan'}
+											{completingId === payment.id ? '...' : 'Xác nhận'}
 										</button>
 									{/if}
 								</td>

@@ -29,7 +29,7 @@
 	let queueMode = $state('hybrid');
 
 	// --- Operating Hours ---
-	const dayNames = ['Chu nhat', 'Thu 2', 'Thu 3', 'Thu 4', 'Thu 5', 'Thu 6', 'Thu 7'];
+	const dayNames = ['Chủ nhật', 'Thu 2', 'Thu 3', 'Thu 4', 'Thu 5', 'Thu 6', 'Thu 7'];
 
 	function defaultHours(): OperatingHoursEntry[] {
 		return Array.from({ length: 7 }, (_, i) => ({
@@ -55,15 +55,15 @@
 	let activeSection = $state<'profile' | 'location' | 'hours' | 'bays'>('profile');
 
 	const statusLabels: Record<string, { label: string; classes: string }> = {
-		active: { label: 'Hoat dong', classes: 'bg-green-500/15 text-green-400' },
-		inactive: { label: 'Tam ngung', classes: 'bg-muted text-muted-foreground' },
-		suspended: { label: 'Bi khoa', classes: 'bg-red-500/15 text-red-400' }
+		active: { label: 'Hoạt động', classes: 'bg-green-500/15 text-green-400' },
+		inactive: { label: 'Tạm ngưng', classes: 'bg-muted text-muted-foreground' },
+		suspended: { label: 'Bị khóa', classes: 'bg-red-500/15 text-red-400' }
 	};
 
 	const queueModeLabels: Record<string, string> = {
-		hybrid: 'Ket hop (dat lich + walk-in)',
-		walkin_only: 'Chi walk-in',
-		booking_only: 'Chi dat lich'
+		hybrid: 'Kết hợp (đặt lịch + walk-in)',
+		walkin_only: 'Chỉ walk-in',
+		booking_only: 'Chỉ đặt lịch'
 	};
 
 	// --- Load all data on mount ---
@@ -132,20 +132,20 @@
 		try {
 			await api.put(`/locations/${location.id}/hours`, { hours });
 			hoursSuccess = true;
-			toast.success('Da luu gio hoat dong!');
+			toast.success('Đã lưu giờ hoạt động!');
 			setTimeout(() => (hoursSuccess = false), 3000);
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		savingHours = false;
 	}
 
 	function validateLocation(): string | null {
-		if (!name.trim()) return 'Vui long nhap ten cua hang';
-		if (!address.trim()) return 'Vui long nhap dia chi';
-		if (!district.trim()) return 'Vui long nhap quan/huyen';
-		if (!city.trim()) return 'Vui long nhap thanh pho';
-		if (bayCount < 1 || bayCount > 50) return 'So bay phai tu 1 den 50';
+		if (!name.trim()) return 'Vui lòng nhập tên cửa hàng';
+		if (!address.trim()) return 'Vui lòng nhập địa chỉ';
+		if (!district.trim()) return 'Vui lòng nhập quận/huyện';
+		if (!city.trim()) return 'Vui lòng nhập thành phố';
+		if (bayCount < 1 || bayCount > 50) return 'Số bay phải từ 1 đến 50';
 		return null;
 	}
 
@@ -169,10 +169,10 @@
 				queue_mode: queueMode
 			});
 			success = true;
-			toast.success('Da luu thay doi!');
+			toast.success('Đã lưu thay đổi!');
 			setTimeout(() => (success = false), 3000);
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		saving = false;
 	}
@@ -197,11 +197,11 @@
 				queue_mode: queueMode
 			});
 			location = created;
-			toast.success('Da tao cua hang thanh cong!');
+			toast.success('Đã tạo cửa hàng thành công!');
 			success = true;
 			setTimeout(() => (success = false), 3000);
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		saving = false;
 	}
@@ -224,7 +224,7 @@
 			bays = [...bays, bay];
 			newBayName = '';
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		addingBay = false;
 	}
@@ -236,7 +236,7 @@
 			});
 			bays = bays.map((b) => (b.id === bay.id ? updated : b));
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 
@@ -255,7 +255,7 @@
 			editingBayId = null;
 			editingBayName = '';
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 
@@ -265,12 +265,12 @@
 	}
 
 	async function deleteBay(bay: BayResponse) {
-		if (!confirm(`Xoa bay "${bay.name}"?`)) return;
+		if (!confirm(`Xóa bay "${bay.name}"?`)) return;
 		try {
 			await api.del(`/locations/bays/${bay.id}`);
 			bays = bays.filter((b) => b.id !== bay.id);
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 </script>
@@ -278,8 +278,8 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Cai dat</h1>
-			<p class="mt-1 text-sm text-muted-foreground">Quan ly thong tin doanh nghiep va cau hinh cua hang.</p>
+			<h1 class="text-2xl font-semibold">Cài đặt</h1>
+			<p class="mt-1 text-sm text-muted-foreground">Quản lý thông tin doanh nghiệp và cấu hình cửa hàng.</p>
 		</div>
 	</div>
 
@@ -291,7 +291,7 @@
 				? 'bg-card text-foreground shadow-sm'
 				: 'text-muted-foreground hover:text-foreground'}"
 		>
-			Ho so doanh nghiep
+			Hồ sơ doanh nghiệp
 		</button>
 		<button
 			onclick={() => (activeSection = 'location')}
@@ -299,7 +299,7 @@
 				? 'bg-card text-foreground shadow-sm'
 				: 'text-muted-foreground hover:text-foreground'}"
 		>
-			Cua hang
+			Cửa hàng
 		</button>
 		<button
 			onclick={() => (activeSection = 'hours')}
@@ -307,7 +307,7 @@
 				? 'bg-card text-foreground shadow-sm'
 				: 'text-muted-foreground hover:text-foreground'}"
 		>
-			Gio hoat dong
+			Giờ hoạt động
 		</button>
 		<button
 			onclick={() => (activeSection = 'bays')}
@@ -315,7 +315,7 @@
 				? 'bg-card text-foreground shadow-sm'
 				: 'text-muted-foreground hover:text-foreground'}"
 		>
-			Bay rua xe
+			Bay rửa xe
 		</button>
 	</div>
 
@@ -323,8 +323,8 @@
 		<!-- ===== SECTION 1: Business Profile ===== -->
 		{#if activeSection === 'profile'}
 			<div class="rounded-lg border border-border bg-card p-6">
-				<h2 class="text-lg font-medium">Ho so doanh nghiep</h2>
-				<p class="mt-1 text-sm text-muted-foreground">Thong tin tai khoan chu cua hang.</p>
+				<h2 class="text-lg font-medium">Hồ sơ doanh nghiệp</h2>
+				<p class="mt-1 text-sm text-muted-foreground">Thông tin tài khoản chủ cửa hàng.</p>
 
 				{#if profileLoading}
 					<div class="mt-6 flex items-center justify-center py-8">
@@ -338,49 +338,49 @@
 							</div>
 							<div>
 								<p class="text-lg font-medium">{profile.name}</p>
-								<p class="text-sm text-muted-foreground">{profile.role === 'owner' ? 'Chu cua hang' : profile.role}</p>
+								<p class="text-sm text-muted-foreground">{profile.role === 'owner' ? 'Chủ cửa hàng' : profile.role}</p>
 							</div>
 						</div>
 
 						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 							<div class="rounded-md border border-border p-4">
-								<p class="text-xs font-medium text-muted-foreground">So dien thoai</p>
+								<p class="text-xs font-medium text-muted-foreground">Số điện thoại</p>
 								<p class="mt-1 text-sm font-medium">{profile.phone}</p>
 							</div>
 							<div class="rounded-md border border-border p-4">
-								<p class="text-xs font-medium text-muted-foreground">Trang thai xac minh</p>
+								<p class="text-xs font-medium text-muted-foreground">Trạng thái xác minh</p>
 								<p class="mt-1 text-sm font-medium">
 									{#if profile.is_verified}
 										<span class="inline-flex items-center gap-1.5 text-green-400">
 											<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 												<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 											</svg>
-											Da xac minh
+											Đã xác minh
 										</span>
 									{:else}
-										<span class="text-warning">Chua xac minh</span>
+										<span class="text-warning">Chưa xác minh</span>
 									{/if}
 								</p>
 							</div>
 							<div class="rounded-md border border-border p-4">
-								<p class="text-xs font-medium text-muted-foreground">Ma tai khoan</p>
+								<p class="text-xs font-medium text-muted-foreground">Mã tài khoản</p>
 								<p class="mt-1 font-mono text-xs text-muted-foreground">{profile.id}</p>
 							</div>
 							<div class="rounded-md border border-border p-4">
-								<p class="text-xs font-medium text-muted-foreground">Ma doanh nghiep</p>
+								<p class="text-xs font-medium text-muted-foreground">Mã doanh nghiệp</p>
 								<p class="mt-1 font-mono text-xs text-muted-foreground">{profile.tenant_id}</p>
 							</div>
 						</div>
 
 						<div class="rounded-md border border-dashed border-border bg-muted/50 p-4">
 							<p class="text-sm text-muted-foreground">
-								Chuc nang chinh sua ho so se duoc cap nhat trong phien ban tiep theo.
+								Chức năng chỉnh sửa hồ sơ sẽ được cập nhật trong phiên bản tiếp theo.
 							</p>
 						</div>
 					</div>
 				{:else}
 					<div class="mt-6 rounded-md bg-destructive/10 p-4 text-sm text-destructive">
-						Khong the tai thong tin ho so. Vui long thu lai.
+						Không thể tải thông tin hồ sơ. Vui lòng thử lại.
 					</div>
 				{/if}
 			</div>
@@ -389,7 +389,7 @@
 		<!-- ===== SECTION 2: Location Settings ===== -->
 		{#if activeSection === 'location'}
 			{#if success}
-				<div class="rounded-md bg-success/10 p-3 text-sm text-success">Da luu thanh cong!</div>
+				<div class="rounded-md bg-success/10 p-3 text-sm text-success">Đã lưu thành công!</div>
 			{/if}
 
 			<!-- Location info card -->
@@ -397,7 +397,7 @@
 			{@const statusInfo = statusLabels[location.status] ?? statusLabels['active']}
 				<div class="rounded-lg border border-border bg-card p-6">
 					<div class="flex items-center justify-between">
-						<h2 class="text-lg font-medium">Thong tin cua hang</h2>
+						<h2 class="text-lg font-medium">Thông tin cửa hàng</h2>
 						<span class="rounded-full px-2.5 py-0.5 text-xs font-medium {statusInfo.classes}">
 							{statusInfo.label}
 						</span>
@@ -405,7 +405,7 @@
 
 					<div class="mt-4 space-y-4">
 						<div>
-							<label for="name" class="block text-sm font-medium">Ten cua hang</label>
+							<label for="name" class="block text-sm font-medium">Tên cửa hàng</label>
 							<input
 								id="name"
 								type="text"
@@ -415,7 +415,7 @@
 							/>
 						</div>
 						<div>
-							<label for="address" class="block text-sm font-medium">Dia chi</label>
+							<label for="address" class="block text-sm font-medium">Địa chỉ</label>
 							<input
 								id="address"
 								type="text"
@@ -425,7 +425,7 @@
 						</div>
 						<div class="grid grid-cols-2 gap-4">
 							<div>
-								<label for="district" class="block text-sm font-medium">Quan/Huyen</label>
+								<label for="district" class="block text-sm font-medium">Quận/Huyện</label>
 								<input
 									id="district"
 									type="text"
@@ -434,7 +434,7 @@
 								/>
 							</div>
 							<div>
-								<label for="city" class="block text-sm font-medium">Thanh pho</label>
+								<label for="city" class="block text-sm font-medium">Thành phố</label>
 								<input
 									id="city"
 									type="text"
@@ -444,7 +444,7 @@
 							</div>
 						</div>
 						<div>
-							<label for="phone" class="block text-sm font-medium">So dien thoai</label>
+							<label for="phone" class="block text-sm font-medium">Số điện thoại</label>
 							<input
 								id="phone"
 								type="tel"
@@ -456,10 +456,10 @@
 				</div>
 
 				<div class="rounded-lg border border-border bg-card p-6">
-					<h2 class="text-lg font-medium">Cau hinh</h2>
+					<h2 class="text-lg font-medium">Cấu hình</h2>
 					<div class="mt-4 space-y-4">
 						<div>
-							<label for="bay_count" class="block text-sm font-medium">So luong bay rua xe</label>
+							<label for="bay_count" class="block text-sm font-medium">Số lượng bay rửa xe</label>
 							<input
 								id="bay_count"
 								type="number"
@@ -470,15 +470,15 @@
 							/>
 						</div>
 						<div>
-							<label for="queue_mode" class="block text-sm font-medium">Che do hang doi</label>
+							<label for="queue_mode" class="block text-sm font-medium">Chế độ hàng đợi</label>
 							<select
 								id="queue_mode"
 								bind:value={queueMode}
 								class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 							>
-								<option value="hybrid">Ket hop (dat lich + walk-in)</option>
-								<option value="walkin_only">Chi walk-in</option>
-								<option value="booking_only">Chi dat lich</option>
+								<option value="hybrid">Kết hợp (đặt lịch + walk-in)</option>
+								<option value="walkin_only">Chỉ walk-in</option>
+								<option value="booking_only">Chỉ đặt lịch</option>
 							</select>
 						</div>
 					</div>
@@ -489,17 +489,17 @@
 					disabled={saving}
 					class="rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 				>
-					{saving ? 'Dang luu...' : 'Luu thay doi'}
+					{saving ? 'Đang lưu...' : 'Lưu thay đổi'}
 				</button>
 			{:else}
 				<!-- No location yet - create form -->
 				<div class="rounded-lg border border-border bg-card p-6">
-					<h2 class="text-lg font-medium">Tao cua hang</h2>
-					<p class="mt-1 text-sm text-muted-foreground">Ban chua co cua hang nao. Dien thong tin ben duoi de bat dau.</p>
+					<h2 class="text-lg font-medium">Tạo cửa hàng</h2>
+					<p class="mt-1 text-sm text-muted-foreground">Bạn chưa có cửa hàng nào. Điền thông tin bên dưới để bắt đầu.</p>
 
 					<div class="mt-4 space-y-4">
 						<div>
-							<label for="name" class="block text-sm font-medium">Ten cua hang</label>
+							<label for="name" class="block text-sm font-medium">Tên cửa hàng</label>
 							<input
 								id="name"
 								type="text"
@@ -509,7 +509,7 @@
 							/>
 						</div>
 						<div>
-							<label for="address" class="block text-sm font-medium">Dia chi</label>
+							<label for="address" class="block text-sm font-medium">Địa chỉ</label>
 							<input
 								id="address"
 								type="text"
@@ -519,7 +519,7 @@
 						</div>
 						<div class="grid grid-cols-2 gap-4">
 							<div>
-								<label for="district" class="block text-sm font-medium">Quan/Huyen</label>
+								<label for="district" class="block text-sm font-medium">Quận/Huyện</label>
 								<input
 									id="district"
 									type="text"
@@ -528,7 +528,7 @@
 								/>
 							</div>
 							<div>
-								<label for="city" class="block text-sm font-medium">Thanh pho</label>
+								<label for="city" class="block text-sm font-medium">Thành phố</label>
 								<input
 									id="city"
 									type="text"
@@ -538,7 +538,7 @@
 							</div>
 						</div>
 						<div>
-							<label for="phone" class="block text-sm font-medium">So dien thoai</label>
+							<label for="phone" class="block text-sm font-medium">Số điện thoại</label>
 							<input
 								id="phone"
 								type="tel"
@@ -547,7 +547,7 @@
 							/>
 						</div>
 						<div>
-							<label for="bay_count" class="block text-sm font-medium">So luong bay rua xe</label>
+							<label for="bay_count" class="block text-sm font-medium">Số lượng bay rửa xe</label>
 							<input
 								id="bay_count"
 								type="number"
@@ -558,15 +558,15 @@
 							/>
 						</div>
 						<div>
-							<label for="queue_mode" class="block text-sm font-medium">Che do hang doi</label>
+							<label for="queue_mode" class="block text-sm font-medium">Chế độ hàng đợi</label>
 							<select
 								id="queue_mode"
 								bind:value={queueMode}
 								class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 							>
-								<option value="hybrid">Ket hop (dat lich + walk-in)</option>
-								<option value="walkin_only">Chi walk-in</option>
-								<option value="booking_only">Chi dat lich</option>
+								<option value="hybrid">Kết hợp (đặt lịch + walk-in)</option>
+								<option value="walkin_only">Chỉ walk-in</option>
+								<option value="booking_only">Chỉ đặt lịch</option>
 							</select>
 						</div>
 					</div>
@@ -576,7 +576,7 @@
 						disabled={saving}
 						class="mt-4 rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 					>
-						{saving ? 'Dang tao...' : 'Tao cua hang'}
+						{saving ? 'Đang tạo...' : 'Tạo cửa hàng'}
 					</button>
 				</div>
 			{/if}
@@ -586,11 +586,11 @@
 		{#if activeSection === 'hours'}
 			{#if location}
 				<div class="rounded-lg border border-border bg-card p-6">
-					<h2 class="text-lg font-medium">Gio hoat dong</h2>
-					<p class="mt-1 text-sm text-muted-foreground">Cai dat gio mo cua va dong cua cho tung ngay trong tuan.</p>
+					<h2 class="text-lg font-medium">Giờ hoạt động</h2>
+					<p class="mt-1 text-sm text-muted-foreground">Cài đặt giờ mở cửa và đóng cửa cho từng ngày trong tuần.</p>
 
 					{#if hoursSuccess}
-						<div class="mt-3 rounded-md bg-success/10 p-3 text-sm text-success">Da luu gio hoat dong!</div>
+						<div class="mt-3 rounded-md bg-success/10 p-3 text-sm text-success">Đã lưu giờ hoạt động!</div>
 					{/if}
 
 					<div class="mt-4 space-y-3">
@@ -607,12 +607,12 @@
 										}}
 										class="h-4 w-4 rounded border-input accent-primary"
 									/>
-									Dong cua
+									Đóng cửa
 								</label>
 
 								{#if !entry.is_closed}
 									<div class="flex items-center gap-2">
-										<label for="open-{i}" class="text-sm text-muted-foreground">Mo:</label>
+										<label for="open-{i}" class="text-sm text-muted-foreground">Mở:</label>
 										<input
 											id="open-{i}"
 											type="time"
@@ -621,7 +621,7 @@
 										/>
 									</div>
 									<div class="flex items-center gap-2">
-										<label for="close-{i}" class="text-sm text-muted-foreground">Dong:</label>
+										<label for="close-{i}" class="text-sm text-muted-foreground">Đóng:</label>
 										<input
 											id="close-{i}"
 											type="time"
@@ -630,7 +630,7 @@
 										/>
 									</div>
 								{:else}
-									<span class="text-sm text-muted-foreground">Nghi</span>
+									<span class="text-sm text-muted-foreground">Nghỉ</span>
 								{/if}
 							</div>
 						{/each}
@@ -641,12 +641,12 @@
 						disabled={savingHours}
 						class="mt-4 rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 					>
-						{savingHours ? 'Dang luu...' : 'Luu gio hoat dong'}
+						{savingHours ? 'Đang lưu...' : 'Lưu giờ hoạt động'}
 					</button>
 				</div>
 			{:else}
 				<div class="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-					Vui long tao cua hang truoc khi cai dat gio hoat dong.
+					Vui lòng tạo cửa hàng trước khi cài đặt giờ hoạt động.
 				</div>
 			{/if}
 		{/if}
@@ -655,8 +655,8 @@
 		{#if activeSection === 'bays'}
 			{#if location}
 				<div class="rounded-lg border border-border bg-card p-6">
-					<h2 class="text-lg font-medium">Quan ly bay rua xe</h2>
-					<p class="mt-1 text-sm text-muted-foreground">Them, sua hoac tat bay rua xe.</p>
+					<h2 class="text-lg font-medium">Quản lý bay rửa xe</h2>
+					<p class="mt-1 text-sm text-muted-foreground">Thêm, sửa hoặc tắt bay rửa xe.</p>
 
 					<div class="mt-4 space-y-2">
 						{#each bays as bay (bay.id)}
@@ -675,26 +675,26 @@
 										onclick={saveEditBay}
 										class="rounded bg-primary px-3 py-1.5 text-xs text-primary-foreground"
 									>
-										Luu
+										Lưu
 									</button>
 									<button
 										onclick={cancelEditBay}
 										class="rounded bg-muted px-3 py-1.5 text-xs"
 									>
-										Huy
+										Hủy
 									</button>
 								{:else}
 									<span class="flex-1 text-sm font-medium" class:text-muted-foreground={!bay.is_active}>
 										{bay.name}
 										{#if !bay.is_active}
-											<span class="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Tat</span>
+											<span class="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Tắt</span>
 										{/if}
 									</span>
 									<button
 										onclick={() => startEditBay(bay)}
 										class="rounded bg-muted px-3 py-1.5 text-xs hover:bg-muted/80"
 									>
-										Sua
+										Sửa
 									</button>
 									<button
 										onclick={() => toggleBayActive(bay)}
@@ -702,20 +702,20 @@
 											? 'bg-warning/10 text-warning'
 											: 'bg-success/10 text-success'}"
 									>
-										{bay.is_active ? 'Tat' : 'Bat'}
+										{bay.is_active ? 'Tắt' : 'Bật'}
 									</button>
 									<button
 										onclick={() => deleteBay(bay)}
 										class="rounded bg-destructive/10 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/20"
 									>
-										Xoa
+										Xóa
 									</button>
 								{/if}
 							</div>
 						{/each}
 
 						{#if bays.length === 0}
-							<p class="py-4 text-center text-sm text-muted-foreground">Chua co bay nao. Them bay moi ben duoi.</p>
+							<p class="py-4 text-center text-sm text-muted-foreground">Chưa có bay nào. Thêm bay mới bên dưới.</p>
 						{/if}
 					</div>
 
@@ -723,7 +723,7 @@
 						<input
 							type="text"
 							bind:value={newBayName}
-							placeholder="Ten bay moi (VD: Bay 1)"
+							placeholder="Tên bay mới (VD: Bay 1)"
 							class="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
 							onkeydown={(e) => {
 								if (e.key === 'Enter') addBay();
@@ -734,13 +734,13 @@
 							disabled={addingBay || !newBayName.trim()}
 							class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 						>
-							{addingBay ? 'Dang them...' : 'Them bay'}
+							{addingBay ? 'Đang thêm...' : 'Thêm bay'}
 						</button>
 					</div>
 				</div>
 			{:else}
 				<div class="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-					Vui long tao cua hang truoc khi quan ly bay rua xe.
+					Vui lòng tạo cửa hàng trước khi quản lý bay rửa xe.
 				</div>
 			{/if}
 		{/if}

@@ -7,17 +7,17 @@
 
 	const navItems = [
 		{ href: '/', label: 'Dashboard', icon: 'home' },
-		{ href: '/queue', label: 'Hang doi', icon: 'queue' },
-		{ href: '/bookings', label: 'Dat lich', icon: 'calendar' },
-		{ href: '/catalog', label: 'Dich vu', icon: 'catalog' },
-		{ href: '/customers', label: 'Khach hang', icon: 'users' },
-		{ href: '/payments', label: 'Thanh toan', icon: 'wallet' },
-		{ href: '/staff', label: 'Nhan vien', icon: 'staff' },
-		{ href: '/inventory', label: 'Vat tu', icon: 'box' },
-		{ href: '/reviews', label: 'Danh gia', icon: 'star' },
-		{ href: '/promotions', label: 'Khuyen mai', icon: 'tag' },
-		{ href: '/analytics', label: 'Bao cao', icon: 'chart' },
-		{ href: '/settings', label: 'Cai dat', icon: 'settings' }
+		{ href: '/queue', label: 'Hàng đợi', icon: 'queue' },
+		{ href: '/bookings', label: 'Đặt lịch', icon: 'calendar' },
+		{ href: '/catalog', label: 'Dịch vụ', icon: 'catalog' },
+		{ href: '/customers', label: 'Khách hàng', icon: 'users' },
+		{ href: '/payments', label: 'Thanh toán', icon: 'wallet' },
+		{ href: '/staff', label: 'Nhân viên', icon: 'staff' },
+		{ href: '/inventory', label: 'Vật tư', icon: 'box' },
+		{ href: '/reviews', label: 'Đánh giá', icon: 'star' },
+		{ href: '/promotions', label: 'Khuyến mãi', icon: 'tag' },
+		{ href: '/analytics', label: 'Báo cáo', icon: 'chart' },
+		{ href: '/settings', label: 'Cài đặt', icon: 'settings' }
 	];
 
 	function isActive(href: string) {
@@ -49,7 +49,7 @@
 				onclick={() => auth.logout()}
 				class="w-full rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
 			>
-				Dang xuat
+				Đăng xuất
 			</button>
 		</div>
 	</aside>
@@ -65,13 +65,13 @@
 				onclick={() => auth.logout()}
 				class="text-sm text-muted-foreground hover:text-foreground lg:hidden"
 			>
-				Dang xuat
+				Đăng xuất
 			</button>
 			<button
 				onclick={() => auth.logout()}
 				class="hidden text-sm text-muted-foreground hover:text-foreground lg:block"
 			>
-				Dang xuat
+				Đăng xuất
 			</button>
 		</header>
 

@@ -29,7 +29,7 @@ class AuthState {
 				// If we still get 401, the session is truly expired
 				this.logout();
 			} else {
-				this.error = 'Loi ket noi. Vui long thu lai.';
+				this.error = 'Lỗi kết nối. Vui lòng thử lại.';
 				this.logout();
 			}
 		}
@@ -45,7 +45,7 @@ class AuthState {
 				owner_name: ownerName
 			});
 		} catch (err) {
-			this.error = err instanceof ApiError ? err.message : 'Dang ky that bai';
+			this.error = err instanceof ApiError ? err.message : 'Đăng ký thất bại';
 			throw err;
 		}
 	}
@@ -55,7 +55,7 @@ class AuthState {
 		try {
 			await api.post('/auth/otp/request', { phone });
 		} catch (err) {
-			this.error = err instanceof ApiError ? err.message : 'Gui OTP that bai';
+			this.error = err instanceof ApiError ? err.message : 'Gửi OTP thất bại';
 			throw err;
 		}
 	}
@@ -67,7 +67,7 @@ class AuthState {
 			this.setTokens(res);
 			await this.init();
 		} catch (err) {
-			this.error = err instanceof ApiError ? err.message : 'Xac thuc that bai';
+			this.error = err instanceof ApiError ? err.message : 'Xác thực thất bại';
 			throw err;
 		}
 	}

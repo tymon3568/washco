@@ -148,8 +148,8 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Danh gia</h1>
-			<p class="mt-1 text-sm text-muted-foreground">Quan ly danh gia cua khach hang.</p>
+			<h1 class="text-2xl font-semibold">Đánh giá</h1>
+			<p class="mt-1 text-sm text-muted-foreground">Quản lý đánh giá của khách hàng.</p>
 		</div>
 		{#if locations.length > 1}
 			<select
@@ -174,7 +174,7 @@
 					<p class="mt-1 text-lg text-yellow-400">
 						{renderStars(Math.round(summary.average_rating)).filled}<span class="text-muted-foreground">{renderStars(Math.round(summary.average_rating)).empty}</span>
 					</p>
-					<p class="mt-1 text-sm text-muted-foreground">{summary.total_count} danh gia</p>
+					<p class="mt-1 text-sm text-muted-foreground">{summary.total_count} đánh giá</p>
 				</div>
 
 				<!-- Distribution -->
@@ -201,7 +201,7 @@
 	<div class="mt-6 space-y-4">
 		{#if reviews.length === 0 && !loading}
 			<div class="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-				Chua co danh gia nao.
+				Chưa có đánh giá nào.
 			</div>
 		{/if}
 
@@ -226,7 +226,7 @@
 				<!-- Existing Reply -->
 				{#if review.reply}
 					<div class="mt-3 rounded-md border border-border bg-muted/50 p-3">
-						<p class="text-xs font-medium text-muted-foreground">Phan hoi cua ban</p>
+						<p class="text-xs font-medium text-muted-foreground">Phản hồi của bạn</p>
 						<p class="mt-1 text-sm">{review.reply}</p>
 						{#if review.replied_at}
 							<p class="mt-1 text-xs text-muted-foreground">{formatDate(review.replied_at)}</p>
@@ -237,7 +237,7 @@
 					<div class="mt-3 space-y-2">
 						<textarea
 							bind:value={replyText}
-							placeholder="Nhap phan hoi..."
+							placeholder="Nhập phản hồi..."
 							rows="3"
 							class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
 						></textarea>
@@ -247,13 +247,13 @@
 								disabled={submittingReply || !replyText.trim()}
 								class="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 							>
-								{submittingReply ? 'Dang gui...' : 'Gui'}
+								{submittingReply ? 'Đang gửi...' : 'Gửi'}
 							</button>
 							<button
 								onclick={cancelReply}
 								class="rounded-md border border-input px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
 							>
-								Huy
+								Hủy
 							</button>
 						</div>
 					</div>
@@ -263,7 +263,7 @@
 						onclick={() => startReply(review.id)}
 						class="mt-3 text-sm font-medium text-primary hover:text-primary/80"
 					>
-						Tra loi
+						Trả lời
 					</button>
 				{/if}
 			</div>
@@ -278,14 +278,14 @@
 				disabled={loading}
 				class="rounded-md border border-input px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
 			>
-				{loading ? 'Dang tai...' : 'Tai them'}
+				{loading ? 'Đang tải...' : 'Tải thêm'}
 			</button>
 		</div>
 	{/if}
 
 	{#if loading && reviews.length === 0}
 		<div class="mt-6 flex justify-center">
-			<p class="text-sm text-muted-foreground">Dang tai...</p>
+			<p class="text-sm text-muted-foreground">Đang tải...</p>
 		</div>
 	{/if}
 </div>

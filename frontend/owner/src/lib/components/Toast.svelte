@@ -25,7 +25,7 @@
 				<span>{item.message}</span>
 				<button
 					onclick={() => toast.dismiss(item.id)}
-					aria-label="Dong thong bao"
+					aria-label="Đóng thông báo"
 					class="ml-2 shrink-0 text-muted-foreground hover:text-foreground"
 				>
 					<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

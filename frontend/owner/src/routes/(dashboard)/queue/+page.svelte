@@ -75,7 +75,7 @@
 			showAddForm = false;
 			await refreshQueue();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		loading = false;
 	}
@@ -97,7 +97,7 @@
 			selectedBayId = '';
 			await refreshQueue();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 
@@ -123,10 +123,10 @@
 	}
 
 	const vehicleTypes = [
-		{ value: 'motorbike', label: 'Xe may' },
+		{ value: 'motorbike', label: 'Xe máy' },
 		{ value: 'sedan', label: 'Sedan' },
 		{ value: 'suv', label: 'SUV' },
-		{ value: 'truck', label: 'Xe tai' },
+		{ value: 'truck', label: 'Xe tải' },
 		{ value: 'van', label: 'Van' }
 	];
 </script>
@@ -134,12 +134,12 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Hang doi</h1>
+			<h1 class="text-2xl font-semibold">Hàng đợi</h1>
 			<p class="mt-1 text-sm text-muted-foreground">
-				Quan ly hang doi rua xe.
+				Quản lý hàng đợi rửa xe.
 				{#if queue}
 					<span class="font-medium text-foreground">
-						Cho khoang {queue.estimated_wait_minutes} phut
+						Chờ khoảng {queue.estimated_wait_minutes} phút
 					</span>
 				{/if}
 			</p>
@@ -148,24 +148,24 @@
 			onclick={() => (showAddForm = !showAddForm)}
 			class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 		>
-			+ Them walk-in
+			+ Thêm walk-in
 		</button>
 	</div>
 
 	<!-- Add walk-in form -->
 	{#if showAddForm}
 		<div class="mt-4 rounded-lg border border-border bg-card p-4">
-			<h3 class="text-sm font-medium">Them khach walk-in</h3>
+			<h3 class="text-sm font-medium">Thêm khách walk-in</h3>
 			<form onsubmit={(e) => { e.preventDefault(); addWalkin(); }} class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
 				<input
 					bind:value={customerName}
-					placeholder="Ten khach hang"
+					placeholder="Tên khách hàng"
 					class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 					required
 				/>
 				<input
 					bind:value={customerPhone}
-					placeholder="SDT (tuy chon)"
+					placeholder="SĐT (tùy chọn)"
 					type="tel"
 					class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 				/>
@@ -184,7 +184,7 @@
 					disabled={loading || !customerName}
 					class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 				>
-					Them
+					Thêm
 				</button>
 			</form>
 		</div>
@@ -196,7 +196,7 @@
 		<div class="rounded-lg border border-border bg-card">
 			<div class="border-b border-border p-4">
 				<h2 class="text-sm font-medium">
-					Dang cho <span class="text-muted-foreground">({queue?.waiting.length ?? 0})</span>
+					Đang chờ <span class="text-muted-foreground">({queue?.waiting.length ?? 0})</span>
 				</h2>
 			</div>
 			<div class="space-y-2 p-4">
@@ -205,14 +205,14 @@
 						<div class="rounded-md border border-border p-3">
 							<div class="flex items-center justify-between">
 								<span class="text-sm font-bold">#{entry.queue_number}</span>
-								<span class="rounded-full bg-warning/10 px-2 py-0.5 text-xs text-warning">Cho</span>
+								<span class="rounded-full bg-warning/10 px-2 py-0.5 text-xs text-warning">Chờ</span>
 							</div>
 							<p class="mt-1 text-sm">{entry.customer_name}</p>
 							<p class="text-xs text-muted-foreground">{entry.vehicle_type} - {entry.service_name}</p>
 							{#if advancingEntryId === entry.id}
 								<div class="mt-2 space-y-2">
 									<select bind:value={selectedBayId} class="w-full rounded-md border border-input bg-background px-2 py-1 text-xs">
-										<option value="">-- Khong chon bay --</option>
+										<option value="">-- Không chọn bay --</option>
 										{#each bays as bay}
 											<option value={bay.id}>{bay.name}</option>
 										{/each}
@@ -222,13 +222,13 @@
 											onclick={() => advanceEntry(entry.id, selectedBayId || undefined)}
 											class="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
 										>
-											Xac nhan
+											Xác nhận
 										</button>
 										<button
 											onclick={cancelAdvance}
 											class="rounded bg-muted px-2 py-1 text-xs"
 										>
-											Huy
+											Hủy
 										</button>
 									</div>
 								</div>
@@ -238,20 +238,20 @@
 										onclick={() => showBaySelect(entry.id)}
 										class="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
 									>
-										Bat dau rua
+										Bắt đầu rửa
 									</button>
 									<button
 										onclick={() => cancelEntry(entry.id)}
 										class="rounded bg-destructive/10 px-2 py-1 text-xs text-destructive"
 									>
-										Huy
+										Hủy
 									</button>
 								</div>
 							{/if}
 						</div>
 					{/each}
 				{:else}
-					<p class="text-center text-sm text-muted-foreground py-4">Khong co ai cho</p>
+					<p class="text-center text-sm text-muted-foreground py-4">Không có ai chờ</p>
 				{/if}
 			</div>
 		</div>
@@ -260,7 +260,7 @@
 		<div class="rounded-lg border border-border bg-card">
 			<div class="border-b border-border p-4">
 				<h2 class="text-sm font-medium">
-					Dang rua <span class="text-muted-foreground">({queue?.in_progress.length ?? 0})</span>
+					Đang rửa <span class="text-muted-foreground">({queue?.in_progress.length ?? 0})</span>
 				</h2>
 			</div>
 			<div class="space-y-2 p-4">
@@ -269,7 +269,7 @@
 						<div class="rounded-md border border-primary/20 bg-primary/5 p-3">
 							<div class="flex items-center justify-between">
 								<span class="text-sm font-bold">#{entry.queue_number}</span>
-								<span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">Dang rua</span>
+								<span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">Đang rửa</span>
 							</div>
 							<p class="mt-1 text-sm">{entry.customer_name}</p>
 							<p class="text-xs text-muted-foreground">{entry.vehicle_type} - {entry.service_name}</p>
@@ -281,13 +281,13 @@
 									onclick={() => completeEntry(entry.id)}
 									class="rounded bg-success px-2 py-1 text-xs text-success-foreground"
 								>
-									Hoan thanh
+									Hoàn thành
 								</button>
 							</div>
 						</div>
 					{/each}
 				{:else}
-					<p class="text-center text-sm text-muted-foreground py-4">Khong co xe dang rua</p>
+					<p class="text-center text-sm text-muted-foreground py-4">Không có xe đang rửa</p>
 				{/if}
 			</div>
 		</div>
@@ -296,12 +296,12 @@
 		<div class="rounded-lg border border-border bg-card">
 			<div class="border-b border-border p-4">
 				<h2 class="text-sm font-medium">
-					Hoan thanh <span class="text-muted-foreground">({queue?.completed_today ?? 0})</span>
+					Hoàn thành <span class="text-muted-foreground">({queue?.completed_today ?? 0})</span>
 				</h2>
 			</div>
 			<div class="p-4">
 				<p class="text-center text-sm text-muted-foreground">
-					{queue?.completed_today ?? 0} xe hoan thanh hom nay
+					{queue?.completed_today ?? 0} xe hoàn thành hôm nay
 				</p>
 			</div>
 		</div>

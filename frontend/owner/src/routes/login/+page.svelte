@@ -17,7 +17,7 @@
 	async function handleRequestOtp() {
 		error = '';
 		if (!validatePhone(phone)) {
-			error = 'So dien thoai khong hop le (VD: 0901234567)';
+			error = 'Số điện thoại không hợp lệ (VD: 0901234567)';
 			return;
 		}
 		loading = true;
@@ -49,15 +49,15 @@
 	async function handleRegister() {
 		error = '';
 		if (!validatePhone(phone)) {
-			error = 'So dien thoai khong hop le (VD: 0901234567)';
+			error = 'Số điện thoại không hợp lệ (VD: 0901234567)';
 			return;
 		}
 		if (!ownerName.trim()) {
-			error = 'Vui long nhap ho ten';
+			error = 'Vui lòng nhập họ tên';
 			return;
 		}
 		if (!businessName.trim()) {
-			error = 'Vui long nhap ten doanh nghiep';
+			error = 'Vui lòng nhập tên doanh nghiệp';
 			return;
 		}
 		loading = true;
@@ -76,7 +76,7 @@
 	<div class="w-full max-w-sm space-y-6 px-4">
 		<div class="text-center">
 			<h1 class="text-2xl font-bold text-primary">WashCo</h1>
-			<p class="mt-2 text-sm text-muted-foreground">Dang nhap quan ly tiem rua xe</p>
+			<p class="mt-2 text-sm text-muted-foreground">Đăng nhập quản lý tiệm rửa xe</p>
 		</div>
 
 		{#if error}
@@ -86,7 +86,7 @@
 		{#if step === 'phone'}
 			<form onsubmit={(e) => { e.preventDefault(); handleRequestOtp(); }} class="space-y-4">
 				<div>
-					<label for="phone" class="block text-sm font-medium">So dien thoai</label>
+					<label for="phone" class="block text-sm font-medium">Số điện thoại</label>
 					<input
 						id="phone"
 						type="tel"
@@ -101,18 +101,18 @@
 					disabled={loading || !phone}
 					class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 				>
-					{loading ? 'Dang xu ly...' : 'Tiep tuc'}
+					{loading ? 'Đang xử lý...' : 'Tiếp tục'}
 				</button>
 			</form>
 			<p class="text-center text-xs text-muted-foreground">
-				Chua co tai khoan?
-				<button onclick={() => (step = 'register')} class="text-primary hover:underline">Dang ky</button>
+				Chưa có tài khoản?
+				<button onclick={() => (step = 'register')} class="text-primary hover:underline">Đăng ký</button>
 			</p>
 		{:else if step === 'otp'}
 			<form onsubmit={(e) => { e.preventDefault(); handleVerifyOtp(); }} class="space-y-4">
-				<p class="text-sm text-muted-foreground">Ma OTP da gui den <strong>{phone}</strong></p>
+				<p class="text-sm text-muted-foreground">Mã OTP đã gửi đến <strong>{phone}</strong></p>
 				<div>
-					<label for="otp" class="block text-sm font-medium">Ma OTP</label>
+					<label for="otp" class="block text-sm font-medium">Mã OTP</label>
 					<input
 						id="otp"
 						type="text"
@@ -128,16 +128,16 @@
 					disabled={loading || otpCode.length !== 6}
 					class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 				>
-					{loading ? 'Dang xac thuc...' : 'Xac thuc'}
+					{loading ? 'Đang xác thực...' : 'Xác thực'}
 				</button>
 				<button onclick={() => (step = 'phone')} class="w-full text-sm text-muted-foreground hover:text-foreground">
-					Quay lai
+					Quay lại
 				</button>
 			</form>
 		{:else}
 			<form onsubmit={(e) => { e.preventDefault(); handleRegister(); }} class="space-y-4">
 				<div>
-					<label for="reg-phone" class="block text-sm font-medium">So dien thoai</label>
+					<label for="reg-phone" class="block text-sm font-medium">Số điện thoại</label>
 					<input
 						id="reg-phone"
 						type="tel"
@@ -147,7 +147,7 @@
 					/>
 				</div>
 				<div>
-					<label for="owner-name" class="block text-sm font-medium">Ho ten chu tiem</label>
+					<label for="owner-name" class="block text-sm font-medium">Họ tên chủ tiệm</label>
 					<input
 						id="owner-name"
 						type="text"
@@ -157,7 +157,7 @@
 					/>
 				</div>
 				<div>
-					<label for="biz-name" class="block text-sm font-medium">Ten doanh nghiep</label>
+					<label for="biz-name" class="block text-sm font-medium">Tên doanh nghiệp</label>
 					<input
 						id="biz-name"
 						type="text"
@@ -171,10 +171,10 @@
 					disabled={loading}
 					class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 				>
-					{loading ? 'Dang dang ky...' : 'Dang ky'}
+					{loading ? 'Đang đăng ký...' : 'Đăng ký'}
 				</button>
 				<button onclick={() => (step = 'phone')} class="w-full text-sm text-muted-foreground hover:text-foreground">
-					Da co tai khoan? Dang nhap
+					Đã có tài khoản? Đăng nhập
 				</button>
 			</form>
 		{/if}

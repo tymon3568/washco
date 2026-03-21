@@ -35,25 +35,25 @@
 	let vehicleFormLoading = $state(false);
 
 	const segments = [
-		{ value: 'all', label: 'Tat ca' },
-		{ value: 'new', label: 'Moi' },
-		{ value: 'regular', label: 'Thuong xuyen' },
+		{ value: 'all', label: 'Tất cả' },
+		{ value: 'new', label: 'Mới' },
+		{ value: 'regular', label: 'Thường xuyên' },
 		{ value: 'vip', label: 'VIP' },
-		{ value: 'dormant', label: 'Ngung' }
+		{ value: 'dormant', label: 'Ngưng' }
 	];
 
 	const segmentBadge: Record<string, { bg: string; text: string; label: string }> = {
-		new: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Moi' },
-		regular: { bg: 'bg-green-100', text: 'text-green-700', label: 'Thuong xuyen' },
+		new: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Mới' },
+		regular: { bg: 'bg-green-100', text: 'text-green-700', label: 'Thường xuyên' },
 		vip: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'VIP' },
-		dormant: { bg: 'bg-gray-100', text: 'text-gray-600', label: 'Ngung' }
+		dormant: { bg: 'bg-gray-100', text: 'text-gray-600', label: 'Ngưng' }
 	};
 
 	const vehicleTypes = [
-		{ value: 'motorbike', label: 'Xe may' },
+		{ value: 'motorbike', label: 'Xe máy' },
 		{ value: 'sedan', label: 'Sedan' },
 		{ value: 'suv', label: 'SUV' },
-		{ value: 'truck', label: 'Xe tai' },
+		{ value: 'truck', label: 'Xe tải' },
 		{ value: 'van', label: 'Van' }
 	];
 
@@ -87,7 +87,7 @@
 				notes: formNotes || undefined,
 				tags: []
 			});
-			toast.success('Them khach hang thanh cong');
+			toast.success('Thêm khách hàng thành công');
 			formPhone = '';
 			formName = '';
 			formEmail = '';
@@ -95,7 +95,7 @@
 			showAddForm = false;
 			await loadCustomers();
 		} catch (e: unknown) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		formLoading = false;
 	}
@@ -136,13 +136,13 @@
 				year: vYear ? parseInt(vYear) : undefined,
 				notes: vNotes || undefined
 			});
-			toast.success('Them xe thanh cong');
+			toast.success('Thêm xe thành công');
 			vehicles = await api.get<VehicleResponse[]>(
 				`/customers/customers/${selectedCustomer.id}/vehicles`
 			);
 			resetVehicleForm();
 		} catch (e: unknown) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		vehicleFormLoading = false;
 	}
@@ -181,23 +181,23 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Khach hang</h1>
+			<h1 class="text-2xl font-semibold">Khách hàng</h1>
 			<p class="mt-1 text-sm text-muted-foreground">
-				Quan ly thong tin khach hang, xe va the thanh vien.
+				Quản lý thông tin khách hàng, xe và thẻ thành viên.
 			</p>
 		</div>
 		<button
 			onclick={() => (showAddForm = !showAddForm)}
 			class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 		>
-			+ Them khach hang
+			+ Thêm khách hàng
 		</button>
 	</div>
 
 	<!-- Add customer form -->
 	{#if showAddForm}
 		<div class="mt-4 rounded-lg border border-border bg-card p-4">
-			<h3 class="text-sm font-medium">Them khach hang moi</h3>
+			<h3 class="text-sm font-medium">Thêm khách hàng mới</h3>
 			<form
 				onsubmit={(e) => {
 					e.preventDefault();
@@ -207,7 +207,7 @@
 			>
 				<input
 					bind:value={formPhone}
-					placeholder="So dien thoai"
+					placeholder="Số điện thoại"
 					type="tel"
 					pattern={"0[0-9]{9}"}
 					class="rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -215,19 +215,19 @@
 				/>
 				<input
 					bind:value={formName}
-					placeholder="Ho ten"
+					placeholder="Họ tên"
 					class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 					required
 				/>
 				<input
 					bind:value={formEmail}
-					placeholder="Email (tuy chon)"
+					placeholder="Email (tùy chọn)"
 					type="email"
 					class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 				/>
 				<input
 					bind:value={formNotes}
-					placeholder="Ghi chu (tuy chon)"
+					placeholder="Ghi chú (tùy chọn)"
 					class="rounded-md border border-input bg-background px-3 py-2 text-sm"
 				/>
 				<div class="flex items-end gap-2">
@@ -236,14 +236,14 @@
 						disabled={formLoading || !formPhone || !formName}
 						class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 					>
-						Them
+						Thêm
 					</button>
 					<button
 						type="button"
 						onclick={() => (showAddForm = false)}
 						class="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
 					>
-						Huy
+						Hủy
 					</button>
 				</div>
 			</form>
@@ -274,7 +274,7 @@
 				: 'w-full'} transition-all"
 		>
 			{#if loading}
-				<div class="px-4 py-8 text-center text-sm text-muted-foreground">Dang tai...</div>
+				<div class="px-4 py-8 text-center text-sm text-muted-foreground">Đang tải...</div>
 			{:else}
 				<table class="min-w-full divide-y divide-border">
 					<thead>
@@ -286,16 +286,16 @@
 								>SDT</th
 							>
 							<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
-								>Phan khuc</th
+								>Phân khúc</th
 							>
 							<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground"
-								>Luot ghe</th
+								>Lượt ghé</th
 							>
 							<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground"
-								>Tong chi</th
+								>Tổng chi</th
 							>
 							<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground"
-								>Diem</th
+								>Điểm</th
 							>
 						</tr>
 					</thead>
@@ -306,7 +306,7 @@
 									colspan="6"
 									class="px-4 py-8 text-center text-sm text-muted-foreground"
 								>
-									Khong co khach hang nao.
+									Không có khách hàng nào.
 								</td>
 							</tr>
 						{:else}
@@ -363,7 +363,7 @@
 					</div>
 					<button
 						onclick={() => (selectedCustomer = null)}
-						aria-label="Dong"
+						aria-label="Đóng"
 						class="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
 					>
 						<svg
@@ -388,7 +388,7 @@
 						<span>{selectedCustomer.email ?? '-'}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-muted-foreground">Phan khuc</span>
+						<span class="text-muted-foreground">Phân khúc</span>
 						{#if segmentBadge[selectedCustomer.segment]}
 							{@const badge = segmentBadge[selectedCustomer.segment]}
 							<span
@@ -401,24 +401,24 @@
 						{/if}
 					</div>
 					<div class="flex justify-between">
-						<span class="text-muted-foreground">Tong chi tieu</span>
+						<span class="text-muted-foreground">Tổng chi tiêu</span>
 						<span class="font-mono">{formatVND(selectedCustomer.total_spent)}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-muted-foreground">Luot ghe tham</span>
+						<span class="text-muted-foreground">Lượt ghé thăm</span>
 						<span class="font-mono">{selectedCustomer.total_visits}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-muted-foreground">Diem tich luy</span>
+						<span class="text-muted-foreground">Điểm tích lũy</span>
 						<span class="font-mono">{selectedCustomer.loyalty_points}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-muted-foreground">Lan ghe cuoi</span>
+						<span class="text-muted-foreground">Lần ghé cuối</span>
 						<span>{formatDate(selectedCustomer.last_visit_at)}</span>
 					</div>
 					{#if selectedCustomer.notes}
 						<div class="flex justify-between">
-							<span class="text-muted-foreground">Ghi chu</span>
+							<span class="text-muted-foreground">Ghi chú</span>
 							<span class="max-w-[60%] text-right">{selectedCustomer.notes}</span>
 						</div>
 					{/if}
@@ -438,7 +438,7 @@
 				</div>
 
 				{#if detailLoading}
-					<div class="mt-6 text-center text-sm text-muted-foreground">Dang tai...</div>
+					<div class="mt-6 text-center text-sm text-muted-foreground">Đang tải...</div>
 				{:else}
 					<!-- Vehicles section -->
 					<div class="mt-6 border-t border-border pt-4">
@@ -448,7 +448,7 @@
 								onclick={() => (showVehicleForm = !showVehicleForm)}
 								class="text-xs text-primary hover:underline"
 							>
-								+ Them xe
+								+ Thêm xe
 							</button>
 						</div>
 
@@ -463,7 +463,7 @@
 								<div class="grid grid-cols-2 gap-2">
 									<input
 										bind:value={vPlateNumber}
-										placeholder="Bien so (tuy chon)"
+										placeholder="Biển số (tùy chọn)"
 										class="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
 									/>
 									<select
@@ -476,22 +476,22 @@
 									</select>
 									<input
 										bind:value={vBrand}
-										placeholder="Hang xe"
+										placeholder="Hãng xe"
 										class="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
 									/>
 									<input
 										bind:value={vModel}
-										placeholder="Dong xe"
+										placeholder="Dòng xe"
 										class="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
 									/>
 									<input
 										bind:value={vColor}
-										placeholder="Mau sac"
+										placeholder="Màu sắc"
 										class="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
 									/>
 									<input
 										bind:value={vYear}
-										placeholder="Nam san xuat"
+										placeholder="Năm sản xuất"
 										type="number"
 										min="1990"
 										max="2030"
@@ -500,7 +500,7 @@
 								</div>
 								<input
 									bind:value={vNotes}
-									placeholder="Ghi chu xe (tuy chon)"
+									placeholder="Ghi chú xe (tùy chọn)"
 									class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
 								/>
 								<div class="flex gap-2">
@@ -509,14 +509,14 @@
 										disabled={vehicleFormLoading}
 										class="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 									>
-										Them xe
+										Thêm xe
 									</button>
 									<button
 										type="button"
 										onclick={resetVehicleForm}
 										class="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted"
 									>
-										Huy
+										Hủy
 									</button>
 								</div>
 							</form>
@@ -528,7 +528,7 @@
 									<div class="rounded-md border border-border p-3">
 										<div class="flex items-center justify-between">
 											<span class="text-sm font-medium">
-												{vehicle.plate_number ?? 'Khong co bien so'}
+												{vehicle.plate_number ?? 'Không có biển số'}
 											</span>
 											<span class="text-xs text-muted-foreground">
 												{vehicleTypes.find((v) => v.value === vehicle.vehicle_type)?.label ?? vehicle.vehicle_type}
@@ -550,13 +550,13 @@
 								{/each}
 							</div>
 						{:else if !showVehicleForm}
-							<p class="mt-2 text-xs text-muted-foreground">Chua co xe nao.</p>
+							<p class="mt-2 text-xs text-muted-foreground">Chưa có xe nào.</p>
 						{/if}
 					</div>
 
 					<!-- Memberships section -->
 					<div class="mt-6 border-t border-border pt-4">
-						<h3 class="text-sm font-semibold">The thanh vien ({memberships.length})</h3>
+						<h3 class="text-sm font-semibold">Thẻ thành viên ({memberships.length})</h3>
 						{#if memberships.length > 0}
 							<div class="mt-3 space-y-2">
 								{#each memberships as membership (membership.id)}
@@ -576,7 +576,7 @@
 											<span>
 												{membership.plan_type}
 												{#if membership.total_uses}
-													- {membership.used_count}/{membership.total_uses} luot
+													- {membership.used_count}/{membership.total_uses} lượt
 												{/if}
 											</span>
 											<span class="font-mono"
@@ -594,7 +594,7 @@
 							</div>
 						{:else}
 							<p class="mt-2 text-xs text-muted-foreground">
-								Chua co the thanh vien.
+								Chưa có thẻ thành viên.
 							</p>
 						{/if}
 					</div>

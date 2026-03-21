@@ -10,10 +10,10 @@ export function formatVND(amount: number): string {
 }
 
 /**
- * Format duration: 45 -> "45 phut"
+ * Format duration: 45 -> "45 phút"
  */
 export function formatDuration(minutes: number): string {
-	if (minutes < 60) return `${minutes} phut`;
+	if (minutes < 60) return `${minutes} phút`;
 	const hours = Math.floor(minutes / 60);
 	const mins = minutes % 60;
 	return mins > 0 ? `${hours}h ${mins}p` : `${hours}h`;
@@ -27,12 +27,12 @@ export function formatRelativeTime(date: Date): string {
 	const diffMs = now.getTime() - date.getTime();
 	const diffMins = Math.floor(diffMs / 60000);
 
-	if (diffMins < 1) return 'Vua xong';
-	if (diffMins < 60) return `${diffMins} phut truoc`;
+	if (diffMins < 1) return 'Vừa xong';
+	if (diffMins < 60) return `${diffMins} phút trước`;
 
 	const diffHours = Math.floor(diffMins / 60);
-	if (diffHours < 24) return `${diffHours} gio truoc`;
+	if (diffHours < 24) return `${diffHours} giờ trước`;
 
 	const diffDays = Math.floor(diffHours / 24);
-	return `${diffDays} ngay truoc`;
+	return `${diffDays} ngày trước`;
 }

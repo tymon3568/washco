@@ -42,8 +42,8 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Bao cao</h1>
-			<p class="mt-1 text-sm text-muted-foreground">Theo doi hieu suat hoat dong.</p>
+			<h1 class="text-2xl font-semibold">Báo cáo</h1>
+			<p class="mt-1 text-sm text-muted-foreground">Theo dõi hiệu suất hoạt động.</p>
 		</div>
 		<input
 			type="date"
@@ -60,15 +60,15 @@
 			<p class="mt-2 text-2xl font-bold font-mono">{formatVND(summary?.total_revenue ?? 0)}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6">
-			<p class="text-sm text-muted-foreground">Hoan thanh</p>
+			<p class="text-sm text-muted-foreground">Hoàn thành</p>
 			<p class="mt-2 text-2xl font-bold">{summary?.completed_jobs ?? 0}</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6">
-			<p class="text-sm text-muted-foreground">TG cho TB</p>
-			<p class="mt-2 text-2xl font-bold">{summary?.average_wait_minutes ?? 0} phut</p>
+			<p class="text-sm text-muted-foreground">TG chờ TB</p>
+			<p class="mt-2 text-2xl font-bold">{summary?.average_wait_minutes ?? 0} phút</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6">
-			<p class="text-sm text-muted-foreground">Huy</p>
+			<p class="text-sm text-muted-foreground">Hủy</p>
 			<p class="mt-2 text-2xl font-bold">{summary?.cancellations ?? 0}</p>
 		</div>
 	</div>
@@ -76,13 +76,13 @@
 	<!-- Service breakdown -->
 	<div class="mt-6 rounded-lg border border-border bg-card">
 		<div class="border-b border-border p-4">
-			<h2 class="text-lg font-medium">Dich vu</h2>
+			<h2 class="text-lg font-medium">Dịch vụ</h2>
 		</div>
 		<table class="w-full">
 			<thead>
 				<tr class="border-b border-border bg-muted/50">
-					<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Dich vu</th>
-					<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">So luong</th>
+					<th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Dịch vụ</th>
+					<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Số lượng</th>
 					<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Doanh thu</th>
 					<th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">TG TB</th>
 				</tr>
@@ -91,7 +91,7 @@
 				{#if serviceMetrics.length === 0}
 					<tr>
 						<td colspan="4" class="px-4 py-8 text-center text-sm text-muted-foreground">
-							Chua co du lieu cho ngay nay.
+							Chưa có dữ liệu cho ngày này.
 						</td>
 					</tr>
 				{:else}
@@ -100,7 +100,7 @@
 							<td class="px-4 py-3 text-sm">{metric.service_name}</td>
 							<td class="px-4 py-3 text-right text-sm">{metric.count}</td>
 							<td class="px-4 py-3 text-right text-sm font-mono">{formatVND(metric.revenue)}</td>
-							<td class="px-4 py-3 text-right text-sm text-muted-foreground">{metric.average_duration_minutes} phut</td>
+							<td class="px-4 py-3 text-right text-sm text-muted-foreground">{metric.average_duration_minutes} phút</td>
 						</tr>
 					{/each}
 				{/if}

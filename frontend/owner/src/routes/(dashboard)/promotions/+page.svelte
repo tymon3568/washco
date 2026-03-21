@@ -48,9 +48,9 @@
 	}
 
 	const statusLabels: Record<string, { label: string; classes: string }> = {
-		active: { label: 'Dang hoat dong', classes: 'bg-green-500/15 text-green-400' },
-		expired: { label: 'Het han', classes: 'bg-muted text-muted-foreground' },
-		used_up: { label: 'Het luot', classes: 'bg-red-500/15 text-red-400' }
+		active: { label: 'Đang hoạt động', classes: 'bg-green-500/15 text-green-400' },
+		expired: { label: 'Hết hạn', classes: 'bg-muted text-muted-foreground' },
+		used_up: { label: 'Hết lượt', classes: 'bg-red-500/15 text-red-400' }
 	};
 
 	function formatDiscount(promo: Promotion): string {
@@ -125,7 +125,7 @@
 			showForm = false;
 			await refreshPromotions();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 		loading = false;
 	}
@@ -135,7 +135,7 @@
 			await api.put(`/promotions/${promo.id}`, { is_active: !promo.is_active });
 			await refreshPromotions();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 
@@ -145,7 +145,7 @@
 			deleteConfirmId = null;
 			await refreshPromotions();
 		} catch (e: any) {
-			toast.error(e instanceof ApiError ? e.message : 'Co loi xay ra');
+			toast.error(e instanceof ApiError ? e.message : 'Có lỗi xảy ra');
 		}
 	}
 </script>
@@ -153,21 +153,21 @@
 <div>
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-semibold">Khuyen mai</h1>
-			<p class="mt-1 text-sm text-muted-foreground">Quan ly cac chuong trinh khuyen mai va ma giam gia.</p>
+			<h1 class="text-2xl font-semibold">Khuyến mãi</h1>
+			<p class="mt-1 text-sm text-muted-foreground">Quản lý các chương trình khuyến mãi và mã giảm giá.</p>
 		</div>
 		<button
 			onclick={openAddForm}
 			class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 		>
-			Them khuyen mai
+			Thêm khuyến mãi
 		</button>
 	</div>
 
 	<!-- Add/Edit form -->
 	{#if showForm}
 		<div class="mt-4 rounded-lg border border-border bg-card p-4">
-			<h3 class="text-sm font-medium">{editingId ? 'Sua khuyen mai' : 'Them khuyen mai moi'}</h3>
+			<h3 class="text-sm font-medium">{editingId ? 'Sửa khuyến mãi' : 'Thêm khuyến mãi mới'}</h3>
 			<form
 				onsubmit={(e) => {
 					e.preventDefault();
@@ -176,7 +176,7 @@
 				class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
 			>
 				<label class="block">
-					<span class="block text-xs text-muted-foreground">Ma khuyen mai</span>
+					<span class="block text-xs text-muted-foreground">Mã khuyến mãi</span>
 					<input
 						bind:value={code}
 						placeholder="VD: GIAM20"
@@ -185,26 +185,26 @@
 					/>
 				</label>
 				<label class="block">
-					<span class="block text-xs text-muted-foreground">Ten</span>
+					<span class="block text-xs text-muted-foreground">Tên</span>
 					<input
 						bind:value={name}
-						placeholder="Ten khuyen mai"
+						placeholder="Tên khuyến mãi"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 						required
 					/>
 				</label>
 				<label class="block">
-					<span class="block text-xs text-muted-foreground">Mo ta (tuy chon)</span>
+					<span class="block text-xs text-muted-foreground">Mô tả (tùy chọn)</span>
 					<input
 						bind:value={description}
-						placeholder="Mo ta ngan"
+						placeholder="Mô tả ngắn"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 					/>
 				</label>
 
 				<!-- Discount type -->
 				<fieldset>
-					<legend class="block text-xs text-muted-foreground">Loai giam gia</legend>
+					<legend class="block text-xs text-muted-foreground">Loại giảm giá</legend>
 					<div class="mt-1 flex gap-4">
 						<label class="flex items-center gap-1.5 text-sm">
 							<input
@@ -215,7 +215,7 @@
 								onchange={() => (discountType = 'percentage')}
 								class="accent-primary"
 							/>
-							Phan tram
+							Phần trăm
 						</label>
 						<label class="flex items-center gap-1.5 text-sm">
 							<input
@@ -226,14 +226,14 @@
 								onchange={() => (discountType = 'fixed')}
 								class="accent-primary"
 							/>
-							Co dinh
+							Cố định
 						</label>
 					</div>
 				</fieldset>
 
 				<label class="block">
 					<span class="block text-xs text-muted-foreground">
-						Gia tri giam {discountType === 'percentage' ? '(%)' : '(VND)'}
+						Giá trị giảm {discountType === 'percentage' ? '(%)' : '(VND)'}
 					</span>
 					<input
 						bind:value={discountValue}
@@ -247,7 +247,7 @@
 				</label>
 
 				<label class="block">
-					<span class="block text-xs text-muted-foreground">Don toi thieu (VND)</span>
+					<span class="block text-xs text-muted-foreground">Đơn tối thiểu (VND)</span>
 					<input
 						bind:value={minOrder}
 						type="number"
@@ -258,18 +258,18 @@
 				</label>
 
 				<label class="block">
-					<span class="block text-xs text-muted-foreground">So luot dung toi da</span>
+					<span class="block text-xs text-muted-foreground">Số lượt dùng tối đa</span>
 					<input
 						bind:value={maxUses}
 						type="number"
 						min="1"
-						placeholder="Khong gioi han"
+						placeholder="Không giới hạn"
 						class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 					/>
 				</label>
 
 				<label class="block">
-					<span class="block text-xs text-muted-foreground">Ngay bat dau</span>
+					<span class="block text-xs text-muted-foreground">Ngày bắt đầu</span>
 					<input
 						bind:value={validFrom}
 						type="date"
@@ -279,7 +279,7 @@
 				</label>
 
 				<label class="block">
-					<span class="block text-xs text-muted-foreground">Ngay ket thuc</span>
+					<span class="block text-xs text-muted-foreground">Ngày kết thúc</span>
 					<input
 						bind:value={validTo}
 						type="date"
@@ -294,14 +294,14 @@
 						disabled={loading}
 						class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 					>
-						{editingId ? 'Cap nhat' : 'Them'}
+						{editingId ? 'Cập nhật' : 'Thêm'}
 					</button>
 					<button
 						type="button"
 						onclick={() => (showForm = false)}
 						class="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
 					>
-						Huy
+						Hủy
 					</button>
 				</div>
 			</form>
@@ -311,7 +311,7 @@
 	<!-- Promotions list -->
 	{#if promotions.length === 0}
 		<div class="mt-6 rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-			Chua co khuyen mai nao. Bam "Them khuyen mai" de bat dau.
+			Chưa có khuyến mãi nào. Bấm "Thêm khuyến mãi" để bắt đầu.
 		</div>
 	{:else}
 		<div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -337,23 +337,23 @@
 
 					<div class="mt-3 space-y-1.5">
 						<div class="flex items-center justify-between text-sm">
-							<span class="text-muted-foreground">Giam gia</span>
+							<span class="text-muted-foreground">Giảm giá</span>
 							<span class="font-medium text-primary">{formatDiscount(promo)}</span>
 						</div>
 						{#if promo.min_order > 0}
 							<div class="flex items-center justify-between text-sm">
-								<span class="text-muted-foreground">Don toi thieu</span>
+								<span class="text-muted-foreground">Đơn tối thiểu</span>
 								<span>{formatVND(promo.min_order)}</span>
 							</div>
 						{/if}
 						<div class="flex items-center justify-between text-sm">
-							<span class="text-muted-foreground">Thoi gian</span>
+							<span class="text-muted-foreground">Thời gian</span>
 							<span class="text-xs">{formatDate(promo.valid_from)} - {formatDate(promo.valid_to)}</span>
 						</div>
 						<div class="flex items-center justify-between text-sm">
-							<span class="text-muted-foreground">Da dung</span>
+							<span class="text-muted-foreground">Đã dùng</span>
 							<span>
-								{promo.used_count}{promo.max_uses !== null ? ` / ${promo.max_uses}` : ''} luot
+								{promo.used_count}{promo.max_uses !== null ? ` / ${promo.max_uses}` : ''} lượt
 							</span>
 						</div>
 					</div>
@@ -375,35 +375,35 @@
 										: 'translate-x-0.5'}"
 								></span>
 							</span>
-							<span class="text-muted-foreground">{promo.is_active ? 'Bat' : 'Tat'}</span>
+							<span class="text-muted-foreground">{promo.is_active ? 'Bật' : 'Tắt'}</span>
 						</button>
 						<div class="flex gap-2">
 							<button
 								onclick={() => openEditForm(promo)}
 								class="text-xs text-primary hover:underline"
 							>
-								Sua
+								Sửa
 							</button>
 							{#if deleteConfirmId === promo.id}
-								<span class="text-xs text-muted-foreground">Chac chua?</span>
+								<span class="text-xs text-muted-foreground">Chắc chưa?</span>
 								<button
 									onclick={() => deletePromotion(promo.id)}
 									class="text-xs font-medium text-destructive hover:underline"
 								>
-									Xoa
+									Xóa
 								</button>
 								<button
 									onclick={() => (deleteConfirmId = null)}
 									class="text-xs text-muted-foreground hover:underline"
 								>
-									Huy
+									Hủy
 								</button>
 							{:else}
 								<button
 									onclick={() => (deleteConfirmId = promo.id)}
 									class="text-xs text-destructive hover:underline"
 								>
-									Xoa
+									Xóa
 								</button>
 							{/if}
 						</div>
