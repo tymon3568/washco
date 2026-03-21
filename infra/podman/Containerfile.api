@@ -1,6 +1,6 @@
-FROM rust:1.86-slim AS builder
+FROM rust:1.91-slim AS builder
 
-RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y pkg-config libssl-dev curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -18,10 +18,15 @@ COPY crates/modules/review/Cargo.toml crates/modules/review/Cargo.toml
 COPY crates/modules/notification/Cargo.toml crates/modules/notification/Cargo.toml
 COPY crates/modules/pricing/Cargo.toml crates/modules/pricing/Cargo.toml
 COPY crates/modules/promotion/Cargo.toml crates/modules/promotion/Cargo.toml
+COPY crates/modules/payment/Cargo.toml crates/modules/payment/Cargo.toml
+COPY crates/modules/staff/Cargo.toml crates/modules/staff/Cargo.toml
+COPY crates/modules/customer/Cargo.toml crates/modules/customer/Cargo.toml
+COPY crates/modules/inventory/Cargo.toml crates/modules/inventory/Cargo.toml
 
 # Create dummy source files for dependency caching
 RUN mkdir -p crates/shared/src && echo "pub fn _dummy() {}" > crates/shared/src/lib.rs && \
     mkdir -p crates/server/src && echo "fn main() {}" > crates/server/src/main.rs && \
+    echo "" > crates/server/src/lib.rs && \
     mkdir -p crates/modules/identity/src && echo "pub fn _dummy() {}" > crates/modules/identity/src/lib.rs && \
     mkdir -p crates/modules/location/src && echo "pub fn _dummy() {}" > crates/modules/location/src/lib.rs && \
     mkdir -p crates/modules/catalog/src && echo "pub fn _dummy() {}" > crates/modules/catalog/src/lib.rs && \
@@ -32,21 +37,26 @@ RUN mkdir -p crates/shared/src && echo "pub fn _dummy() {}" > crates/shared/src/
     mkdir -p crates/modules/notification/src && echo "pub fn _dummy() {}" > crates/modules/notification/src/lib.rs && \
     mkdir -p crates/modules/pricing/src && echo "pub fn _dummy() {}" > crates/modules/pricing/src/lib.rs && \
     mkdir -p crates/modules/promotion/src && echo "pub fn _dummy() {}" > crates/modules/promotion/src/lib.rs && \
+    mkdir -p crates/modules/payment/src && echo "pub fn _dummy() {}" > crates/modules/payment/src/lib.rs && \
+    mkdir -p crates/modules/staff/src && echo "pub fn _dummy() {}" > crates/modules/staff/src/lib.rs && \
+    mkdir -p crates/modules/customer/src && echo "pub fn _dummy() {}" > crates/modules/customer/src/lib.rs && \
+    mkdir -p crates/modules/inventory/src && echo "pub fn _dummy() {}" > crates/modules/inventory/src/lib.rs && \
     mkdir -p migrations && touch migrations/20250101000000_initial.sql
 
 RUN cargo build --release -p washco-server 2>/dev/null || true
 
-# Copy real source
+# Copy real source (touch to invalidate cargo fingerprints from dummy build)
 COPY crates crates
 COPY migrations migrations
+RUN find crates -name '*.rs' -exec touch {} + && touch Cargo.toml
 
 # Build
 RUN cargo build --release -p washco-server
 
 # Runtime
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/target/release/washco-server /usr/local/bin/washco-server
 

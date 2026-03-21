@@ -156,5 +156,5 @@ D1 (Infra finalize) → D2 (Full deploy) → D3 (Backup/monitoring)
 | C1 | Backend integration tests | DONE |
 | C2 | Frontend component tests | DONE |
 | D1 | Infra finalization | DONE |
-| D2 | Build & deploy | READY (podman compose build) |
+| D2 | Build & deploy | DONE (10/10 services running) |
 | D3 | Backup & monitoring | DONE |

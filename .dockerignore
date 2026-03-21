@@ -1,0 +1,8 @@
+target/
+node_modules/
+.git/
+*.md
+frontend/owner/node_modules/
+frontend/owner/.svelte-kit/
+frontend/driver/node_modules/
+frontend/driver/.svelte-kit/
