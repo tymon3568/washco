@@ -132,7 +132,7 @@ impl QueueRepository for PgQueueRepository {
         .fetch_one(&self.pool)
         .await?;
         let position: i64 = row.get("cnt");
-        let estimated_minutes = (position * 15) / 1; // 15 min avg, 1 bay default
+        let estimated_minutes = position * 15; // 15 min avg per entry
         Ok(WaitEstimate {
             position: position as i32,
             estimated_minutes: estimated_minutes as i32,

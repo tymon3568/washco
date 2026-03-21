@@ -42,7 +42,7 @@ impl<R: QueueRepository> QueueService<R> {
             .repo
             .next_queue_number(tenant_id, location_id)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         let entry = QueueEntry {
             id: Uuid::now_v7(),
@@ -64,7 +64,7 @@ impl<R: QueueRepository> QueueService<R> {
         self.repo
             .create(&entry)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(entry)
     }
@@ -79,7 +79,7 @@ impl<R: QueueRepository> QueueService<R> {
             .repo
             .find_by_id(tenant_id, id)
             .await
-            .map_err(|e| AppError::Internal(e))?
+            .map_err(AppError::Internal)?
             .ok_or(QueueError::EntryNotFound)?;
 
         entry.advance(bay_id)?;
@@ -87,7 +87,7 @@ impl<R: QueueRepository> QueueService<R> {
         self.repo
             .update_status(&entry)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(entry)
     }
@@ -97,7 +97,7 @@ impl<R: QueueRepository> QueueService<R> {
             .repo
             .find_by_id(tenant_id, id)
             .await
-            .map_err(|e| AppError::Internal(e))?
+            .map_err(AppError::Internal)?
             .ok_or(QueueError::EntryNotFound)?;
 
         entry.complete()?;
@@ -105,7 +105,7 @@ impl<R: QueueRepository> QueueService<R> {
         self.repo
             .update_status(&entry)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(entry)
     }
@@ -115,7 +115,7 @@ impl<R: QueueRepository> QueueService<R> {
             .repo
             .find_by_id(tenant_id, id)
             .await
-            .map_err(|e| AppError::Internal(e))?
+            .map_err(AppError::Internal)?
             .ok_or(QueueError::EntryNotFound)?;
 
         entry.cancel()?;
@@ -123,7 +123,7 @@ impl<R: QueueRepository> QueueService<R> {
         self.repo
             .update_status(&entry)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(entry)
     }
@@ -137,7 +137,7 @@ impl<R: QueueRepository> QueueService<R> {
             .repo
             .find_active_by_location(tenant_id, location_id)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         let waiting: Vec<QueueEntry> = entries
             .iter()
@@ -155,7 +155,7 @@ impl<R: QueueRepository> QueueService<R> {
             .repo
             .completed_today_count(tenant_id, location_id)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         // For the overall location wait estimate, use current time as reference.
         let estimated_wait = if waiting.is_empty() {
@@ -188,6 +188,6 @@ impl<R: QueueRepository> QueueService<R> {
         self.repo
             .estimate_wait(tenant_id, location_id, entry.joined_at)
             .await
-            .map_err(|e| AppError::Internal(e))
+            .map_err(AppError::Internal)
     }
 }

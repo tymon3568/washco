@@ -38,7 +38,7 @@ impl<R: ReviewRepository> ReviewService<R> {
                 .repo
                 .exists_for_queue_entry(tenant_id, queue_entry_id)
                 .await
-                .map_err(|e| AppError::Internal(e))?;
+                .map_err(AppError::Internal)?;
             if exists {
                 return Err(ReviewError::AlreadyReviewed.into());
             }
@@ -61,7 +61,7 @@ impl<R: ReviewRepository> ReviewService<R> {
         self.repo
             .create(&review)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(review)
     }
@@ -76,7 +76,7 @@ impl<R: ReviewRepository> ReviewService<R> {
         self.repo
             .list_by_location(tenant_id, location_id, limit, offset)
             .await
-            .map_err(|e| AppError::Internal(e))
+            .map_err(AppError::Internal)
     }
 
     pub async fn get_summary(
@@ -87,7 +87,7 @@ impl<R: ReviewRepository> ReviewService<R> {
         self.repo
             .summary_by_location(tenant_id, location_id)
             .await
-            .map_err(|e| AppError::Internal(e))
+            .map_err(AppError::Internal)
     }
 
     pub async fn reply_to_review(
@@ -100,7 +100,7 @@ impl<R: ReviewRepository> ReviewService<R> {
             .repo
             .find_by_id(tenant_id, id)
             .await
-            .map_err(|e| AppError::Internal(e))?
+            .map_err(AppError::Internal)?
             .ok_or(ReviewError::NotFound)?;
 
         let _ = review; // exists check done
@@ -108,7 +108,7 @@ impl<R: ReviewRepository> ReviewService<R> {
         self.repo
             .set_reply(tenant_id, id, reply)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(())
     }

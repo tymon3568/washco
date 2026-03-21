@@ -10,6 +10,12 @@ pub struct QueueBroadcast {
     channels: Arc<RwLock<HashMap<Uuid, broadcast::Sender<String>>>>,
 }
 
+impl Default for QueueBroadcast {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl QueueBroadcast {
     pub fn new() -> Self {
         Self {

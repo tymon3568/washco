@@ -222,20 +222,21 @@ impl<R: PromotionRepository> PromotionService<R> {
             return Err(PromotionError::Expired.into());
         }
 
-        if let Some(max_uses) = promo.max_uses {
-            if promo.used_count >= max_uses {
-                return Err(PromotionError::MaxUsesReached.into());
-            }
+        if let Some(max_uses) = promo.max_uses
+            && promo.used_count >= max_uses
+        {
+            return Err(PromotionError::MaxUsesReached.into());
         }
 
         if order_amount < promo.min_order {
             return Err(PromotionError::MinOrderNotMet.into());
         }
 
-        if let Some(loc_id) = location_id {
-            if !promo.location_ids.is_empty() && !promo.location_ids.contains(&loc_id) {
-                return Err(PromotionError::NotApplicableToLocation.into());
-            }
+        if let Some(loc_id) = location_id
+            && !promo.location_ids.is_empty()
+            && !promo.location_ids.contains(&loc_id)
+        {
+            return Err(PromotionError::NotApplicableToLocation.into());
         }
 
         Ok(())

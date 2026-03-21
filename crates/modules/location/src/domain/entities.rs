@@ -24,6 +24,7 @@ pub struct Location {
 }
 
 impl Location {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         tenant_id: Uuid,
         name: String,

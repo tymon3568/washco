@@ -121,12 +121,11 @@ impl<R: LocationRepository> LocationService<R> {
         if let Some(name) = input.name {
             let new_slug = Location::slugify(&name);
             // Check slug uniqueness if it changed
-            if new_slug != location.slug {
-                if let Some(existing) = self.repo.find_by_slug(tenant_id, &new_slug).await? {
-                    if existing.id != location.id {
-                        return Err(LocationError::SlugConflict.into());
-                    }
-                }
+            if new_slug != location.slug
+                && let Some(existing) = self.repo.find_by_slug(tenant_id, &new_slug).await?
+                && existing.id != location.id
+            {
+                return Err(LocationError::SlugConflict.into());
             }
             location.name = name;
             location.slug = new_slug;
@@ -145,13 +144,13 @@ impl<R: LocationRepository> LocationService<R> {
             location.city = city;
         }
         if let Some(lat) = input.latitude {
-            if lat < -90.0 || lat > 90.0 {
+            if !(-90.0..=90.0).contains(&lat) {
                 return Err(LocationError::InvalidCoordinates.into());
             }
             location.latitude = lat;
         }
         if let Some(lng) = input.longitude {
-            if lng < -180.0 || lng > 180.0 {
+            if !(-180.0..=180.0).contains(&lng) {
                 return Err(LocationError::InvalidCoordinates.into());
             }
             location.longitude = lng;
@@ -194,7 +193,7 @@ impl<R: LocationRepository> LocationService<R> {
         lng: f64,
         radius_meters: f64,
     ) -> Result<Vec<(Location, f64)>, AppError> {
-        if lat < -90.0 || lat > 90.0 || lng < -180.0 || lng > 180.0 {
+        if !(-90.0..=90.0).contains(&lat) || !(-180.0..=180.0).contains(&lng) {
             return Err(LocationError::InvalidCoordinates.into());
         }
         let results = self.repo.find_nearby(lat, lng, radius_meters).await?;

@@ -44,14 +44,14 @@ impl<R: ServiceRepository> CatalogService<R> {
         self.repo
             .find_by_location(tenant_id, location_id)
             .await
-            .map_err(|e| AppError::Internal(e))
+            .map_err(AppError::Internal)
     }
 
     pub async fn get_service(&self, tenant_id: Uuid, id: Uuid) -> Result<Service, AppError> {
         self.repo
             .find_by_id(tenant_id, id)
             .await
-            .map_err(|e| AppError::Internal(e))?
+            .map_err(AppError::Internal)?
             .ok_or_else(|| CatalogError::ServiceNotFound.into())
     }
 
@@ -72,7 +72,7 @@ impl<R: ServiceRepository> CatalogService<R> {
         self.repo
             .create(&service)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(service)
     }
@@ -82,7 +82,7 @@ impl<R: ServiceRepository> CatalogService<R> {
             .repo
             .find_by_id(input.tenant_id, input.id)
             .await
-            .map_err(|e| AppError::Internal(e))?
+            .map_err(AppError::Internal)?
             .ok_or(AppError::from(CatalogError::ServiceNotFound))?;
 
         if let Some(name) = input.name {
@@ -109,7 +109,7 @@ impl<R: ServiceRepository> CatalogService<R> {
         self.repo
             .update(&service)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(service)
     }
@@ -119,13 +119,13 @@ impl<R: ServiceRepository> CatalogService<R> {
         self.repo
             .find_by_id(tenant_id, id)
             .await
-            .map_err(|e| AppError::Internal(e))?
+            .map_err(AppError::Internal)?
             .ok_or(AppError::from(CatalogError::ServiceNotFound))?;
 
         self.repo
             .soft_delete(tenant_id, id)
             .await
-            .map_err(|e| AppError::Internal(e))?;
+            .map_err(AppError::Internal)?;
 
         Ok(())
     }
