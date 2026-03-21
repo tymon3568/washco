@@ -152,7 +152,7 @@ D1 (Infra finalize) → D2 (Full deploy) → D3 (Backup/monitoring)
 | A2 | Pricing page | DONE |
 | A3 | Driver diacritics | DONE |
 | B1 | Seed data | DONE |
-| B2 | E2E verification | NEEDS DB (manual) |
+| B2 | E2E verification | DONE (72/72 endpoints) |
 | C1 | Backend integration tests | DONE |
 | C2 | Frontend component tests | DONE |
 | D1 | Infra finalization | DONE |
