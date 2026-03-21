@@ -27,10 +27,11 @@ impl<R: WeatherRepository> WeatherService<R> {
         tenant_id: Uuid,
         input: CreateWeatherTriggerInput,
     ) -> Result<WeatherTrigger, AppError> {
-        let condition = TriggerCondition::from_str(&input.trigger_condition)
-            .ok_or_else(|| AppError::Validation {
+        let condition = TriggerCondition::from_str(&input.trigger_condition).ok_or_else(|| {
+            AppError::Validation {
                 message: format!("Invalid trigger condition: {}", input.trigger_condition),
-            })?;
+            }
+        })?;
 
         let now = Utc::now();
         let trigger = WeatherTrigger {

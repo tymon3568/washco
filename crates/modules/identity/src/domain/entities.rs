@@ -64,7 +64,11 @@ pub struct OtpEntry {
     pub phone: String,
     pub code: String,
     pub expires_at: DateTime<Utc>,
+    pub attempts: u8,
 }
+
+/// Maximum number of failed OTP verification attempts before lockout.
+pub const OTP_MAX_ATTEMPTS: u8 = 5;
 
 impl OtpEntry {
     pub fn new(phone: String) -> Self {
@@ -74,6 +78,7 @@ impl OtpEntry {
             phone,
             code,
             expires_at: Utc::now() + chrono::Duration::minutes(5),
+            attempts: 0,
         }
     }
 
@@ -84,6 +89,27 @@ impl OtpEntry {
     pub fn matches(&self, code: &str) -> bool {
         self.code == code
     }
+
+    pub fn max_attempts_exceeded(&self) -> bool {
+        self.attempts >= OTP_MAX_ATTEMPTS
+    }
+
+    pub fn increment_attempts(&mut self) {
+        self.attempts += 1;
+    }
+}
+
+/// Validates a Vietnamese phone number format (10 digits starting with 0).
+pub fn validate_phone(phone: &str) -> bool {
+    phone.len() >= 10
+        && phone.len() <= 11
+        && phone.starts_with('0')
+        && phone[1..].chars().all(|c| c.is_ascii_digit())
+}
+
+/// Strips HTML tags from input to prevent stored XSS.
+pub fn sanitize_text(input: &str) -> String {
+    input.replace('<', "&lt;").replace('>', "&gt;")
 }
 
 #[cfg(test)]
@@ -143,7 +169,37 @@ mod tests {
             phone: "0901234567".into(),
             code: "123456".into(),
             expires_at: Utc::now() - chrono::Duration::minutes(1),
+            attempts: 0,
         };
         assert!(otp.is_expired());
+    }
+
+    #[test]
+    fn otp_max_attempts_exceeded() {
+        let mut otp = OtpEntry::new("0901234567".into());
+        assert!(!otp.max_attempts_exceeded());
+        for _ in 0..OTP_MAX_ATTEMPTS {
+            otp.increment_attempts();
+        }
+        assert!(otp.max_attempts_exceeded());
+    }
+
+    #[test]
+    fn validate_phone_format() {
+        assert!(validate_phone("0901234567"));
+        assert!(validate_phone("09012345678")); // 11 digits ok
+        assert!(!validate_phone("")); // empty
+        assert!(!validate_phone("abc")); // non-numeric
+        assert!(!validate_phone("1234567890")); // doesn't start with 0
+        assert!(!validate_phone("090123456")); // too short (9 digits)
+    }
+
+    #[test]
+    fn sanitize_text_strips_html() {
+        assert_eq!(
+            sanitize_text("<script>alert(1)</script>"),
+            "&lt;script&gt;alert(1)&lt;/script&gt;"
+        );
+        assert_eq!(sanitize_text("Normal text"), "Normal text");
     }
 }

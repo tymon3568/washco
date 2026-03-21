@@ -5,7 +5,6 @@ use crate::domain::{Review, ReviewSummary};
 
 #[derive(Debug, Deserialize)]
 pub struct SubmitReviewRequest {
-    pub tenant_id: Uuid,
     pub location_id: Uuid,
     pub queue_entry_id: Option<Uuid>,
     pub customer_name: String,
@@ -16,15 +15,12 @@ pub struct SubmitReviewRequest {
 
 #[derive(Debug, Deserialize)]
 pub struct ListReviewsQuery {
-    pub tenant_id: Uuid,
     pub limit: Option<i64>,
     pub offset: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct SummaryQuery {
-    pub tenant_id: Uuid,
-}
+pub struct SummaryQuery {}
 
 #[derive(Debug, Deserialize)]
 pub struct ReplyRequest {

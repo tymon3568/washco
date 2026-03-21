@@ -4,7 +4,9 @@ use uuid::Uuid;
 use washco_shared::money::Money;
 
 use crate::application::AnalyticsRepository;
-use crate::domain::{BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint};
+use crate::domain::{
+    BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint,
+};
 
 pub struct PgAnalyticsRepository {
     pool: PgPool,

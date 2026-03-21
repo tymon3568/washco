@@ -50,7 +50,7 @@ async fn authed_client(base: &str, phone: &str) -> (Client, String) {
     c.post(format!("{base}/api/v1/auth/register"))
         .json(&json!({
             "phone": phone,
-            "name": "Test User",
+            "owner_name": "Test User",
             "business_name": "Test Wash LLC"
         }))
         .send()
@@ -109,7 +109,7 @@ async fn auth_register_and_login_flow() {
         .post(format!("{base}/api/v1/auth/register"))
         .json(&json!({
             "phone": "0999100001",
-            "name": "Auth Test User",
+            "owner_name": "Auth Test User",
             "business_name": "Auth Test Wash"
         }))
         .send()
@@ -117,7 +117,7 @@ async fn auth_register_and_login_flow() {
         .unwrap();
     assert!(res.status().is_success());
     let body: Value = res.json().await.unwrap();
-    assert!(body["user_id"].is_string());
+    assert!(body["id"].is_string());
 
     // Step 2: Request OTP
     let res = c
@@ -281,7 +281,7 @@ async fn catalog_service_crud() {
         .json(&json!({
             "name": "Rửa xe cơ bản",
             "description": "Rửa ngoài + hút bụi",
-            "vehicle_type": "car",
+            "vehicle_type": "sedan",
             "base_price": 80000,
             "duration_minutes": 20
         }))
@@ -313,7 +313,7 @@ async fn catalog_service_crud() {
         .json(&json!({
             "name": "Rửa xe cơ bản v2",
             "description": "Rửa ngoài + hút bụi + lau kính",
-            "vehicle_type": "car",
+            "vehicle_type": "sedan",
             "base_price": 90000,
             "duration_minutes": 25
         }))
@@ -370,7 +370,7 @@ async fn queue_join_advance_complete_flow() {
         .bearer_auth(&token)
         .json(&json!({
             "name": "Rửa cơ bản",
-            "vehicle_type": "car",
+            "vehicle_type": "sedan",
             "base_price": 80000,
             "duration_minutes": 20
         }))
@@ -387,8 +387,9 @@ async fn queue_join_advance_complete_flow() {
         .json(&json!({
             "customer_name": "Nguyễn Test",
             "customer_phone": "0912999999",
-            "vehicle_type": "car",
-            "service_id": service_id
+            "vehicle_type": "sedan",
+            "service_id": service_id,
+            "service_name": "Rửa cơ bản"
         }))
         .send()
         .await
@@ -410,8 +411,9 @@ async fn queue_join_advance_complete_flow() {
 
     // Advance to in_progress
     let res = c
-        .post(format!("{base}/api/v1/queue/{entry_id}/advance"))
+        .put(format!("{base}/api/v1/queue/{entry_id}/advance"))
         .bearer_auth(&token)
+        .json(&json!({}))
         .send()
         .await
         .unwrap();
@@ -421,7 +423,7 @@ async fn queue_join_advance_complete_flow() {
 
     // Complete
     let res = c
-        .post(format!("{base}/api/v1/queue/{entry_id}/complete"))
+        .put(format!("{base}/api/v1/queue/{entry_id}/complete"))
         .bearer_auth(&token)
         .send()
         .await
@@ -466,7 +468,7 @@ async fn booking_create_and_list() {
         .bearer_auth(&token)
         .json(&json!({
             "name": "Rửa VIP",
-            "vehicle_type": "car",
+            "vehicle_type": "sedan",
             "base_price": 300000,
             "duration_minutes": 60
         }))
@@ -482,16 +484,15 @@ async fn booking_create_and_list() {
         .to_string();
 
     let res = c
-        .post(format!("{base}/api/v1/bookings"))
+        .post(format!("{base}/api/v1/bookings/locations/{location_id}"))
         .bearer_auth(&token)
         .json(&json!({
-            "location_id": location_id,
             "service_id": service_id,
             "customer_name": "Trần Booking",
             "customer_phone": "0912888888",
-            "vehicle_type": "car",
+            "vehicle_type": "sedan",
             "booking_date": tomorrow,
-            "time_slot": "10:00"
+            "time_slot": "10:00:00"
         }))
         .send()
         .await
@@ -551,7 +552,7 @@ async fn multi_tenant_isolation() {
             "latitude": 10.78,
             "longitude": 106.71,
             "bay_count": 1,
-            "queue_mode": "walkin"
+            "queue_mode": "walkin_only"
         }))
         .send()
         .await

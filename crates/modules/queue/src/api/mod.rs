@@ -28,6 +28,7 @@ pub struct QueueState {
     service: Arc<Service>,
     jwt: JwtConfig,
     pub broadcast: ws::QueueBroadcast,
+    pub pool: PgPool,
 }
 
 impl std::ops::Deref for QueueState {
@@ -83,7 +84,7 @@ async fn handle_socket(mut socket: WebSocket, state: QueueState, location_id: Uu
 }
 
 pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
-    let repo = PgQueueRepository::new(pool);
+    let repo = PgQueueRepository::new(pool.clone());
     let service = Arc::new(QueueService::new(repo));
     let broadcast = ws::QueueBroadcast::new();
 
@@ -91,6 +92,7 @@ pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
         service,
         jwt,
         broadcast,
+        pool,
     };
 
     Router::new()

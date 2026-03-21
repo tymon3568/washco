@@ -38,6 +38,12 @@ impl<R: QueueRepository> QueueService<R> {
         location_id: Uuid,
         input: JoinInput,
     ) -> Result<QueueEntry, AppError> {
+        if input.customer_name.trim().is_empty() {
+            return Err(AppError::Validation {
+                message: "Customer name is required".into(),
+            });
+        }
+
         let queue_number = self
             .repo
             .next_queue_number(tenant_id, location_id)
@@ -61,10 +67,7 @@ impl<R: QueueRepository> QueueService<R> {
             completed_at: None,
         };
 
-        self.repo
-            .create(&entry)
-            .await
-            .map_err(AppError::Internal)?;
+        self.repo.create(&entry).await.map_err(AppError::Internal)?;
 
         Ok(entry)
     }

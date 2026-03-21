@@ -46,4 +46,10 @@ pub trait OtpStore: Send + Sync {
     ) -> impl std::future::Future<Output = anyhow::Result<Option<OtpEntry>>> + Send;
 
     fn remove(&self, phone: &str) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
+
+    /// Increment failed attempt counter and return updated entry.
+    fn increment_attempts(
+        &self,
+        phone: &str,
+    ) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
 }

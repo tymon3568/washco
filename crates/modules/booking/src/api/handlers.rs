@@ -50,11 +50,11 @@ pub async fn list_by_location(
 
 pub async fn list_by_phone(
     State(svc): State<BookingState>,
-    _ctx: TenantContext,
+    ctx: TenantContext,
     Path(phone): Path<String>,
     Query(query): Query<DateQuery>,
 ) -> Result<Json<Vec<BookingResponse>>, AppError> {
-    let bookings = svc.list_by_phone(&phone, query.date).await?;
+    let bookings = svc.list_by_phone(ctx.tenant_id, &phone, query.date).await?;
 
     Ok(Json(bookings.into_iter().map(Into::into).collect()))
 }

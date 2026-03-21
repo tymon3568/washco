@@ -29,6 +29,7 @@ pub trait BookingRepository: Send + Sync {
 
     fn list_by_phone(
         &self,
+        tenant_id: Uuid,
         phone: &str,
         date: NaiveDate,
     ) -> impl std::future::Future<Output = anyhow::Result<Vec<Booking>>> + Send;

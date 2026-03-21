@@ -56,6 +56,17 @@ impl<R: ServiceRepository> CatalogService<R> {
     }
 
     pub async fn create_service(&self, input: CreateServiceInput) -> Result<Service, AppError> {
+        if input.name.trim().is_empty() {
+            return Err(AppError::Validation {
+                message: "Service name is required".into(),
+            });
+        }
+        if input.base_price < 0 {
+            return Err(AppError::Validation {
+                message: "Base price must not be negative".into(),
+            });
+        }
+
         let vehicle_type = VehicleType::from_str(&input.vehicle_type)
             .ok_or_else(|| CatalogError::InvalidVehicleType(input.vehicle_type.clone()))?;
 
@@ -92,6 +103,11 @@ impl<R: ServiceRepository> CatalogService<R> {
             service.description = Some(description);
         }
         if let Some(base_price) = input.base_price {
+            if base_price < 0 {
+                return Err(AppError::Validation {
+                    message: "Base price must not be negative".into(),
+                });
+            }
             service.base_price = Money::new(base_price);
         }
         if let Some(duration_minutes) = input.duration_minutes {

@@ -74,7 +74,12 @@ pub async fn report_weather(
     Json(body): Json<ReportWeatherRequest>,
 ) -> Result<Json<WeatherDataResponse>, AppError> {
     let data = svc
-        .report_weather(&body.city, &body.condition, body.temperature_c, body.humidity)
+        .report_weather(
+            &body.city,
+            &body.condition,
+            body.temperature_c,
+            body.humidity,
+        )
         .await?;
     Ok(Json(data.into()))
 }

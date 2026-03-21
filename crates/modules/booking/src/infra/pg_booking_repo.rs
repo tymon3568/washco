@@ -107,13 +107,19 @@ impl BookingRepository for PgBookingRepository {
         Ok(rows.iter().map(row_to_booking).collect())
     }
 
-    async fn list_by_phone(&self, phone: &str, date: NaiveDate) -> anyhow::Result<Vec<Booking>> {
+    async fn list_by_phone(
+        &self,
+        tenant_id: Uuid,
+        phone: &str,
+        date: NaiveDate,
+    ) -> anyhow::Result<Vec<Booking>> {
         let q = format!(
             "SELECT {BOOKING_COLS} FROM bookings
-             WHERE customer_phone = $1 AND booking_date = $2
+             WHERE tenant_id = $1 AND customer_phone = $2 AND booking_date = $3
              ORDER BY time_slot ASC"
         );
         let rows = sqlx::query(&q)
+            .bind(tenant_id)
             .bind(phone)
             .bind(date)
             .fetch_all(&self.pool)

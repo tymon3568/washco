@@ -31,11 +31,7 @@ impl<R: AdminRepository> AdminService<R> {
         self.repo.get_location(id).await.map_err(AppError::Internal)
     }
 
-    pub async fn approve_location(
-        &self,
-        id: Uuid,
-        admin_user_id: Uuid,
-    ) -> Result<(), AppError> {
+    pub async fn approve_location(&self, id: Uuid, admin_user_id: Uuid) -> Result<(), AppError> {
         self.repo
             .update_location_status(id, "active")
             .await

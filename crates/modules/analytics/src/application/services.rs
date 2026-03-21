@@ -2,7 +2,9 @@ use chrono::NaiveDate;
 use uuid::Uuid;
 use washco_shared::AppError;
 
-use crate::domain::{BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint};
+use crate::domain::{
+    BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint,
+};
 
 use super::ports::AnalyticsRepository;
 

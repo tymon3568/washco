@@ -16,6 +16,7 @@ type Service = AnalyticsService<PgAnalyticsRepository>;
 pub struct AnalyticsState {
     service: Arc<Service>,
     jwt: JwtConfig,
+    pub pool: PgPool,
 }
 
 impl std::ops::Deref for AnalyticsState {
@@ -32,10 +33,10 @@ impl AsRef<JwtConfig> for AnalyticsState {
 }
 
 pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
-    let repo = PgAnalyticsRepository::new(pool);
+    let repo = PgAnalyticsRepository::new(pool.clone());
     let service = Arc::new(AnalyticsService::new(repo));
 
-    let state = AnalyticsState { service, jwt };
+    let state = AnalyticsState { service, jwt, pool };
 
     Router::new()
         .route(
@@ -50,10 +51,7 @@ pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
             "/locations/{location_id}/services",
             get(handlers::service_breakdown),
         )
-        .route(
-            "/locations/{location_id}/trend",
-            get(handlers::trend),
-        )
+        .route("/locations/{location_id}/trend", get(handlers::trend))
         .route(
             "/locations/{location_id}/period",
             get(handlers::period_summary),

@@ -54,6 +54,12 @@ impl<R: LocationRepository> LocationService<R> {
         tenant_id: Uuid,
         input: CreateLocationInput,
     ) -> Result<Location, AppError> {
+        if input.name.trim().is_empty() {
+            return Err(AppError::Validation {
+                message: "Location name is required".into(),
+            });
+        }
+
         let queue_mode = QueueMode::from_str(&input.queue_mode)
             .ok_or_else(|| LocationError::InvalidQueueMode(input.queue_mode.clone()))?;
 
@@ -195,6 +201,11 @@ impl<R: LocationRepository> LocationService<R> {
     ) -> Result<Vec<(Location, f64)>, AppError> {
         if !(-90.0..=90.0).contains(&lat) || !(-180.0..=180.0).contains(&lng) {
             return Err(LocationError::InvalidCoordinates.into());
+        }
+        if radius_meters < 0.0 {
+            return Err(AppError::Validation {
+                message: "Radius must not be negative".into(),
+            });
         }
         let results = self.repo.find_nearby(lat, lng, radius_meters).await?;
         Ok(results)

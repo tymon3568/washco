@@ -2,7 +2,9 @@ use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::domain::{BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint};
+use crate::domain::{
+    BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint,
+};
 
 #[derive(Debug, Deserialize)]
 pub struct DateRangeQuery {

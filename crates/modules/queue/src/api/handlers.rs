@@ -10,11 +10,33 @@ use super::QueueState;
 use super::dto::*;
 use crate::application::JoinInput;
 
+/// Verify location belongs to the caller's tenant.
+async fn verify_location_ownership(
+    pool: &sqlx::PgPool,
+    tenant_id: Uuid,
+    location_id: Uuid,
+) -> Result<(), AppError> {
+    let exists: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM locations WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL)",
+    )
+    .bind(location_id)
+    .bind(tenant_id)
+    .fetch_one(pool)
+    .await
+    .map_err(|e| AppError::Internal(anyhow::anyhow!("DB: {e}")))?;
+
+    if !exists {
+        return Err(AppError::NotFound { entity: "Location" });
+    }
+    Ok(())
+}
+
 pub async fn get_queue(
     State(svc): State<QueueState>,
     ctx: TenantContext,
     Path(location_id): Path<Uuid>,
 ) -> Result<Json<QueueStateResponse>, AppError> {
+    verify_location_ownership(&svc.pool, ctx.tenant_id, location_id).await?;
     let view = svc.get_queue(ctx.tenant_id, location_id).await?;
 
     Ok(Json(QueueStateResponse {
@@ -32,6 +54,7 @@ pub async fn join(
     Path(location_id): Path<Uuid>,
     Json(body): Json<JoinQueueRequest>,
 ) -> Result<(StatusCode, Json<QueueEntryResponse>), AppError> {
+    verify_location_ownership(&svc.pool, ctx.tenant_id, location_id).await?;
     let entry = svc
         .join(
             ctx.tenant_id,

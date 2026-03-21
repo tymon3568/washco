@@ -39,4 +39,11 @@ impl OtpStore for InMemoryOtpStore {
         self.store.write().await.remove(phone);
         Ok(())
     }
+
+    async fn increment_attempts(&self, phone: &str) -> anyhow::Result<()> {
+        if let Some(entry) = self.store.write().await.get_mut(phone) {
+            entry.increment_attempts();
+        }
+        Ok(())
+    }
 }

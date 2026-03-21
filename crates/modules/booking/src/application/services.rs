@@ -163,11 +163,12 @@ impl<R: BookingRepository> BookingService<R> {
 
     pub async fn list_by_phone(
         &self,
+        tenant_id: Uuid,
         phone: &str,
         date: NaiveDate,
     ) -> Result<Vec<Booking>, AppError> {
         self.repo
-            .list_by_phone(phone, date)
+            .list_by_phone(tenant_id, phone, date)
             .await
             .map_err(AppError::Internal)
     }

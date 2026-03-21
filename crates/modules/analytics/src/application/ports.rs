@@ -1,7 +1,9 @@
 use chrono::NaiveDate;
 use uuid::Uuid;
 
-use crate::domain::{BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint};
+use crate::domain::{
+    BayUtilization, DailySummary, LocationComparison, PeriodSummary, ServiceMetric, TrendDataPoint,
+};
 
 pub trait AnalyticsRepository: Send + Sync {
     fn daily_summary(

@@ -1,7 +1,7 @@
 use uuid::Uuid;
 use washco_shared::{AppError, JwtConfig};
 
-use crate::domain::{IdentityError, OtpEntry, Tenant, User};
+use crate::domain::{IdentityError, OtpEntry, Tenant, User, sanitize_text, validate_phone};
 
 use super::ports::{OtpStore, UserRepository};
 
@@ -32,20 +32,36 @@ impl<R: UserRepository, O: OtpStore> IdentityService<R, O> {
     }
 
     pub async fn register(&self, input: RegisterInput) -> Result<User, AppError> {
+        if !validate_phone(&input.phone) {
+            return Err(IdentityError::InvalidPhone.into());
+        }
+        let owner_name = sanitize_text(input.owner_name.trim());
+        if owner_name.is_empty() {
+            return Err(IdentityError::NameRequired.into());
+        }
+        let business_name = sanitize_text(input.business_name.trim());
+        if business_name.is_empty() {
+            return Err(IdentityError::NameRequired.into());
+        }
+
         if self.repo.find_by_phone(&input.phone).await?.is_some() {
             return Err(IdentityError::PhoneAlreadyExists.into());
         }
 
-        let tenant = Tenant::new(input.business_name, input.owner_name.clone());
+        let tenant = Tenant::new(business_name, owner_name.clone());
         self.repo.create_tenant(&tenant).await?;
 
-        let user = User::new_owner(tenant.id, input.phone, input.owner_name);
+        let user = User::new_owner(tenant.id, input.phone, owner_name);
         self.repo.create_user(&user).await?;
 
         Ok(user)
     }
 
     pub async fn request_otp(&self, phone: &str) -> Result<(), AppError> {
+        if !validate_phone(phone) {
+            return Err(IdentityError::InvalidPhone.into());
+        }
+
         self.repo
             .find_by_phone(phone)
             .await?
@@ -74,9 +90,15 @@ impl<R: UserRepository, O: OtpStore> IdentityService<R, O> {
             return Err(IdentityError::OtpExpired.into());
         }
 
+        if otp.max_attempts_exceeded() {
+            self.otp_store.remove(phone).await?;
+            return Err(IdentityError::OtpMaxAttemptsExceeded.into());
+        }
+
         // Dev mode: accept "000000" as universal OTP
         let is_dev_bypass = cfg!(debug_assertions) && code == "000000";
         if !is_dev_bypass && !otp.matches(code) {
+            self.otp_store.increment_attempts(phone).await?;
             return Err(IdentityError::InvalidOtp.into());
         }
 

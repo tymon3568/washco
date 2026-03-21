@@ -70,13 +70,11 @@ impl WeatherRepository for PgWeatherRepository {
         tenant_id: Uuid,
         id: Uuid,
     ) -> anyhow::Result<Option<WeatherTrigger>> {
-        let row = sqlx::query(
-            "SELECT * FROM weather_triggers WHERE id = $1 AND tenant_id = $2",
-        )
-        .bind(id)
-        .bind(tenant_id)
-        .fetch_optional(&self.pool)
-        .await?;
+        let row = sqlx::query("SELECT * FROM weather_triggers WHERE id = $1 AND tenant_id = $2")
+            .bind(id)
+            .bind(tenant_id)
+            .fetch_optional(&self.pool)
+            .await?;
         Ok(row.as_ref().map(row_to_trigger))
     }
 
