@@ -33,8 +33,8 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip WebSocket
-  if (url.protocol === 'ws:' || url.protocol === 'wss:') return;
+  // Skip WebSocket and non-HTTP(S) requests (chrome-extension://, etc.)
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
   // API requests: network-first with cache fallback
   if (url.pathname.startsWith('/api/')) {
@@ -52,16 +52,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // SPA navigation requests: return cached app shell (/)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/'))
+    );
+    return;
+  }
+
   // Static assets: stale-while-revalidate
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      const fetched = fetch(event.request).then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      });
+      const fetched = fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => cached);
       return cached || fetched;
     })
   );

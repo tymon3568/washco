@@ -80,8 +80,8 @@
 
 		<div class="mt-8 rounded-2xl bg-card p-6 shadow-sm">
 			{#if step === 'phone'}
-				<h2 class="text-lg font-semibold">Dang nhap</h2>
-				<p class="mt-1 text-sm text-muted-foreground">Nhap so dien thoai de tiep tuc</p>
+				<h2 class="text-lg font-semibold">Dang nhap / Dang ky</h2>
+				<p class="mt-1 text-sm text-muted-foreground">Nhap so dien thoai de dang nhap hoac tao tai khoan moi</p>
 
 				{#if error}
 					<p class="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>
@@ -110,6 +110,9 @@
 				</form>
 
 				<p class="mt-4 text-center text-xs text-muted-foreground">
+					Chua co tai khoan? Nhap SĐT va xac thuc OTP, he thong se tu dong tao tai khoan cho ban.
+				</p>
+				<p class="mt-2 text-center text-xs text-muted-foreground">
 					Tiep tuc la ban dong y voi dieu khoan su dung cua WashCo
 				</p>
 
@@ -123,6 +126,7 @@
 					<h2 class="text-lg font-semibold">Nhap ma OTP</h2>
 				</div>
 				<p class="mt-1 text-sm text-muted-foreground">Ma da gui den {phone}</p>
+				<p class="mt-1 text-xs text-blue-600">Neu chua co tai khoan, he thong se tu dong chuyen sang dang ky sau khi xac thuc.</p>
 
 				{#if error}
 					<p class="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>

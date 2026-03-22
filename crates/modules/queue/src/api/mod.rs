@@ -97,7 +97,15 @@ pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
 
     Router::new()
         .route("/locations/{location_id}", get(handlers::get_queue))
+        .route(
+            "/public/locations/{location_id}",
+            get(handlers::public_get_queue),
+        )
         .route("/locations/{location_id}/join", post(handlers::join))
+        .route(
+            "/public/locations/{location_id}/join",
+            post(handlers::public_join),
+        )
         .route("/{id}/advance", put(handlers::advance))
         .route("/{id}/complete", put(handlers::complete))
         .route("/{id}/cancel", put(handlers::cancel))

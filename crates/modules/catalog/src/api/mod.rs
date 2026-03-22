@@ -16,6 +16,7 @@ type Service = CatalogService<PgServiceRepository>;
 pub struct CatalogState {
     service: Arc<Service>,
     jwt: JwtConfig,
+    pub pool: PgPool,
 }
 
 impl std::ops::Deref for CatalogState {
@@ -32,15 +33,23 @@ impl AsRef<JwtConfig> for CatalogState {
 }
 
 pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
-    let repo = PgServiceRepository::new(pool);
+    let repo = PgServiceRepository::new(pool.clone());
     let service = Arc::new(CatalogService::new(repo));
 
-    let state = CatalogState { service, jwt };
+    let state = CatalogState {
+        service,
+        jwt,
+        pool,
+    };
 
     Router::new()
         .route(
             "/locations/{location_id}/services",
             get(handlers::list).post(handlers::create),
+        )
+        .route(
+            "/public/locations/{location_id}/services",
+            get(handlers::public_list),
         )
         .route(
             "/services/{id}",

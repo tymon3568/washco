@@ -4,7 +4,7 @@ use axum::{
     http::StatusCode,
 };
 use uuid::Uuid;
-use washco_shared::{AppError, Role, TenantContext};
+use washco_shared::{AppError, Role, TenantContext, resolve_tenant_for_location};
 
 use super::QueueState;
 use super::dto::*;
@@ -48,6 +48,23 @@ pub async fn get_queue(
     }))
 }
 
+/// Public endpoint for driver app - no auth required
+pub async fn public_get_queue(
+    State(svc): State<QueueState>,
+    Path(location_id): Path<Uuid>,
+) -> Result<Json<QueueStateResponse>, AppError> {
+    let tenant_id = resolve_tenant_for_location(&svc.pool, location_id).await?;
+    let view = svc.get_queue(tenant_id, location_id).await?;
+
+    Ok(Json(QueueStateResponse {
+        location_id,
+        waiting: view.waiting.into_iter().map(Into::into).collect(),
+        in_progress: view.in_progress.into_iter().map(Into::into).collect(),
+        completed_today: view.completed_today,
+        estimated_wait_minutes: view.estimated_wait.estimated_minutes,
+    }))
+}
+
 pub async fn join(
     State(svc): State<QueueState>,
     ctx: TenantContext,
@@ -58,6 +75,31 @@ pub async fn join(
     let entry = svc
         .join(
             ctx.tenant_id,
+            location_id,
+            JoinInput {
+                customer_name: body.customer_name,
+                customer_phone: body.customer_phone,
+                vehicle_type: body.vehicle_type,
+                service_id: body.service_id,
+                service_name: body.service_name,
+            },
+        )
+        .await?;
+
+    svc.broadcast.notify(location_id, "queue_updated").await;
+    Ok((StatusCode::CREATED, Json(entry.into())))
+}
+
+/// Public endpoint for driver app - join queue without tenant ownership check
+pub async fn public_join(
+    State(svc): State<QueueState>,
+    Path(location_id): Path<Uuid>,
+    Json(body): Json<JoinQueueRequest>,
+) -> Result<(StatusCode, Json<QueueEntryResponse>), AppError> {
+    let tenant_id = resolve_tenant_for_location(&svc.pool, location_id).await?;
+    let entry = svc
+        .join(
+            tenant_id,
             location_id,
             JoinInput {
                 customer_name: body.customer_name,

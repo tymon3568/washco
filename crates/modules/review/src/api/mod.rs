@@ -19,6 +19,7 @@ type Service = ReviewService<PgReviewRepository>;
 pub struct ReviewState {
     service: Arc<Service>,
     jwt: JwtConfig,
+    pub pool: PgPool,
 }
 
 impl std::ops::Deref for ReviewState {
@@ -35,14 +36,23 @@ impl AsRef<JwtConfig> for ReviewState {
 }
 
 pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
-    let repo = PgReviewRepository::new(pool);
+    let repo = PgReviewRepository::new(pool.clone());
     let service = Arc::new(ReviewService::new(repo));
 
-    let state = ReviewState { service, jwt };
+    let state = ReviewState {
+        service,
+        jwt,
+        pool,
+    };
 
     Router::new()
         .route("/", post(handlers::submit_review))
+        .route("/public", post(handlers::public_submit_review))
         .route("/locations/{location_id}", get(handlers::list_reviews))
+        .route(
+            "/public/locations/{location_id}",
+            get(handlers::public_list_reviews),
+        )
         .route(
             "/locations/{location_id}/summary",
             get(handlers::get_summary),

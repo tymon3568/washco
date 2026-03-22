@@ -19,6 +19,7 @@ type Service = BookingService<PgBookingRepository>;
 pub struct BookingState {
     service: Arc<Service>,
     jwt: JwtConfig,
+    pub pool: PgPool,
 }
 
 impl std::ops::Deref for BookingState {
@@ -35,15 +36,23 @@ impl AsRef<JwtConfig> for BookingState {
 }
 
 pub fn routes(pool: PgPool, jwt: JwtConfig) -> Router {
-    let repo = PgBookingRepository::new(pool);
+    let repo = PgBookingRepository::new(pool.clone());
     let service = Arc::new(BookingService::new(repo));
 
-    let state = BookingState { service, jwt };
+    let state = BookingState {
+        service,
+        jwt,
+        pool,
+    };
 
     Router::new()
         .route(
             "/locations/{location_id}",
             post(handlers::create_booking).get(handlers::list_by_location),
+        )
+        .route(
+            "/public/locations/{location_id}",
+            post(handlers::public_create_booking),
         )
         .route("/phone/{phone}", get(handlers::list_by_phone))
         .route("/{id}/confirm", put(handlers::confirm))

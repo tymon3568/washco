@@ -165,7 +165,7 @@ impl<R: BookingRepository> BookingService<R> {
         &self,
         tenant_id: Uuid,
         phone: &str,
-        date: NaiveDate,
+        date: Option<&NaiveDate>,
     ) -> Result<Vec<Booking>, AppError> {
         self.repo
             .list_by_phone(tenant_id, phone, date)

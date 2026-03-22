@@ -1,5 +1,7 @@
 apisix:
-  node_listen: 9080
+  node_listen:
+    - 9080
+    - 9081
   enable_admin: false
 
 deployment:

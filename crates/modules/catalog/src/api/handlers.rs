@@ -4,7 +4,7 @@ use axum::{
     http::StatusCode,
 };
 use uuid::Uuid;
-use washco_shared::{AppError, TenantContext};
+use washco_shared::{AppError, TenantContext, resolve_tenant_for_location};
 
 use super::CatalogState;
 use super::dto::*;
@@ -16,6 +16,17 @@ pub async fn list(
     Path(location_id): Path<Uuid>,
 ) -> Result<Json<Vec<ServiceResponse>>, AppError> {
     let services = svc.list_services(ctx.tenant_id, location_id).await?;
+    let responses: Vec<ServiceResponse> = services.into_iter().map(Into::into).collect();
+    Ok(Json(responses))
+}
+
+/// Public endpoint for driver app - no auth required
+pub async fn public_list(
+    State(svc): State<CatalogState>,
+    Path(location_id): Path<Uuid>,
+) -> Result<Json<Vec<ServiceResponse>>, AppError> {
+    let tenant_id = resolve_tenant_for_location(&svc.pool, location_id).await?;
+    let services = svc.list_services(tenant_id, location_id).await?;
     let responses: Vec<ServiceResponse> = services.into_iter().map(Into::into).collect();
     Ok(Json(responses))
 }

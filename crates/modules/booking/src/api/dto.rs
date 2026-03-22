@@ -16,7 +16,7 @@ pub struct CreateBookingRequest {
 
 #[derive(Debug, Deserialize)]
 pub struct DateQuery {
-    pub date: chrono::NaiveDate,
+    pub date: Option<chrono::NaiveDate>,
 }
 
 #[derive(Debug, Serialize)]

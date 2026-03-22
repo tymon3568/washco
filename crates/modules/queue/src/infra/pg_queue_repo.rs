@@ -108,7 +108,7 @@ impl QueueRepository for PgQueueRepository {
 
     async fn next_queue_number(&self, tenant_id: Uuid, location_id: Uuid) -> anyhow::Result<i32> {
         let row = sqlx::query(
-            "SELECT COALESCE(MAX(queue_number), 0) + 1 as next_num FROM queue_entries WHERE tenant_id = $1 AND location_id = $2 AND joined_at::date = CURRENT_DATE",
+            "SELECT COALESCE(MAX(queue_number), 0) + 1 as next_num FROM queue_entries WHERE tenant_id = $1 AND location_id = $2 AND status IN ('waiting', 'in_progress')",
         )
         .bind(tenant_id)
         .bind(location_id)

@@ -29,7 +29,7 @@
 				</svg>
 			</button>
 			<span class="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-				{formatDistance(location.distance)}
+				{formatDistance(location.distance_meters)}
 			</span>
 		</div>
 	</div>

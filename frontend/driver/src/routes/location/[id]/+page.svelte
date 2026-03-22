@@ -51,9 +51,9 @@
 		loading = true;
 		try {
 			const [q, s, r] = await Promise.all([
-				api.get<QueueStateResponse>(`/queue/locations/${locationId}`),
-				api.get<ServiceResponse[]>(`/catalog/locations/${locationId}/services`),
-				api.get<ReviewResponse[]>(`/reviews/locations/${locationId}`).catch(() => [] as ReviewResponse[])
+				api.get<QueueStateResponse>(`/queue/public/locations/${locationId}`),
+				api.get<ServiceResponse[]>(`/catalog/public/locations/${locationId}/services`),
+				api.get<ReviewResponse[]>(`/reviews/public/locations/${locationId}`).catch(() => [] as ReviewResponse[])
 			]);
 			queue = q;
 			services = s.filter((s) => s.is_active);
@@ -69,7 +69,7 @@
 
 	async function refreshQueue() {
 		try {
-			queue = await api.get<QueueStateResponse>(`/queue/locations/${locationId}`);
+			queue = await api.get<QueueStateResponse>(`/queue/public/locations/${locationId}`);
 		} catch {
 			// silent
 		}
@@ -78,7 +78,7 @@
 	async function submitBooking() {
 		bookingSubmitting = true;
 		try {
-			await api.post(`/bookings/locations/${locationId}`, {
+			await api.post(`/bookings/public/locations/${locationId}`, {
 				service_id: bookingServiceId,
 				customer_name: bookingName,
 				customer_phone: bookingPhone,
@@ -102,11 +102,13 @@
 	async function submitQueueJoin() {
 		queueSubmitting = true;
 		try {
-			await api.post(`/queue/locations/${locationId}/join`, {
+			const selectedService = services.find((s) => s.id === queueServiceId);
+			await api.post(`/queue/public/locations/${locationId}/join`, {
 				customer_name: queueName,
 				customer_phone: queuePhone,
 				vehicle_type: queueVehicle,
-				service_id: queueServiceId
+				service_id: queueServiceId,
+				service_name: selectedService?.name ?? ''
 			});
 			showQueueJoin = false;
 			toast.success('Da vao hang doi!');

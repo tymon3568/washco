@@ -64,11 +64,13 @@
 		if (!locationId || !selectedServiceId) return;
 		loading = true;
 		try {
+			const selectedService = services.find((s) => s.id === selectedServiceId);
 			await api.post(`/queue/locations/${locationId}/join`, {
 				customer_name: customerName,
 				customer_phone: customerPhone || undefined,
 				vehicle_type: vehicleType,
-				service_id: selectedServiceId
+				service_id: selectedServiceId,
+				service_name: selectedService?.name ?? ''
 			});
 			customerName = '';
 			customerPhone = '';

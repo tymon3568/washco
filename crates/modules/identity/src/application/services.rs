@@ -62,11 +62,7 @@ impl<R: UserRepository, O: OtpStore> IdentityService<R, O> {
             return Err(IdentityError::InvalidPhone.into());
         }
 
-        self.repo
-            .find_by_phone(phone)
-            .await?
-            .ok_or(IdentityError::UserNotFound)?;
-
+        // Allow OTP for unregistered phones too (driver sign-up flow)
         let otp = OtpEntry::new(phone.to_string());
         tracing::info!(phone = phone, code = %otp.code, "OTP generated (dev mode)");
         self.otp_store.store(otp).await?;

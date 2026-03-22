@@ -1,54 +1,62 @@
-# APISIX declarative routes (standalone mode fallback)
-# In production, use Admin API or Dashboard to configure routes dynamically
+# APISIX declarative routes (standalone mode)
+# Port 9080 (-> 8088): Owner Dashboard + API
+# Port 9081 (-> 8089): Driver App + API
 
 routes:
   # ============================================================
-  # OWNER DASHBOARD (owner.washco.local / localhost:80)
+  # OWNER DASHBOARD (port 9080 -> localhost:8088)
   # ============================================================
   - id: 1
     uri: /*
-    host: owner.washco.local
+    priority: -1
+    vars:
+      - - server_port
+        - "=="
+        - "9080"
     upstream:
       type: roundrobin
       nodes:
-        owner-dashboard:3000: 1
+        host.containers.internal:5173: 1
     plugins:
       cors:
-        allow_origins: "http://owner.washco.local"
+        allow_origins: "http://localhost:8088"
         allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
         allow_headers: "Content-Type,Authorization"
         allow_credential: true
 
   # ============================================================
-  # DRIVER / CUSTOMER APP (app.washco.local)
+  # DRIVER APP (port 9081 -> localhost:8089)
   # ============================================================
   - id: 6
     uri: /*
-    host: app.washco.local
+    priority: -1
+    vars:
+      - - server_port
+        - "=="
+        - "9081"
     upstream:
       type: roundrobin
       nodes:
-        driver-app:3001: 1
+        host.containers.internal:3001: 1
     plugins:
       cors:
-        allow_origins: "http://app.washco.local"
+        allow_origins: "http://localhost:8089"
         allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
         allow_headers: "Content-Type,Authorization"
         allow_credential: true
 
   # ============================================================
-  # API ROUTES
+  # API ROUTES (available on both ports)
   # ============================================================
   - id: 2
     uri: /api/v1/*
-    host: api.washco.local
     upstream:
       type: roundrobin
       nodes:
-        washco-api:8080: 1
+        host.containers.internal:8080: 1
     plugins:
       cors:
-        allow_origins: "http://owner.washco.local,http://app.washco.local"
+        allow_origins: "http://localhost:8088,http://localhost:8089"
         allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
         allow_headers: "Content-Type,Authorization"
         allow_credential: true
@@ -62,50 +70,18 @@ routes:
   # WebSocket routes
   - id: 3
     uri: /api/v1/queue/ws/*
-    host: api.washco.local
     upstream:
       type: roundrobin
       nodes:
-        washco-api:8080: 1
+        host.containers.internal:8080: 1
     enable_websocket: true
 
-  # ============================================================
-  # DEV CONVENIENCE (localhost access)
-  # ============================================================
-
-  # API via localhost
-  - id: 4
-    uri: /api/v1/*
-    host: localhost
+  # Health check passthrough
+  - id: 8
+    uri: /health
     upstream:
       type: roundrobin
       nodes:
-        washco-api:8080: 1
-    plugins:
-      cors:
-        allow_origins: "http://localhost:3000,http://localhost:3001,http://localhost:5173"
-        allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
-        allow_headers: "Content-Type,Authorization"
-        allow_credential: true
-
-  # WebSocket via localhost
-  - id: 7
-    uri: /api/v1/queue/ws/*
-    host: localhost
-    upstream:
-      type: roundrobin
-      nodes:
-        washco-api:8080: 1
-    enable_websocket: true
-
-  # Owner dashboard via localhost (fallback)
-  - id: 5
-    uri: /*
-    host: localhost
-    priority: -1
-    upstream:
-      type: roundrobin
-      nodes:
-        owner-dashboard:3000: 1
+        host.containers.internal:8080: 1
 
 #END

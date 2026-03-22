@@ -51,7 +51,7 @@
 		</div>
 		<div class="rounded-lg border border-border bg-card p-6 shadow-xs">
 			<p class="text-sm text-muted-foreground">TG chờ TB</p>
-			<p class="mt-2 text-2xl font-bold">{summary?.average_wait_minutes ?? 0} phút</p>
+			<p class="mt-2 text-2xl font-bold">{Math.round(summary?.average_wait_minutes ?? 0)} phút</p>
 		</div>
 	</div>
 
@@ -76,7 +76,7 @@
 							<span class="ml-2 text-sm">{entry.customer_name}</span>
 							<span class="ml-2 text-xs text-muted-foreground">{entry.service_name}</span>
 						</div>
-						<span class="text-xs text-muted-foreground">~{entry.estimated_wait_minutes} phút</span>
+						<span class="text-xs text-muted-foreground">~{Math.round(entry.estimated_wait_minutes)} phút</span>
 					</div>
 				{/each}
 			</div>

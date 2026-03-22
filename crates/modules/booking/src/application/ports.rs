@@ -31,7 +31,7 @@ pub trait BookingRepository: Send + Sync {
         &self,
         tenant_id: Uuid,
         phone: &str,
-        date: NaiveDate,
+        date: Option<&NaiveDate>,
     ) -> impl std::future::Future<Output = anyhow::Result<Vec<Booking>>> + Send;
 
     fn count_at_slot(

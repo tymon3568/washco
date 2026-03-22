@@ -4,7 +4,7 @@ use axum::{
     http::StatusCode,
 };
 use uuid::Uuid;
-use washco_shared::{AppError, TenantContext};
+use washco_shared::{AppError, TenantContext, resolve_tenant_for_location};
 
 use super::ReviewState;
 use super::dto::*;
@@ -33,6 +33,29 @@ pub async fn submit_review(
     Ok((StatusCode::CREATED, Json(review.into())))
 }
 
+/// POST /public — submit a review without auth (driver app)
+pub async fn public_submit_review(
+    State(svc): State<ReviewState>,
+    Json(body): Json<SubmitReviewRequest>,
+) -> Result<(StatusCode, Json<ReviewResponse>), AppError> {
+    let tenant_id = resolve_tenant_for_location(&svc.pool, body.location_id).await?;
+    let review = svc
+        .submit_review(
+            tenant_id,
+            SubmitReviewInput {
+                location_id: body.location_id,
+                queue_entry_id: body.queue_entry_id,
+                customer_name: body.customer_name,
+                customer_phone: body.customer_phone,
+                rating: body.rating,
+                comment: body.comment,
+            },
+        )
+        .await?;
+
+    Ok((StatusCode::CREATED, Json(review.into())))
+}
+
 /// GET /locations/{location_id} — list reviews (auth required, tenant_id from JWT)
 pub async fn list_reviews(
     State(svc): State<ReviewState>,
@@ -45,6 +68,23 @@ pub async fn list_reviews(
 
     let reviews = svc
         .list_by_location(ctx.tenant_id, location_id, limit, offset)
+        .await?;
+
+    Ok(Json(reviews.into_iter().map(Into::into).collect()))
+}
+
+/// Public endpoint for driver app - no auth required
+pub async fn public_list_reviews(
+    State(svc): State<ReviewState>,
+    Path(location_id): Path<Uuid>,
+    Query(query): Query<ListReviewsQuery>,
+) -> Result<Json<Vec<ReviewResponse>>, AppError> {
+    let tenant_id = resolve_tenant_for_location(&svc.pool, location_id).await?;
+    let limit = query.limit.unwrap_or(20).min(100);
+    let offset = query.offset.unwrap_or(0);
+
+    let reviews = svc
+        .list_by_location(tenant_id, location_id, limit, offset)
         .await?;
 
     Ok(Json(reviews.into_iter().map(Into::into).collect()))

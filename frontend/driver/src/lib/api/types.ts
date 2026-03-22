@@ -27,7 +27,7 @@ export interface NearbyLocation {
 	bay_count: number;
 	queue_mode: string;
 	status: string;
-	distance: number;
+	distance_meters: number;
 }
 
 export interface LocationDetail {

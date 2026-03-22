@@ -20,7 +20,8 @@
 		}
 		submitting = true;
 		try {
-			await api.post(`/reviews/locations/${locationId}`, {
+			await api.post(`/reviews/public`, {
+				location_id: locationId,
 				customer_name: name,
 				customer_phone: phone || null,
 				rating,
